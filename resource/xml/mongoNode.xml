@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : mongoNode.xml
+    Created on : February 23, 2011, 12:54 PM
+    Author     : antoine
+    Description:
+        Purpose of the document follows.
+-->
+
+<TreeNodeLabel icon="mongo_leaf_32.png" iconGroup="icons" toolTipText="Mongo">
+    <PopUpMenu>
+        <MenuItem id="refresh" bind="globalStore.mongoPanel.menu.mongo.refresh"/>
+        <MenuItem id="close" bind="globalStore.mongoPanel.menu.mongo.close"/>
+        <MenuSeparator/>
+        <MenuItem id="createDB" label="Create DB" bind="globalStore.mongoPanel.menu.mongo.createDB"/>
+        <MenuSeparator/>
+        <MenuItem id="options" bind="globalStore.mongoPanel.menu.tools.options"/>
+    </PopUpMenu>
+</TreeNodeLabel>

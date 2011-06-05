@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : collectionNode.xml
+    Created on : February 23, 2011, 12:51 PM
+    Author     : antoine
+    Description:
+        Purpose of the document follows.
+-->
+
+<TreeNodeLabel icon="folder.png" iconGroup="icons" toolTipText="Collection">
+    <PopUpMenu>
+        <MenuItem id="refresh" bind="globalStore.collectionPanel.menu.collection.refresh"/>
+        <MenuItem id="rename" bind="globalStore.collectionPanel.menu.collection.rename"/>
+        <MenuItem id="dropCollection" bind="globalStore.collectionPanel.menu.collection.dropCollection"/>
+        <MenuSeparator/>
+        <MenuItem id="ensureIndex" bind="globalStore.collectionPanel.menu.collection.ensureIndex"/>
+        <MenuSeparator/>
+        <MenuItem id="find" bind="globalStore.collectionPanel.menu.document.find"/>
+        <MenuItem id="findOne" bind="globalStore.collectionPanel.menu.document.findOne"/>
+        <MenuItem id="count" bind="globalStore.collectionPanel.menu.document.count"/>
+        <MenuItem id="insert" bind="globalStore.collectionPanel.menu.document.insert"/>
+        <MenuItem id="save" bind="globalStore.collectionPanel.menu.document.save"/>
+        <MenuItem id="update" bind="globalStore.collectionPanel.menu.document.update"/>
+        <MenuItem id="remove" bind="globalStore.collectionPanel.menu.document.remove"/>
+        <MenuItem id="findAndModify" bind="globalStore.collectionPanel.menu.document.findAndModify"/>
+        <MenuSeparator/>
+        <MenuItem id="group" bind="globalStore.collectionPanel.menu.tools.group"/>
+        <MenuItem id="mapReduce" bind="globalStore.collectionPanel.menu.tools.mapReduce"/>
+    </PopUpMenu>
+</TreeNodeLabel>

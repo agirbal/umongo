@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : docFieldText.xml
+    Created on : March 7, 2011, 7:59 PM
+    Author     : antoine
+    Description:
+        Purpose of the document follows.
+-->
+
+<Div axis="X" field="true" gap="true">
+    <Div id="fields" borderSize="0" borderColor="127;127;127" gap="true">
+        <Text id="value"/>
+    </Div>
+    <Button id="edit" icon="edit.png" iconGroup="icons" toolTipText="Edit field" call="edit"/>
+    <Button id="up" icon="up.png" iconGroup="icons" toolTipText="Move field up" call="moveUp"/>
+    <Button id="down" icon="down.png" iconGroup="icons" toolTipText="Move field down" call="moveDown"/>
+    <Button id="addField" icon="add.png" iconGroup="icons" toolTipText="Add field" call="addField" visible="false">
+        <FormDialog>
+            <Div axis="X" gap="true">
+                <TextField id="addKey" label="Key" columns="10"/>
+                <ComboBox id="addType" label="Type" items="String;Long/Integer;Double/Float;Boolean;Date;Pattern;Object;Array;ObjectId/DBRef;Binary;Code;Timestamp;UUID;Null"/>
+            </Div>
+        </FormDialog>
+    </Button>
+    <Button id="remove" icon="dialog-close_16.png" iconGroup="icons" toolTipText="Remove field" call="remove"/>
+</Div>

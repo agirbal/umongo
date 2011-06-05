@@ -1,0 +1,60 @@
+<!-- Bold elements are required -->
+<launch4jConfig>
+  <headerType>gui</headerType>
+  <outfile>JMongoBrowser.exe</outfile>
+  <jar>./JMongoBrowser.jar</jar>
+  <dontWrapJar>true</dontWrapJar>
+  <errTitle>JMongoBrowser error</errTitle>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>http://10gen.com</supportUrl>
+  <cmdLine></cmdLine>
+  <priority>normal</priority>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <icon>java-icon.ico</icon>
+
+<!--  <obj>header object file</obj>
+  ...
+  <lib>w32api lib</lib>
+  ...
+  <var>var=text</var>
+  ... -->
+
+  <classPath>
+    <mainClass>org.mongo.jmongob.JMongoBrowser</mainClass>
+    <cp>./lib/*.jar</cp>
+  </classPath>
+
+  <jre>
+    <!-- Specify one of the following or both -->
+    <minVersion>1.6.0</minVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <!-- Heap sizes in MB and % of free memory -->
+    <initialHeapSize>64</initialHeapSize>
+    <maxHeapSize>512</maxHeapSize>
+  </jre>
+  <splash>
+    <file>../../resource/img/mongo_leaf.bmp</file>
+    <waitForWindow>true</waitForWindow>
+    <timeout>60</timeout>
+    <timeoutErr>true</timeoutErr>
+  </splash>
+  <versionInfo>
+    <fileVersion>0.9.0.0</fileVersion>
+    <txtFileVersion>win_0.9.0.0</txtFileVersion>
+    <fileDescription>JMongoBrowser</fileDescription>
+    <copyright>@10gen.com All rights reserved</copyright>
+    <productVersion>0.9.0.0</productVersion>
+    <txtProductVersion>win_0.9.0.0</txtProductVersion>
+    <productName>JMongoBrowser</productName>
+    <companyName>10gen</companyName>
+    <internalName>JMongoBrowser</internalName>
+    <originalFilename>JMongoBrowser.exe</originalFilename>
+  </versionInfo>
+<!--  <messages>
+    <startupErr>text</startupErr>
+    <bundledJreErr>text</bundledJreErr>
+    <jreVersionErr>text</jreVersionErr>
+    <launcherErr>text</launcherErr>
+  </messages> -->
+</launch4jConfig>

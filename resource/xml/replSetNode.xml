@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : serverNode.xml
+    Created on : February 23, 2011, 12:55 PM
+    Author     : antoine
+    Description:
+        Purpose of the document follows.
+-->
+
+<TreeNodeLabel icon="replSet.png" iconGroup="icons" toolTipText="Replica Set">
+    <PopUpMenu>
+        <MenuItem id="refresh" bind="globalStore.replSetPanel.menu.replSet.refresh"/>
+    </PopUpMenu>
+</TreeNodeLabel>

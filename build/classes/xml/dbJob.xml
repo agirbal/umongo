@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : runningCommand.xml
+    Created on : February 12, 2011, 6:27 PM
+    Author     : antoine
+    Description:
+        Purpose of the document follows.
+-->
+
+<Div axis="X" gap="true">
+    <Text id="jobName"/>
+    <ProgressBar id="progressBar" determinate="false" fixedSize="60;30"/>
+<!--    <Button id="close" icon="dialog-close_16.png" iconGroup="icons" call="close" fixedSize="20;20"/> -->
+</Div>
