@@ -57,7 +57,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         currentOpsQuery,
         killOp,
         killOpId,
-        autoBalance,
         isMaster,
     }
 
@@ -107,7 +106,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
             setStringFieldValue(Item.maxObjectSize, String.valueOf(mongo.getMaxBsonObjectSize()));
 
             setBooleanFieldValue(Item.fsyncAndLock, mongo.isLocked());
-            setBooleanFieldValue(Item.autoBalance, MongoUtils.isBalancerOn(mongo));
         } catch (Exception e) {
             JMongoBrowser.instance.showError(this.getClass().getSimpleName() + " update", e);
         }
@@ -266,39 +264,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         final int opid = getIntFieldValue(Item.killOpId);
         final DBObject query = new BasicDBObject("op", opid);
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query, null, null, 0, 0, 0, false);
-    }
-
-    public void autoBalance() {
-        final DB config = getMongoNode().getMongo().getDB("config");
-        final DBCollection settings = config.getCollection("settings");
-        
-        new DbJob() {
-
-            @Override
-            public Object doRun() throws IOException {
-                boolean on = MongoUtils.isBalancerOn(getMongoNode().getMongo());
-                BasicDBObject query = new BasicDBObject("_id", "balancer");
-                BasicDBObject update = new BasicDBObject("stopped", on);
-                update = new BasicDBObject("$set", update);
-                return settings.update(query, update, true, false);
-            }
-
-            @Override
-            public String getNS() {
-                return settings.getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Enable Balancer";
-            }
-            
-            @Override
-            public void wrapUp(Object res) {
-                updateComponent();
-                super.wrapUp(res);
-            }
-        }.addJob();
     }
     
     public void isMaster() {

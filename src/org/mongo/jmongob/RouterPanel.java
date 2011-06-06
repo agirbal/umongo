@@ -9,6 +9,8 @@ import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
 import java.io.IOException;
 import javax.swing.JPanel;
@@ -31,6 +33,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         asShardName,
         asReplSetName,
         asMaxSize,
+        autoBalance,
     }
 
     public RouterPanel() {
@@ -47,6 +50,8 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
             ServerAddress addr = getRouterNode().getAddress();
             setStringFieldValue(Item.host, addr.getHost() + ":" + addr.getPort());
             setStringFieldValue(Item.address, addr.getSocketAddress().toString());
+            final Mongo mongo = getRouterNode().getMongo();
+            setBooleanFieldValue(Item.autoBalance, MongoUtils.isBalancerOn(mongo));
         } catch (Exception e) {
             JMongoBrowser.instance.showError(this.getClass().getSimpleName() + " update", e);
         }
@@ -82,4 +87,39 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
     public void listShards() {
         new DocView(null, "List Shards", getRouterNode().getMongo().getDB("admin"), "listShards").addToTabbedDiv();
     }
+
+    public void autoBalance() {
+        final Mongo mongo = getRouterNode().getMongo();
+        final DB config = mongo.getDB("config");
+        final DBCollection settings = config.getCollection("settings");
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() throws IOException {
+                boolean on = MongoUtils.isBalancerOn(mongo);
+                BasicDBObject query = new BasicDBObject("_id", "balancer");
+                BasicDBObject update = new BasicDBObject("stopped", on);
+                update = new BasicDBObject("$set", update);
+                return settings.update(query, update, true, false);
+            }
+
+            @Override
+            public String getNS() {
+                return settings.getFullName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Enable Balancer";
+            }
+
+            @Override
+            public void wrapUp(Object res) {
+                updateComponent();
+                super.wrapUp(res);
+            }
+        }.addJob();
+    }
+
 }

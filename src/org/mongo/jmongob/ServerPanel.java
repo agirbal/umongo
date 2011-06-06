@@ -8,6 +8,7 @@ import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.SwingFast;
 import com.edgytech.swingfast.Text;
 import com.edgytech.swingfast.XmlComponentUnit;
+import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
@@ -38,6 +39,8 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         replicaSetInfo,
         refresh,
         rsStepDown,
+        rsFreeze,
+        rsFreezeTime,
         isMaster
     }
 
@@ -82,24 +85,14 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void rsStepDown() {
-        final DB db = getServerNode().getServerMongo().getDB("admin");
-        new DbJob() {
+        DBObject cmd = new BasicDBObject("replSetStepDown", 1);
+        new DocView(null, "RS Step Down", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
+    }
 
-            @Override
-            public Object doRun() throws IOException {
-                return db.command("replSetStepDown");
-            }
-
-            @Override
-            public String getNS() {
-                return db.getName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "RS Step Down";
-            }
-        }.addJob();
+    public void rsFreeze() {
+        int sec = getIntFieldValue(Item.rsFreezeTime);
+        DBObject cmd = new BasicDBObject("replSetFreeze", sec);
+        new DocView(null, "RS Freeze", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
     }
 
     public void serverStatus() {
