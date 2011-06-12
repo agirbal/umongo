@@ -33,6 +33,8 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     }
     long startTime, endTime;
     boolean stopped = false;
+    ProgressBar _progress;
+    ProgressBarWorker _pbw;
 
     public DbJob() {
         try {
@@ -45,8 +47,13 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     }
 
     public void start() {
-        ProgressBar progress = (ProgressBar) getBoundUnit(Item.progressBar);
-        ProgressBarWorker pbw = new ProgressBarWorker(progress) {
+        start(false);
+    }
+
+    public void start(boolean determinate) {
+        _progress = (ProgressBar) getBoundUnit(Item.progressBar);
+        _progress.determinate = isDeterminate();
+        _pbw = new ProgressBarWorker(_progress) {
 
             @Override
             protected Object doInBackground() throws Exception {
@@ -79,7 +86,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
                 }
             }
         };
-        pbw.start();
+        _pbw.start();
     }
 
     public abstract Object doRun() throws Exception;
@@ -92,7 +99,23 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
         return null;
     }
 
+    public boolean isCancelled() {
+        if (_pbw != null) {
+            return _pbw.isCancelled();
+        }
+        return false;
+    }
+
     public void cancel() {
+        if (_pbw != null) {
+            _pbw.cancel(true);
+        }
+    }
+
+    public void setProgress(int progress) {
+        if (_pbw != null) {
+            _pbw.updateProgress(progress);
+        }
     }
 
     public void wrapUp(Object res) {
@@ -124,6 +147,8 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
             DBObject obj = new BasicDBObject("Result", res.toString());
             new DocView(null, title, obj, sroot, this).addToTabbedDiv();
         }
+        _progress = null;
+        _pbw = null;
     }
 
     public String getTitle() {
@@ -140,8 +165,11 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
         if (enm == Item.close) {
             // cancel job
-            
         }
+    }
+
+    public boolean isDeterminate() {
+        return false;
     }
 
     public void addJob() {

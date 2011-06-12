@@ -387,7 +387,11 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             public Object doRun() throws Exception {
                 try {
                     try {
-                        DBCursor cur = col.find(query, fields, skip, batchSize);
+                        DBCursor cur = col.find(query, fields);
+                        if (skip > 0)
+                            cur.skip(skip);
+                        if (batchSize != 0)
+                            cur.batchSize(batchSize);
                         if (sort != null) {
                             cur.sort(sort);
                         }

@@ -21,6 +21,8 @@ import org.bson.types.BSONTimestamp;
 import org.bson.types.Binary;
 import org.bson.types.Code;
 import org.bson.types.CodeWScope;
+import org.bson.types.MaxKey;
+import org.bson.types.MinKey;
 import org.bson.types.ObjectId;
 
 /**
@@ -150,6 +152,10 @@ public class DocFieldObject extends DocFieldText {
             val = null;
         } else if (type.equals("UUID")) {
             val = UUID.randomUUID();
+        } else if (type.equals("MinKey")) {
+            val = new MinKey();
+        } else if (type.equals("MaxKey")) {
+            val = new MaxKey();
         }
 
         if (value == null) {
