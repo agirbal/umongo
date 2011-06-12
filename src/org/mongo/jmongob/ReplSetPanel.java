@@ -19,7 +19,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         refresh,
         name,
         replicaSetStatus,
-        replicaSetInfo,
+        oplogInfo,
         maxObjectSize
     }
 
@@ -45,7 +45,11 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void replicaSetInfo() {
-        new DocView(null, "RS Info", MongoUtils.getReplicaSetInfo(getReplSetNode().getMongo()), null, null).addToTabbedDiv();
+    public void replicaSetStatus() {
+        new DocView(null, "RS Status", getReplSetNode().getMongo().getDB("admin"), "replSetGetStatus").addToTabbedDiv();
+    }
+    
+    public void oplogInfo() {
+        new DocView(null, "Oplog Info", MongoUtils.getReplicaSetInfo(getReplSetNode().getMongo()),  "Oplog of " + getReplSetNode().getMongo().toString(), null).addToTabbedDiv();
     }
 }

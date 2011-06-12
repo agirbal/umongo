@@ -448,10 +448,12 @@
                 </Menu>
                 <Menu id="Replica">
                     <MenuItem id="replicaSetStatus" call="replicaSetStatus" label="RS Status"/>
-                    <MenuItem id="replicaSetInfo" call="replicaSetInfo" label="RS Info"/>
+                    <MenuItem id="oplogInfo" call="oplogInfo" label="Oplog Info"/>
                     <MenuItem id="rsStepDown" call="rsStepDown" label="Step Down" toolTipText="If primary, the server will step down to secondary to let another server be elected."/>
                     <MenuItem id="rsFreeze" call="rsFreeze" label="Freeze" toolTipText="This server will not attempt to become primary for next N seconds">
-                        <IntField id="rsFreezeTime" label="Freeze Time (Sec)" toolTipText="Time to freeze for, in seconds. If 0, it will unfreeze the server." value="60"/>
+                        <FormDialog>
+                            <IntField id="rsFreezeTime" label="Freeze Time (Sec)" toolTipText="Time to freeze for, in seconds. If 0, it will unfreeze the server." value="60"/>
+                        </FormDialog>
                     </MenuItem>
                 </Menu>
             </MenuBar>
@@ -474,7 +476,7 @@
                 </Menu>
                 <Menu id="command">
                     <MenuItem id="replicaSetStatus" call="replicaSetStatus" label="RS Status"/>
-                    <MenuItem id="replicaSetInfo" call="replicaSetInfo" label="RS Info"/>
+                    <MenuItem id="oplogInfo" call="oplogInfo" label="Oplog Info"/>
                 </Menu>
             </MenuBar>
             <Zone zone="CENTER">

@@ -36,7 +36,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         clientPorts,
         serverStatus,
         replicaSetStatus,
-        replicaSetInfo,
+        oplogInfo,
         refresh,
         rsStepDown,
         rsFreeze,
@@ -104,10 +104,10 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void replicaSetStatus() {
-        new DocView(null, "Server Status", getServerNode().getServerMongo().getDB("admin"), "replSetGetStatus").addToTabbedDiv();
+        new DocView(null, "RS Status", getServerNode().getServerMongo().getDB("admin"), "replSetGetStatus").addToTabbedDiv();
     }
 
-    public void replicaSetInfo() {
-        new DocView(null, "RS Info", MongoUtils.getReplicaSetInfo(getServerNode().getServerMongo()), null, null).addToTabbedDiv();
+    public void oplogInfo() {
+        new DocView(null, "Oplog Info", MongoUtils.getReplicaSetInfo(getServerNode().getServerMongo()), "Oplog of " + getServerNode().getServerAddress(), null).addToTabbedDiv();
     }
 }
