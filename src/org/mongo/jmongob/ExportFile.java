@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import org.bson.BSON;
 import org.bson.BSONDecoder;
 import org.bson.BSONObject;
+import org.bson.BasicBSONDecoder;
 import org.bson.BasicBSONObject;
 import org.bson.io.Bits;
 
@@ -183,7 +184,7 @@ public class ExportFile {
             } else {
                 fis = new FileInputStream(file);
                 callback = new DefaultDBCallback(null);
-                decoder = new BSONDecoder();
+                decoder = new BasicBSONDecoder();
             }
         }
 

@@ -92,7 +92,7 @@
                     <MenuItem id="authenticate" call="authenticate">
                         <FormDialog>
                             <TextField id="authUser" toolTipText="The user name to authenticate with admin database." nonEmpty="true"/>
-                            <TextField id="authPassword" toolTipText="The password to authenticate with admin database." nonEmpty="true"/>
+                            <PasswordField id="authPassword" toolTipText="The password to authenticate with admin database." nonEmpty="true"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
@@ -189,13 +189,13 @@
                     <MenuItem id="authenticate" call="authenticate">
                         <FormDialog>
                             <TextField id="authUser" label="User" nonEmpty="true"/>
-                            <TextField id="authPassword" label="Password" nonEmpty="true"/>
+                            <PasswordField id="authPassword" label="Password" nonEmpty="true"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="addUser" call="addUser">
                         <FormDialog>
                             <TextField id="auUser" label="User" nonEmpty="true"/>
-                            <TextField id="auPassword" label="Password" nonEmpty="true"/>
+                            <PasswordField id="auPassword" label="Password" nonEmpty="true"/>
                             <CheckBox id="auReadOnly" label="Read-only"/>
                         </FormDialog>
                     </MenuItem>
@@ -619,7 +619,7 @@
             </Menu>
             <Menu id="help" alt="h">
                 <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="mongo_leaf.png" signIconGroup="icons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v0.1&lt;br&gt;Author: Antoine Girbal"/>
+                    <InfoDialog signIcon="mongo_leaf.png" signIconGroup="icons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v0.9.3&lt;br&gt;Author: Antoine Girbal"/>
                 </MenuItem>
             </Menu>
         </org.mongo.jmongob.MainMenu>
