@@ -246,7 +246,7 @@
                     <MenuItem id="addJSFunction" call="addJSFunction" label="Add JS Function">
                         <FormDialog id="addJSFunctionDialog" label="Add JS Function">
                             <TextField id="addJSFunctionName" label="Name" toolTipText="Name of the function" nonEmpty="true"/>
-                            <TextArea id="addJSFunctionCode" label="Function Code" toolTipText="Code of the function" nonEmpty="true"/>
+                            <TextArea id="addJSFunctionCode" label="Function Code" toolTipText="Code of the javascript function like 'function(){ ... }'" nonEmpty="true"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="findJSFunction" call="findJSFunction" label="Find JS Function">
@@ -300,20 +300,20 @@
                         <FormDialog>
                             <org.mongo.jmongob.DocBuilderField id="grpKeys" label="Keys" toolTipText="Keys to group by, in JSON format" nonEmpty="true"/>
                             <org.mongo.jmongob.DocBuilderField id="grpQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="grpInitialValue" label="Initial Value" toolTipText="Initial value for the job, in JSON format" nonEmpty="true"/>
-                            <TextArea id="grpReduce" label="Reduce JS Function" toolTipText="reduce function, in javascript code" nonEmpty="true"/>
-                            <TextArea id="grpFinalize" label="Finalize JS Function" toolTipText="optional finalize function, in javascript code"/>
+                            <org.mongo.jmongob.DocBuilderField id="grpInitialValue" label="Initial Value" toolTipText="Initial value for the job, in JSON format" nonEmpty="true" value='{"count": 0}'/>
+                            <TextArea id="grpReduce" label="Reduce JS Function" toolTipText="reduce javascript function with signature 'void function(obj, out)' where obj is the object to process and out is the current result for that key" nonEmpty="true" value="function(obj,out){ out.count += 1; }"/>
+                            <TextArea id="grpFinalize" label="Finalize JS Function" toolTipText="optional finalize javascript function with signature 'void function(out)' where out is the result for that key"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="mapReduce" call="mapReduce">
                         <FormDialog>
-                            <TextArea id="mrMap" label="Map JS Function" toolTipText="map function, in javascript code" nonEmpty="true"/>
-                            <TextArea id="mrReduce" label="Reduce JS Function" toolTipText="reduce function, in javascript code" nonEmpty="true"/>
-                            <TextArea id="mrFinalize" label="Finalize JS Function" toolTipText="optional finalize function, in javascript code"/>
+                            <TextArea id="mrMap" label="Map JS Function" toolTipText="map javascript function with signature 'void function map()' which should contain one or more calls to emit(key, obj)" nonEmpty="true" value="function(){ emit(this._id, {count: 1}); }"/>
+                            <TextArea id="mrReduce" label="Reduce JS Function" toolTipText="reduce javascript function with signature 'result reduce(key, values)' where key is the emit key and values is the list of values to reduce.'" nonEmpty="true" value="function(key, values) { total = 0; for (var i = 0; i &lt; values.length; ++i) { total += values[i].count; }; return {count: total}; }"/>
+                            <TextArea id="mrFinalize" label="Finalize JS Function" toolTipText="optional finalize javascript function with signature 'result finalize(key, out)' where out is the result for that key"/>
                             <org.mongo.jmongob.DocBuilderField id="mrQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
                             <IntSpinner id="mrLimit" label="Limit" toolTipText="Limit of the number of input entries to process" minValue="0"/>
                             <ComboBox id="mrType" label="Output Type" items="replace;merge;reduce;inline" toolTipText="How to process the output"/>
-                            <TextField id="mrOut" label="Output Collection" toolTipText="Name of the output collection"/>
+                            <TextField id="mrOut" label="Output Collection" toolTipText="Name of the output collection" nonEmpty="true"/>
                             <TextField id="mrOutDB" label="Output Database" toolTipText="Name of the output database, if different from the input database"/>
                             <CheckBox id="mrOutSharded" label="Sharded Output" toolTipText="If true, the result collection will be sharded using the _id key."/>
                             <CheckBox id="mrJSMode" label="JS Mode"/>
