@@ -66,7 +66,6 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
                     return e;
                 } finally {
                     endTime = System.currentTimeMillis();
-                    getLogger().info("time " + (endTime - startTime));
                 }
             }
 

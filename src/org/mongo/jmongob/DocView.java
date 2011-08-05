@@ -204,9 +204,9 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         }
 
         updateThread = new Thread(this);
-        updateType = dia.getStringFieldValue(AutoUpdateDialog.Item.autoType);
-        updateInterval = dia.getIntFieldValue(AutoUpdateDialog.Item.autoInterval);
-        updateCount = dia.getIntFieldValue(AutoUpdateDialog.Item.autoCount);
+        updateType = dia.getComponentStringFieldValue(AutoUpdateDialog.Item.autoType);
+        updateInterval = dia.getComponentIntFieldValue(AutoUpdateDialog.Item.autoInterval);
+        updateCount = dia.getComponentIntFieldValue(AutoUpdateDialog.Item.autoCount);
         running = true;
         updateThread.start();
 
@@ -245,6 +245,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                 getLogger().log(Level.SEVERE, null, ex);
             }
         }
+        getLogger().log(Level.INFO, "Ran " + i + " updates");
     }
 
     public void refresh() {

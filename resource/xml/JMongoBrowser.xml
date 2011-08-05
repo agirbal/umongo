@@ -243,6 +243,18 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
+                    <MenuItem id="addJSFunction" call="addJSFunction" label="Add JS Function">
+                        <FormDialog id="addJSFunctionDialog" label="Add JS Function">
+                            <TextField id="addJSFunctionName" label="Name" toolTipText="Name of the function" nonEmpty="true"/>
+                            <TextArea id="addJSFunctionCode" label="Function Code" toolTipText="Code of the function" nonEmpty="true"/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuItem id="findJSFunction" call="findJSFunction" label="Find JS Function">
+                        <FormDialog id="findJSFunctionDialog" label="Find JS Function">
+                            <TextField id="findJSFunctionName" label="Name" toolTipText="Name of the function. Leave Empty to get all functions."/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuSeparator/>
                     <MenuItem id="options" call="options"/>
                 </Menu>
             </MenuBar>

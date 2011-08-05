@@ -20,6 +20,7 @@ import com.mongodb.util.JSON;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JPanel;
+import org.bson.types.Code;
 import org.mongo.jmongob.DbPanel.Item;
 
 /**
@@ -74,7 +75,12 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         profile,
         profileLevel,
         profileSlowMS,
-        repair
+        repair,
+        addJSFunction,
+        addJSFunctionName,
+        addJSFunctionCode,
+        findJSFunction,
+        findJSFunctionName
     }
     GridFS gridFS;
 
@@ -127,29 +133,31 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void eval() {
         final DB db = getDbNode().getDb();
         final String sfunc = getStringFieldValue(Item.evalCode);
+        BasicDBObject cmd = new BasicDBObject("$eval", sfunc);
+        new DocView(null, "Eval", db, cmd).addToTabbedDiv();
 
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                return db.eval(sfunc);
-            }
-
-            @Override
-            public String getNS() {
-                return db.getName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Eval";
-            }
-
-            @Override
-            public Object getRoot(Object result) {
-                return sfunc;
-            }
-        }.addJob();
+//        new DbJob() {
+//
+//            @Override
+//            public Object doRun() {
+//                return db.eval(sfunc);
+//            }
+//
+//            @Override
+//            public String getNS() {
+//                return db.getName();
+//            }
+//
+//            @Override
+//            public String getShortName() {
+//                return "Eval";
+//            }
+//
+//            @Override
+//            public Object getRoot(Object result) {
+//                return sfunc;
+//            }
+//        }.addJob();
     }
 
     public void uploadFile() {
@@ -447,5 +455,43 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final DB config = db.getSisterDB("config");
         final DBCollection col = config.getCollection("databases");
         CollectionPanel.doFind(col, new BasicDBObject("_id", db.getName()), null, null, 0, 0, 0, false);
+    }
+
+    public void findJSFunction() {
+        final DB db = getDbNode().getDb();
+        final DBCollection col = db.getCollection("system.js");
+        final String name = getStringFieldValue(Item.findJSFunctionName);
+        DBObject query = new BasicDBObject();
+        if (name != null && !name.isEmpty())
+            query.put("_id", name);
+        CollectionPanel.doFind(col, query, null, null, 0, 0, 0, false);
+    }
+
+    public void addJSFunction() {
+        final DB db = getDbNode().getDb();
+        final DBCollection col = db.getCollection("system.js");
+        final String name = getStringFieldValue(Item.addJSFunctionName);
+        final String code = getStringFieldValue(Item.addJSFunctionCode);
+        CollectionPanel.doFind(col, new BasicDBObject("_id", name), null, null, 0, 0, 0, false);
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() throws Exception {
+                DBObject obj = new BasicDBObject("_id", name);
+                obj.put("value", new Code(code));
+                return col.insert(obj);
+            }
+
+            @Override
+            public String getNS() {
+                return col.getFullName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Add JS Function";
+            }
+        }.addJob();
     }
 }
