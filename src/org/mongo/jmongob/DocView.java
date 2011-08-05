@@ -106,6 +106,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
             this.iterator = dbcursor;
             ((MenuItem) getBoundUnit(Item.refresh)).enabled = true;
             ((Menu) getBoundUnit(Item.document)).enabled = true;
+            ((MenuItem) getBoundUnit(Item.startAutoUpdate)).enabled = true;
         } else {
             this.iterator = iterator;
         }
@@ -231,7 +232,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         int i = 0;
         while (running) {
             try {
-                if ("Refresh".equals(updateType)) {
+                if ("Refresh".equals(updateType) || dbcursor != null) {
                     refresh();
                 } else if ("Append".equals(updateType)) {
                     append();
