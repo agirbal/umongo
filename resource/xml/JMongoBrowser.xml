@@ -631,7 +631,7 @@
             </Menu>
             <Menu id="help" alt="h">
                 <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="mongo_leaf.png" signIconGroup="icons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v0.9.3&lt;br&gt;Author: Antoine Girbal"/>
+                    <InfoDialog signIcon="mongo_leaf.png" signIconGroup="icons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v1.0.1&lt;br&gt;Author: Antoine Girbal"/>
                 </MenuItem>
             </Menu>
         </org.mongo.jmongob.MainMenu>

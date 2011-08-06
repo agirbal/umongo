@@ -40,12 +40,12 @@
     <timeoutErr>true</timeoutErr>
   </splash>
   <versionInfo>
-    <fileVersion>0.9.0.0</fileVersion>
-    <txtFileVersion>win_0.9.0.0</txtFileVersion>
+    <fileVersion>1.0.1.0</fileVersion>
+    <txtFileVersion>win_1.0.1.0</txtFileVersion>
     <fileDescription>JMongoBrowser</fileDescription>
     <copyright>@10gen.com All rights reserved</copyright>
-    <productVersion>0.9.0.0</productVersion>
-    <txtProductVersion>win_0.9.0.0</txtProductVersion>
+    <productVersion>1.0.1.0</productVersion>
+    <txtProductVersion>win_1.0.1.0</txtProductVersion>
     <productName>JMongoBrowser</productName>
     <companyName>10gen</companyName>
     <internalName>JMongoBrowser</internalName>
