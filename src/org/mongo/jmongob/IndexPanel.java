@@ -50,7 +50,8 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
             DBObject index = getIndexNode().getIndex();
             setStringFieldValue(Item.name, (String) index.get("name"));
             setStringFieldValue(Item.ns, (String) index.get("ns"));
-            setStringFieldValue(Item.version, ((Integer) index.get("v")).toString());
+            if (index.get("v") != null)
+                setStringFieldValue(Item.version, ((Integer) index.get("v")).toString());
             ((DocField) getBoundUnit(Item.key)).setDoc((DBObject) index.get("key"));
             ((CmdField) getBoundUnit(Item.stats)).updateFromCmd(getIndexNode().getStatsCollection());
         } catch (Exception e) {
