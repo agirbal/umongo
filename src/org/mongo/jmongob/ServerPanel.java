@@ -5,17 +5,13 @@
 package org.mongo.jmongob;
 
 import com.edgytech.swingfast.EnumListener;
-import com.edgytech.swingfast.SwingFast;
 import com.edgytech.swingfast.Text;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
-import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
-import java.io.IOException;
-import javax.swing.Icon;
 import javax.swing.JPanel;
 import org.mongo.jmongob.ServerPanel.Item;
 
