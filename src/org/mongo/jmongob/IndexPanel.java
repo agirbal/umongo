@@ -4,15 +4,9 @@
  */
 package org.mongo.jmongob;
 
-import com.edgytech.swingfast.Button;
 import com.edgytech.swingfast.EnumListener;
-import com.edgytech.swingfast.Showable;
 import com.edgytech.swingfast.XmlComponentUnit;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import java.io.IOException;
 import javax.swing.JPanel;
 import org.mongo.jmongob.IndexPanel.Item;
@@ -29,11 +23,10 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
         name,
         ns,
         key,
+        info,
         stats,
-        version,
         refresh,
         drop,
-        shardCollection
     }
 
     public IndexPanel() {
@@ -50,10 +43,8 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
             DBObject index = getIndexNode().getIndex();
             setStringFieldValue(Item.name, (String) index.get("name"));
             setStringFieldValue(Item.ns, (String) index.get("ns"));
-            if (index.get("v") != null)
-                setStringFieldValue(Item.version, ((Integer) index.get("v")).toString());
             ((DocField) getBoundUnit(Item.key)).setDoc((DBObject) index.get("key"));
-            ((CmdField) getBoundUnit(Item.stats)).updateFromCmd(getIndexNode().getStatsCollection());
+            ((DocField) getBoundUnit(Item.info)).setDoc(index);
         } catch (Exception e) {
             JMongoBrowser.instance.showError(this.getClass().getSimpleName() + " update", e);
         }
@@ -97,14 +88,5 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
 
     public void stats() {
         new DocView(null, "Collection Stats", getIndexNode().getStatsCollection(), "collstats").addToTabbedDiv();
-    }
-
-    public void shardCollection() {
-        DBCollection col = getIndexNode().getIndexedCollection();
-        Mongo m = col.getDB().getMongo();
-        DB admin = m.getDB("admin");
-        DBObject cmd = new BasicDBObject("shardCollection", getIndexNode().getCollectionNode().getCollection().getFullName());
-        cmd.put("key", (DBObject) getIndexNode().getIndex().get("key"));
-        new DocView(null, "Shard Collection", admin, cmd).addToTabbedDiv();
     }
 }

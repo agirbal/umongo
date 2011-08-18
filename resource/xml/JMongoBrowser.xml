@@ -158,6 +158,7 @@
                             <CheckBox id="createCollCapped" label="Is Capped"/>
                             <IntField id="createCollSize" label="Max Size" toolTipText="If capped, maximum size in bytes"/>
                             <IntField id="createCollCount" label="Max Count" toolTipText="If capped, maximum number of documents"/>
+                            <CheckBox id="createCollAutoIndex" label="Auto Index Id" value="true" toolTipText="To automatically create an index on _id field, default is true"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
@@ -168,7 +169,7 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="command">
-                    <MenuItem id="command" call="command">
+                    <MenuItem id="commandCmd" label="Command" call="command">
                         <FormDialog>
                             <Text value="Input either a command name, or a JSON command"/>
                             <TextField id="commandStr" label="Command Name"/>
@@ -183,7 +184,7 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
-                    <MenuItem id="stats" call="stats"/>
+                    <MenuItem id="statsCmd" label="Stats" call="stats"/>
                 </Menu>
                 <Menu id="user">
                     <MenuItem id="authenticate" call="authenticate">
@@ -295,7 +296,7 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="command">
-                    <MenuItem id="stats" call="stats"/>
+                    <MenuItem id="statsCmd" label="Stats" call="stats"/>
                     <MenuItem id="group" call="group">
                         <FormDialog>
                             <org.mongo.jmongob.DocBuilderField id="grpKeys" label="Keys" toolTipText="Keys to group by, in JSON format" nonEmpty="true"/>
@@ -386,6 +387,17 @@
                 </Menu>
                 <Menu id="sharding">
                     <MenuItem id="shardingInfo" call="shardingInfo"/>
+                    <MenuSeparator/>
+                    <MenuItem id="shardCollection" call="shardCollection" showDialog="false">
+                        <FormDialog>
+                            <Text value="Either pick a key from an existing index, or specify your own"/>
+                            <ComboBox id="shardKeyCombo" label="Existing Key" items="None" toolTipText="Choose this option if you want to use an existing index for sharding"/>
+                            <org.mongo.jmongob.DocBuilderField id="shardCustomKey" label="Custom Key" toolTipText="Specify a custom shard key. An index may be created to back that key."/>
+                            <CheckBox id="shardUniqueIndex" label="Unique" toolTipText="If true, will make sure the underlying index has a unique constraint." value="false"/>
+                            <Text text="Choose the shard key carefully, this operation cannot be undone."/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuSeparator/>
                     <MenuItem id="findChunks" call="findChunks"/>
                     <MenuItem id="moveChunk" call="moveChunk">
                         <FormDialog>
@@ -432,19 +444,13 @@
                 <Menu id="command">
                     <MenuItem id="stats" call="stats"/>
                 </Menu>
-                <Menu id="sharding">
-                    <MenuItem id="shardCollection" call="shardCollection">
-                        <ConfirmDialog text="Shard the collection using this index? This operation cannot be undone."/>
-                    </MenuItem>
-                </Menu>
             </MenuBar>
             <Zone zone="CENTER">
                 <Div zone="NORTH" gap="true" bgColor="255;255;255">
                     <Text id="name" field="true"/>
                     <Text id="ns" label="NS" field="true"/>
                     <org.mongo.jmongob.DocField id="key"/>
-                    <Text id="version" field="true"/>
-                    <org.mongo.jmongob.CmdField id="stats" cmd="collstats"/>
+                    <org.mongo.jmongob.DocField id="info"/>
                 </Div>
             </Zone>
         </org.mongo.jmongob.IndexPanel>
@@ -455,10 +461,10 @@
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                 </Menu>
                 <Menu id="command">
-                    <MenuItem id="serverStatus" call="serverStatus"/>
+                    <MenuItem id="serverStatusCmd" label="Server Status" call="serverStatus"/>
                     <MenuItem id="isMaster" call="isMaster"/>
                 </Menu>
-                <Menu id="Replica">
+                <Menu id="replica">
                     <MenuItem id="replicaSetStatus" call="replicaSetStatus" label="RS Status"/>
                     <MenuItem id="oplogInfo" call="oplogInfo" label="Oplog Info"/>
                     <MenuItem id="rsStepDown" call="rsStepDown" label="Step Down" toolTipText="If primary, the server will step down to secondary to let another server be elected."/>
@@ -631,7 +637,7 @@
             </Menu>
             <Menu id="help" alt="h">
                 <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="mongo_leaf.png" signIconGroup="icons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v1.0.1&lt;br&gt;Author: Antoine Girbal"/>
+                    <InfoDialog signIcon="mongo_leaf.png" signIconGroup="icons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v1.0.3&lt;br&gt;By Edgytech / Antoine Girbal"/>
                 </MenuItem>
             </Menu>
         </org.mongo.jmongob.MainMenu>

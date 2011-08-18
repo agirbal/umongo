@@ -143,10 +143,12 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     }
 
     public void close() {
-        tabbedDiv.getComponent().remove(getComponent());
         if (dbcursor != null) {
             dbcursor.close();
+            dbcursor = null;
         }
+        tabbedDiv.removeChild(this);
+        tabbedDiv.structureComponent();
     }
 
     void addToTabbedDiv() {

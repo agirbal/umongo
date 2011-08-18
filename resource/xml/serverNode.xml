@@ -10,6 +10,10 @@
 
 <TreeNodeLabel icon="server.png" iconGroup="icons" toolTipText="Server">
     <PopUpMenu>
-        <MenuItem id="refresh" bind="globalStore.serverPanel.menu.server.refresh"/>
+        <MenuItem id="refresh" bind="globalStore.serverPanel.menu.refresh"/>
+        <MenuSeparator/>
+        <MenuItem id="serverStatus" bind="globalStore.serverPanel.menu.serverStatusCmd"/>
+        <MenuSeparator/>
+        <MenuItem id="rsStepDown" label="Step Down" bind="globalStore.serverPanel.menu.rsStepDown"/>
     </PopUpMenu>
 </TreeNodeLabel>

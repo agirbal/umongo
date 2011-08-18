@@ -10,7 +10,7 @@
 
 <TreeNodeLabel icon="index.png" iconGroup="icons" toolTipText="Index">
     <PopUpMenu>
-        <MenuItem id="refresh" bind="globalStore.indexPanel.menu.index.refresh"/>
-        <MenuItem id="drop" bind="globalStore.indexPanel.menu.index.drop"/>
+        <MenuItem id="refresh" bind="globalStore.indexPanel.menu.refresh"/>
+        <MenuItem id="drop" bind="globalStore.indexPanel.menu.drop"/>
     </PopUpMenu>
 </TreeNodeLabel>

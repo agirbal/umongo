@@ -10,22 +10,22 @@
 
 <TreeNodeLabel icon="folder.png" iconGroup="icons" toolTipText="Collection">
     <PopUpMenu>
-        <MenuItem id="refresh" bind="globalStore.collectionPanel.menu.collection.refresh"/>
-        <MenuItem id="rename" bind="globalStore.collectionPanel.menu.collection.rename"/>
-        <MenuItem id="dropCollection" bind="globalStore.collectionPanel.menu.collection.dropCollection"/>
+        <MenuItem id="refresh" bind="globalStore.collectionPanel.menu.refresh"/>
+        <MenuItem id="rename" bind="globalStore.collectionPanel.menu.rename"/>
+        <MenuItem id="dropCollection" bind="globalStore.collectionPanel.menu.dropCollection"/>
         <MenuSeparator/>
-        <MenuItem id="ensureIndex" bind="globalStore.collectionPanel.menu.collection.ensureIndex"/>
+        <MenuItem id="ensureIndex" bind="globalStore.collectionPanel.menu.ensureIndex"/>
         <MenuSeparator/>
-        <MenuItem id="find" bind="globalStore.collectionPanel.menu.document.find"/>
-        <MenuItem id="findOne" bind="globalStore.collectionPanel.menu.document.findOne"/>
-        <MenuItem id="count" bind="globalStore.collectionPanel.menu.document.count"/>
-        <MenuItem id="insert" bind="globalStore.collectionPanel.menu.document.insert"/>
-        <MenuItem id="save" bind="globalStore.collectionPanel.menu.document.save"/>
-        <MenuItem id="update" bind="globalStore.collectionPanel.menu.document.update"/>
-        <MenuItem id="remove" bind="globalStore.collectionPanel.menu.document.remove"/>
-        <MenuItem id="findAndModify" bind="globalStore.collectionPanel.menu.document.findAndModify"/>
+        <MenuItem id="find" bind="globalStore.collectionPanel.menu.find"/>
+        <MenuItem id="findOne" bind="globalStore.collectionPanel.menu.findOne"/>
+        <MenuItem id="count" bind="globalStore.collectionPanel.menu.count"/>
+        <MenuItem id="insert" bind="globalStore.collectionPanel.menu.insert"/>
+        <MenuItem id="save" bind="globalStore.collectionPanel.menu.save"/>
+        <MenuItem id="update" bind="globalStore.collectionPanel.menu.update"/>
+        <MenuItem id="remove" bind="globalStore.collectionPanel.menu.remove"/>
+        <MenuItem id="findAndModify" bind="globalStore.collectionPanel.menu.findAndModify"/>
         <MenuSeparator/>
-        <MenuItem id="group" bind="globalStore.collectionPanel.menu.tools.group"/>
-        <MenuItem id="mapReduce" bind="globalStore.collectionPanel.menu.tools.mapReduce"/>
+        <MenuItem id="group" bind="globalStore.collectionPanel.menu.group"/>
+        <MenuItem id="mapReduce" bind="globalStore.collectionPanel.menu.mapReduce"/>
     </PopUpMenu>
 </TreeNodeLabel>

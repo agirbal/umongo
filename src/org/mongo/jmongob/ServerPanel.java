@@ -37,7 +37,8 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         rsStepDown,
         rsFreeze,
         rsFreezeTime,
-        isMaster
+        isMaster,
+        serverStatusCmd
     }
 
     public ServerPanel() {

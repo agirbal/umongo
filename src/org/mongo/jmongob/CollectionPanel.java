@@ -4,9 +4,14 @@
  */
 package org.mongo.jmongob;
 
+import com.edgytech.swingfast.CheckBox;
+import com.edgytech.swingfast.ComboBox;
 import com.edgytech.swingfast.ConfirmDialog;
 import com.edgytech.swingfast.EnumListener;
+import com.edgytech.swingfast.FormDialog;
 import com.edgytech.swingfast.InfoDialog;
+import com.edgytech.swingfast.MenuItem;
+import com.edgytech.swingfast.Showable;
 import com.edgytech.swingfast.TreeNodeLabel;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBList;
@@ -20,6 +25,7 @@ import com.mongodb.GroupCommand;
 import com.mongodb.MapReduceCommand;
 import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.MapReduceOutput;
+import com.mongodb.Mongo;
 import com.mongodb.WriteConcern;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +48,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         queryOptions,
         writeConcern,
         stats,
+        statsCmd,
         refresh,
         dropCollection,
         rename,
@@ -109,6 +116,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         save,
         saveDoc,
         shardingInfo,
+        shardCollection,
+        shardKeyCombo,
+        shardCustomKey,
+        shardUniqueIndex,
         findChunks,
         validate,
         validateFull,
@@ -902,4 +913,45 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             cmd.append("find", query);
         new DocView(null, "Split Chunk", getCollectionNode().getDbNode().getDb().getSisterDB("admin"), cmd).addToTabbedDiv();
     }
+
+    public void shardCollection() {
+        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.shardCollection)).getDialog();
+        ComboBox combo = (ComboBox) getBoundUnit(Item.shardKeyCombo);
+        combo.value = 0;
+        List<DBObject> indices = getCollectionNode().getCollection().getIndexInfo();
+        String[] items = new String[indices.size() + 1];
+        items[0] = "None";
+        int i = 1;
+        for (DBObject index : indices) {
+            items[i++] = ((DBObject) index.get("key")).toString();
+        }
+        combo.items = items;
+        combo.structureComponent();
+
+        if (!dialog.show())
+            return;
+
+        DBObject key = null;
+        int index = combo.getComponentIntValue();
+        if (index > 0)
+            key = (DBObject) indices.get(index - 1).get("key");
+        else
+            key = ((DocBuilderField)getBoundUnit(Item.shardCustomKey)).getDBObject();
+
+        if (key == null) {
+            new InfoDialog(null, "Empty key", null, "You must select a shard key").show();
+            return;
+        }
+        if (!new ConfirmDialog(null, "Confirm shard key", null, "About to shard collection with key " + key + ", is that correct?").show())
+            return;
+
+        boolean unique = getBooleanFieldValue(Item.shardUniqueIndex);
+        DB admin = getCollectionNode().getDbNode().getDb().getSisterDB("admin");
+        DBObject cmd = new BasicDBObject("shardCollection", getCollectionNode().getCollection().getFullName());
+        cmd.put("key", key);
+        if (unique)
+            cmd.put("unique", unique);
+        new DocView(null, "Shard Collection", admin, cmd).addToTabbedDiv();
+    }
+
 }

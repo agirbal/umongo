@@ -10,11 +10,11 @@
 
 <TreeNodeLabel icon="mongo_leaf_32.png" iconGroup="icons" toolTipText="Mongo">
     <PopUpMenu>
-        <MenuItem id="refresh" bind="globalStore.mongoPanel.menu.mongo.refresh"/>
-        <MenuItem id="close" bind="globalStore.mongoPanel.menu.mongo.close"/>
+        <MenuItem id="refresh" bind="globalStore.mongoPanel.menu.refresh"/>
+        <MenuItem id="close" bind="globalStore.mongoPanel.menu.close"/>
         <MenuSeparator/>
-        <MenuItem id="createDB" label="Create DB" bind="globalStore.mongoPanel.menu.mongo.createDB"/>
+        <MenuItem id="createDB" label="Create DB" bind="globalStore.mongoPanel.menu.createDB"/>
         <MenuSeparator/>
-        <MenuItem id="options" bind="globalStore.mongoPanel.menu.tools.options"/>
+        <MenuItem id="options" bind="globalStore.mongoPanel.menu.options"/>
     </PopUpMenu>
 </TreeNodeLabel>

@@ -36,6 +36,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         queryOptions,
         writeConcern,
         stats,
+        statsCmd,
         refresh,
         dropDatabase,
         uploadFile,
@@ -70,6 +71,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         createCollCapped,
         createCollSize,
         createCollCount,
+        createCollAutoIndex,
         enableSharding,
         shardingInfo,
         profile,
@@ -384,6 +386,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final boolean capped = getBooleanFieldValue(Item.createCollCapped);
         final int size = getIntFieldValue(Item.createCollSize);
         final int count = getIntFieldValue(Item.createCollCount);
+        final boolean autoIndexId = getBooleanFieldValue(Item.createCollAutoIndex);
 
         new DbJob() {
 
@@ -398,6 +401,8 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
                         opt.put("max", count);
                     }
                 }
+                if (!autoIndexId)
+                    opt.put("autoIndexId", false);
                 db.createCollection(name, opt);
                 return null;
             }
