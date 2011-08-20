@@ -22,6 +22,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.GroupCommand;
+import com.mongodb.LazyDBDecoder;
 import com.mongodb.MapReduceCommand;
 import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.MapReduceOutput;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JPanel;
+import org.bson.BSONObject;
 import org.mongo.jmongob.CollectionPanel.Item;
 
 /**
@@ -95,6 +97,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         insert,
         insertDoc,
         insertCount,
+        insertBulk,
         ensureIndex,
         eiKeys,
         eiUnique,
@@ -129,6 +132,14 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         splitChunk,
         spckQuery,
         spckOnValue,
+        geoNear,
+        gnOrigin,
+        gnNum,
+        gnMaxDistance,
+        gnDistanceMultiplier,
+        gnQuery,
+        gnSpherical,
+        lazyDecoding
     }
 
     public CollectionPanel() {
@@ -153,7 +164,16 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }
     }
 
+    @Override
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
+        if (enm == Item.lazyDecoding) {
+            boolean lazy = getBooleanFieldValue(Item.lazyDecoding);
+            DBCollection col = getCollectionNode().getCollection();
+            if (lazy)
+                col.setDBDecoderFactory(LazyDBDecoder.FACTORY);
+            else
+                col.setDBDecoderFactory(null);
+        }
     }
 
     public void find() {
@@ -225,12 +245,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
     public void group() {
         final DBCollection col = getCollectionNode().getCollection();
-        BasicDBObject keys = ((DocBuilderField) getBoundUnit(Item.grpKeys)).getDBObject();
-        BasicDBObject initial = ((DocBuilderField) getBoundUnit(Item.grpInitialValue)).getDBObject();
-        if (keys == null || keys.isEmpty() || initial == null || initial.isEmpty()) {
-            new InfoDialog(id, null, null, "Keys and Initial value must be provided.").show();
-            return;
-        }
+        DBObject keys = ((DocBuilderField) getBoundUnit(Item.grpKeys)).getDBObject();
+        DBObject initial = ((DocBuilderField) getBoundUnit(Item.grpInitialValue)).getDBObject();
         DBObject query = ((DocBuilderField) getBoundUnit(Item.grpQuery)).getDBObject();
         String reduce = getStringFieldValue(Item.grpReduce);
         String finalize = getStringFieldValue(Item.grpFinalize);
@@ -506,26 +522,25 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
     public void insert() {
         final DBCollection col = getCollectionNode().getCollection();
-        final DBObject doc = ((DocBuilderField) getBoundUnit(Item.insertDoc)).getDBObjectShallowCopy();
+        final BasicDBObject doc = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.insertDoc)).getDBObject();
         final int count = getIntFieldValue(Item.insertCount);
+        final boolean bulk = getBooleanFieldValue(Item.insertBulk);
         new DbJob() {
 
             @Override
             public Object doRun() throws IOException {
-                boolean first = true;
                 List<DBObject> list = new ArrayList<DBObject>();
                 for (int i = 0; i < count; ++i) {
-                    if (first) {
-                        first = false;
-                        list.add(doc);
-                        continue;
-                    }
-                    // need to regenerate id
-                    DBObject newdoc = new BasicDBObject(doc.toMap());
-                    newdoc.removeField("_id");
-                    list.add(newdoc);
+                    BasicDBObject newdoc = (BasicDBObject) doc.copy();
+                    handleSpecialFields(newdoc);
+                    if (bulk)
+                        list.add(newdoc);
+                    else
+                        col.insert(newdoc);
                 }
-                return col.insert(list);
+                if (bulk)
+                    return col.insert(list);
+                return null;
             }
 
             @Override
@@ -553,12 +568,12 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
     public void save() {
         final DBCollection col = getCollectionNode().getCollection();
-        final DBObject doc = ((DocBuilderField) getBoundUnit(Item.saveDoc)).getDBObjectShallowCopy();
+        final BasicDBObject doc = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.saveDoc)).getDBObject();
         new DbJob() {
 
             @Override
             public Object doRun() throws IOException {
-                return col.save(doc);
+                return col.save((DBObject) doc.copy());
             }
 
             @Override
@@ -681,7 +696,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final DBObject query = ((DocBuilderField) getBoundUnit(Item.famQuery)).getDBObject();
         final DBObject fields = ((DocBuilderField) getBoundUnit(Item.famFields)).getDBObject();
         final DBObject sort = ((DocBuilderField) getBoundUnit(Item.famSort)).getDBObject();
-        final DBObject update = ((DocBuilderField) getBoundUnit(Item.famUpdate)).getDBObjectShallowCopy();
+        final BasicDBObject update = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.famUpdate)).getDBObject();
         final boolean remove = getBooleanFieldValue(Item.famRemove);
         final boolean returnNew = getBooleanFieldValue(Item.famReturnNew);
         final boolean upsert = getBooleanFieldValue(Item.famUpsert);
@@ -690,7 +705,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public Object doRun() {
-                return col.findAndModify(query, fields, sort, remove, update, returnNew, upsert);
+                return col.findAndModify(query, fields, sort, remove, (DBObject) update.copy(), returnNew, upsert);
             }
 
             @Override
@@ -727,7 +742,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     public void update() {
         final DBCollection col = getCollectionNode().getCollection();
         final DBObject query = ((DocBuilderField) getBoundUnit(Item.upQuery)).getDBObject();
-        final DBObject update = ((DocBuilderField) getBoundUnit(Item.upUpdate)).getDBObjectShallowCopy();
+        final BasicDBObject update = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.upUpdate)).getDBObject();
         final boolean upsert = getBooleanFieldValue(Item.upUpsert);
         final boolean multi = getBooleanFieldValue(Item.upMulti);
         final boolean safe = getBooleanFieldValue(Item.upSafe);
@@ -749,7 +764,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                         return null;
                     }
                 }
-                return col.update(query, update, upsert, multi);
+                return col.update(query, (DBObject) update.copy(), upsert, multi);
             }
 
             @Override
@@ -954,4 +969,46 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         new DocView(null, "Shard Collection", admin, cmd).addToTabbedDiv();
     }
 
+    private Object handleSpecialFields(DBObject doc) {
+        for (String field : doc.keySet()) {
+            if (field.equals("__rand")) {
+                String type = (String) doc.get(field);
+                if (type.equals("int")) {
+                    int min = (Integer)doc.get("min");
+                    int max = (Integer)doc.get("max");
+                    return min + (int)(Math.random() * ((max - min) + 1));
+                }
+            }
+            Object val = doc.get(field);
+            if (val instanceof BasicDBObject) {
+                BasicDBObject subdoc = (BasicDBObject) val;
+                Object res = handleSpecialFields(subdoc);
+                if (res != null)
+                    doc.put(field, res);
+            } else if (val instanceof BasicDBList) {
+                BasicDBList sublist = (BasicDBList) val;
+                handleSpecialFields(sublist);
+            }
+        }
+        return null;
+    }
+
+    public void geoNear() {
+        DBObject cmd = new BasicDBObject("geoNear", getCollectionNode().getCollection().getName());
+        DBObject origin = ((DocBuilderField) getBoundUnit(Item.gnOrigin)).getDBObject();
+        cmd.put("near", origin);
+        int distance = getIntFieldValue(Item.gnMaxDistance);
+        cmd.put("maxDistance", distance);
+        double distanceMult = getDoubleFieldValue(Item.gnDistanceMultiplier);
+        if (distanceMult > 0)
+            cmd.put("distanceMultiplier", distanceMult);
+        DBObject query = ((DocBuilderField) getBoundUnit(Item.gnQuery)).getDBObject();
+        if (query != null)
+            cmd.put("query", query);
+        boolean spherical = getBooleanFieldValue(Item.gnSpherical);
+        if (spherical)
+            cmd.put("spherical", true);
+
+        new DocView(null, "Geo Near", getCollectionNode().getDbNode().getDb(), cmd).addToTabbedDiv();
+    }
 }

@@ -10,7 +10,7 @@ import com.edgytech.swingfast.JTextAreaScroll;
 import com.edgytech.swingfast.SwingFast;
 import com.edgytech.swingfast.XmlUnit;
 import com.edgytech.swingfast.XmlUnitField;
-import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,7 +38,7 @@ public class DocBuilderField extends XmlUnitField<XmlUnit, BoxPanel> implements 
     JTextAreaScroll _field;
     JButton _button;
     JToggleButton _validate;
-    BasicDBObject doc;
+    DBObject doc;
 
     /**
      * Creates a new instance of FieldFile
@@ -60,7 +60,7 @@ public class DocBuilderField extends XmlUnitField<XmlUnit, BoxPanel> implements 
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            doc = (BasicDBObject) JSON.parse(_field.getText());
+            doc = (DBObject) JSON.parse(_field.getText());
         } catch (Exception ex) {
             // this could be because of binary in field
             getLogger().log(Level.INFO, null, ex);
@@ -148,7 +148,7 @@ public class DocBuilderField extends XmlUnitField<XmlUnit, BoxPanel> implements 
         // here we want to commit the string value, but doc is already uptodate
         try {
             value = _field.getText();
-            doc = (BasicDBObject) JSON.parse(value);
+            doc = (DBObject) JSON.parse(value);
         } catch (Exception e) {
             // this could be because of binary in field
             // in this case the doc already has the correct inner value
@@ -156,23 +156,14 @@ public class DocBuilderField extends XmlUnitField<XmlUnit, BoxPanel> implements 
         }
     }
 
-    public void setDBObject(BasicDBObject obj) {
+    public void setDBObject(DBObject obj) {
         // it's safe to use obj, not a copy, since builder will build its own
         doc = obj;
         value = doc != null ? doc.toString() : "";
     }
 
-    public BasicDBObject getDBObject() {
+    public DBObject getDBObject() {
         return doc;
     }
 
-    /**
-     * Gets a shallow copy of dbobject, allowing to modify its root object (e.g. add _id)
-     * @return
-     */
-    public BasicDBObject getDBObjectShallowCopy() {
-        if (doc == null)
-            return doc;
-        return new BasicDBObject(doc);
-    }
 }

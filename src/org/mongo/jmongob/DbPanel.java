@@ -173,7 +173,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final File src = new File(path);
         final String fileName = getStringFieldValue(Item.uploadFileName);
         final String contentType = getStringFieldValue(Item.uploadContentType);
-        final BasicDBObject metadata = ((DocBuilderField) getBoundUnit(Item.uploadMetadata)).getDBObject();
+        final DBObject metadata = ((DocBuilderField) getBoundUnit(Item.uploadMetadata)).getDBObject();
 
         new DbJob() {
 

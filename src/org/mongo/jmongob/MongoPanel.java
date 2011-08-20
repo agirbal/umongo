@@ -303,7 +303,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         final String db = getStringFieldValue(Item.regenDB);
         final String col = getStringFieldValue(Item.regenCollection);
         final String ns = db + "." + col;
-        final BasicDBObject shardKey = ((DocBuilderField) getBoundUnit(Item.regenShardKey)).getDBObject();
+        final DBObject shardKey = ((DocBuilderField) getBoundUnit(Item.regenShardKey)).getDBObject();
         final boolean unique = getBooleanFieldValue(Item.regenKeyUnique);
         final BasicDBObject result = new BasicDBObject();
         result.put("ns", ns);
@@ -570,7 +570,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    BasicDBObject getChunk(String ns, BasicDBObject shardKey, BasicDBObject min, BasicDBObject max, BSONTimestamp ts) {
+    BasicDBObject getChunk(String ns, DBObject shardKey, BasicDBObject min, BasicDBObject max, BSONTimestamp ts) {
         BasicDBObject chunk = new BasicDBObject();
         BasicDBObject themin = (BasicDBObject) min.get("_id");
         BasicDBObject themax = (BasicDBObject) max.get("_id");

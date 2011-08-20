@@ -320,6 +320,16 @@
                             <CheckBox id="mrJSMode" label="JS Mode"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="geoNear" call="geoNear">
+                        <FormDialog>
+                            <org.mongo.jmongob.DocBuilderField id="gnOrigin" label="Origin" toolTipText="Point of origin, in JSON format"/>
+                            <IntSpinner id="gnNum" label="Num" toolTipText="Maximum number of entries to return" minValue="0" value="100"/>
+                            <IntSpinner id="gnMaxDistance" label="Max Distance" toolTipText="Maximum distance from the point of origin" minValue="0"/>
+                            <DoubleSpinner id="gnDistanceMultiplier" label="Distance Multiplier" toolTipText="Distance multiplier" minValue="0"/>
+                            <org.mongo.jmongob.DocBuilderField id="gnQuery" label="Query" toolTipText="Query to filter the results by, in JSON format"/>
+                            <CheckBox id="gnSpherical" label="Spherical" toolTipText="Takes into account that earth is a sphere. Coordinates must be in decimal degrees and the distance must be in radians (divide by 6371 km or 3959 miles)."/>
+                        </FormDialog>
+                    </MenuItem>
                 </Menu>
                 <Menu id="document">
                     <MenuItem id="find" call="find" key="f" keyMod="cmd+shift">
@@ -352,6 +362,7 @@
                         <FormDialog>
                             <org.mongo.jmongob.DocBuilderField id="insertDoc" label="JSON Document" toolTipText="Document to insert in JSON format" nonEmpty="true"/>
                             <IntSpinner id="insertCount" label="Insert Count" minValue="1" value="1" toolTipText="Number of documents to insert"/>
+                            <CheckBox id="insertBulk" label="Bulk Insert" value="true" toolTipText="If multiple objects are inserted, use the bulk operation, faster but uses more memory."/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="save" call="save">
@@ -420,6 +431,7 @@
                     </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="options" call="options"/>
+                    <CheckBoxMenuItem id="lazyDecoding" value="false"/>
                 </Menu>
             </MenuBar>
             <Zone zone="CENTER">
@@ -637,7 +649,7 @@
             </Menu>
             <Menu id="help" alt="h">
                 <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="mongo_leaf.png" signIconGroup="icons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v1.0.3&lt;br&gt;By Edgytech / Antoine Girbal"/>
+                    <InfoDialog signIcon="mongo_leaf.png" signIconGroup="icons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBro/wser v1.0.3&lt;br&gt;By Edgytech / Antoine Girbal"/>
                 </MenuItem>
             </Menu>
         </org.mongo.jmongob.MainMenu>

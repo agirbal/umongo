@@ -9,6 +9,7 @@ import com.edgytech.swingfast.FormDialog;
 import com.edgytech.swingfast.Scroller;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 /**
  *
@@ -26,7 +27,7 @@ public class DocBuilderDialog extends FormDialog {
         setEnumBinding(Item.values(), null);
     }
 
-    void setDBObject(BasicDBObject doc) {
+    void setDBObject(DBObject doc) {
         _root = new DocFieldObject(null, null, doc, null);
         XmlComponentUnit div = getComponentBoundUnit(Item.div);
         div.removeAllChildren();
@@ -34,7 +35,7 @@ public class DocBuilderDialog extends FormDialog {
         div.structureComponent();
     }
 
-    BasicDBObject getDBObject() {
-        return (BasicDBObject) _root.getValue();
+    DBObject getDBObject() {
+        return (DBObject) _root.getValue();
     }
 }
