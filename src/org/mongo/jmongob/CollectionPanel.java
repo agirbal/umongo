@@ -139,6 +139,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         gnDistanceMultiplier,
         gnQuery,
         gnSpherical,
+        gnSearch,
         lazyDecoding
     }
 
@@ -1008,6 +1009,9 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         boolean spherical = getBooleanFieldValue(Item.gnSpherical);
         if (spherical)
             cmd.put("spherical", true);
+        DBObject search = ((DocBuilderField) getBoundUnit(Item.gnSearch)).getDBObject();
+        if (search != null)
+            cmd.put("search", search);
 
         new DocView(null, "Geo Near", getCollectionNode().getDbNode().getDb(), cmd).addToTabbedDiv();
     }

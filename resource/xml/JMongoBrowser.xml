@@ -328,6 +328,7 @@
                             <DoubleSpinner id="gnDistanceMultiplier" label="Distance Multiplier" toolTipText="Distance multiplier" minValue="0"/>
                             <org.mongo.jmongob.DocBuilderField id="gnQuery" label="Query" toolTipText="Query to filter the results by, in JSON format"/>
                             <CheckBox id="gnSpherical" label="Spherical" toolTipText="Takes into account that earth is a sphere. Coordinates must be in decimal degrees and the distance must be in radians (divide by 6371 km or 3959 miles)."/>
+                            <org.mongo.jmongob.DocBuilderField id="gnSearch" label="Search" toolTipText="Search criteria for geo haystack indexing, in JSON format"/>
                         </FormDialog>
                     </MenuItem>
                 </Menu>
