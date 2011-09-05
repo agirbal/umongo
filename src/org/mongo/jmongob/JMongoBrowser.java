@@ -166,6 +166,10 @@ public class JMongoBrowser extends Application implements Runnable {
         mongo.close();
     }
 
+    public ArrayList<MongoNode> getMongos() {
+        return mongos;
+    }
+
     void displayElement(XmlJComponentUnit unit) {
         getWorkspace().setContent(unit);
     }

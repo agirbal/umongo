@@ -116,23 +116,6 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
-                    <MenuItem id="regenConfigDB" label="Regenerate Config DB" call="regenConfigDB">
-                        <FormDialog okLabel="start">
-<!--                            <TextField id="regenServers" label="Servers" toolTipText="Comma-separated list of servers (host:port) containing the data. You must provide at least one available server per shard."/> -->
-                            <TextArea id="regenServers" label="Servers" rows="10" columns="50" editable="true" toolTipText="List of servers containing the data, one by line, in format host:port/shardName. You must provide at least one available server per shard." nonEmpty="true"/>
-                            <TextField id="regenDB" label="Database" toolTipText="Database to scan" nonEmpty="true"/>
-                            <TextField id="regenCollection" label="Collection" toolTipText="Collection to scan" nonEmpty="true"/>
-                            <org.mongo.jmongob.DocBuilderField id="regenShardKey" label="Sharding Key" nonEmpty="true"/>
-                            <CheckBox id="regenKeyUnique" label="Unique Key" toolTipText="Whether sharding key is unique" value="false"/>
-                        </FormDialog>
-                        <FormDialog id="regenRSList" label="Replica Set List" okLabel="Next">
-                            <Text value="Check that the following information is correct and complete..."/>
-                            <TextArea id="regenRSListArea" label="Replica Sets" rows="10" columns="50" editable="false"/>
-                        </FormDialog>
-                        <ConfirmDialog id="regenDeleteChunks" label="Confirm Delete" text="There are existing chunks for this NS. Delete chunks? (Cannot be undone)" okLabel="Continue"/>
-                        <ConfirmDialog id="regenConfirm" label="Start Regen" text="Regenerating the config DB may take a long time and read a lot of data from your DBs. Do you want to continue?" okLabel="Continue"/>
-                    </MenuItem>
-                    <MenuSeparator/>
                     <MenuItem id="options" call="options"/>
                 </Menu>
             </MenuBar>
@@ -430,6 +413,12 @@
                             <CheckBox id="validateFull" label="Full" toolTipText="Turns on full validation, which is slower"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="fixCollection" call="fixCollection" showDialog="false">
+                        <FormDialog id="fcDialog">
+                            <ComboBox id="fcSrcMongo" label="Source Mongo" toolTipText="Pick one of the other Mongo instances as source"/>
+                            <CheckBox id="fcUpsert" label="Upsert" toolTipText="If checked, operation will be upsert instead of insert"/>
+                        </FormDialog>
+                    </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="options" call="options"/>
                     <CheckBoxMenuItem id="lazyDecoding" value="false"/>
@@ -509,6 +498,9 @@
                     <MenuItem id="replicaSetStatus" call="replicaSetStatus" label="RS Status"/>
                     <MenuItem id="oplogInfo" call="oplogInfo" label="Oplog Info"/>
                 </Menu>
+                <Menu id="tools">
+                    <MenuItem id="compareReplicas" call="compareReplicas"/>
+                </Menu>
             </MenuBar>
             <Zone zone="CENTER">
                 <Div zone="NORTH" gap="true" bgColor="255;255;255">
@@ -536,6 +528,23 @@
                     </MenuItem>
                     <MenuSeparator/>
                     <CheckBoxMenuItem id="autoBalance" call="autoBalance"/>
+                    <MenuSeparator/>
+                    <MenuItem id="regenConfigDB" label="Regenerate Config DB" call="regenConfigDB">
+                        <FormDialog okLabel="start">
+<!--                            <TextField id="regenServers" label="Servers" toolTipText="Comma-separated list of servers (host:port) containing the data. You must provide at least one available server per shard."/> -->
+                            <TextArea id="regenServers" label="Servers" rows="10" columns="50" editable="true" toolTipText="List of servers containing the data, one by line, in format host:port/shardName. You must provide at least one available server per shard." nonEmpty="true"/>
+                            <TextField id="regenDB" label="Database" toolTipText="Database to scan" nonEmpty="true"/>
+                            <TextField id="regenCollection" label="Collection" toolTipText="Collection to scan" nonEmpty="true"/>
+                            <org.mongo.jmongob.DocBuilderField id="regenShardKey" label="Sharding Key" nonEmpty="true"/>
+                            <CheckBox id="regenKeyUnique" label="Unique Key" toolTipText="Whether sharding key is unique" value="false"/>
+                        </FormDialog>
+                        <FormDialog id="regenRSList" label="Replica Set List" okLabel="Next">
+                            <Text value="Check that the following information is correct and complete..."/>
+                            <TextArea id="regenRSListArea" label="Replica Sets" rows="10" columns="50" editable="false"/>
+                        </FormDialog>
+                        <ConfirmDialog id="regenDeleteChunks" label="Confirm Delete" text="There are existing chunks for this NS. Delete chunks? (Cannot be undone)" okLabel="Continue"/>
+                        <ConfirmDialog id="regenConfirm" label="Start Regen" text="Regenerating the config DB may take a long time and read a lot of data from your DBs. Do you want to continue?" okLabel="Continue"/>
+                    </MenuItem>
                 </Menu>
             </MenuBar>
             <Zone zone="CENTER">

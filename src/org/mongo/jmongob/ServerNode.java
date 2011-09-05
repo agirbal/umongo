@@ -9,6 +9,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
+import com.mongodb.MongoOptions;
 import com.mongodb.ServerAddress;
 import java.util.List;
 import java.util.logging.Level;
@@ -25,7 +26,9 @@ public class ServerNode extends BaseTreeNode {
 
     public ServerNode(ServerAddress serverAddress) {
         this.serverAddress = serverAddress;
-        serverMongo = new Mongo(serverAddress);
+        MongoOptions opts = new MongoOptions();
+        opts.slaveOk = true;
+        serverMongo = new Mongo(serverAddress, opts);
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
         } catch (Exception ex) {

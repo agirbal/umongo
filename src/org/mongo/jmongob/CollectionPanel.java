@@ -27,6 +27,7 @@ import com.mongodb.MapReduceCommand;
 import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.MapReduceOutput;
 import com.mongodb.Mongo;
+import com.mongodb.MongoException.DuplicateKey;
 import com.mongodb.WriteConcern;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -140,7 +141,11 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         gnQuery,
         gnSpherical,
         gnSearch,
-        lazyDecoding
+        lazyDecoding,
+        fixCollection,
+        fcDialog,
+        fcSrcMongo,
+        fcUpsert
     }
 
     public CollectionPanel() {
@@ -1014,5 +1019,80 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             cmd.put("search", search);
 
         new DocView(null, "Geo Near", getCollectionNode().getDbNode().getDb(), cmd).addToTabbedDiv();
+    }
+
+    public void fixCollection() {
+        final Mongo m = getCollectionNode().getDbNode().getMongoNode().getMongo();
+        ArrayList<MongoNode> mongoNodes = JMongoBrowser.instance.getMongos();
+        String[] mongonames = new String[mongoNodes.size() - 1];
+        Mongo[] mongos = new Mongo[mongonames.length];
+        int i = 0;
+        for (MongoNode node : mongoNodes) {
+            Mongo m2 = node.getMongo();
+            if (m == m2) {
+                continue;
+            }
+            mongonames[i] = m2.toString();
+            mongos[i] = m2;
+            ++i;
+        }
+        ComboBox src = (ComboBox) getBoundUnit(Item.fcSrcMongo);
+        src.items = mongonames;
+        src.structureComponent();
+        FormDialog dialog = (FormDialog) getBoundUnit(Item.fcDialog);
+        if (!dialog.show()) {
+            return;
+        }
+
+        final DBCollection dstCol = getCollectionNode().getCollection();
+        final Mongo srcMongo = mongos[src.getIntValue()];
+        final boolean upsert = getBooleanFieldValue(Item.fcUpsert);
+
+        final String dbname = dstCol.getDB().getName();
+        final String colname = dstCol.getName();
+        final DBCollection srcCol = srcMongo.getDB(dbname).getCollection(colname);
+        String txt = "About to copy from ";
+        txt += srcMongo.getConnectPoint() + "(" + srcCol.count() + ")";
+        txt += " to ";
+        txt += m.getConnectPoint() + "(" + dstCol.count() + ")";
+        if (!new ConfirmDialog(null, "Confirm Fix Collection", null, txt).show())
+            return;
+
+        new DbJob() {
+            @Override
+            public Object doRun() {
+                DBCursor cur = srcCol.find();
+                int count = 0;
+                int dup = 0;
+                while (cur.hasNext()) {
+                    DBObject obj = cur.next();
+                    if (upsert) {
+                        BasicDBObject id = new BasicDBObject("_id", obj.get("_id"));
+                        dstCol.update(id, obj, true, false);
+                    } else {
+                        try {
+                            dstCol.insert(obj);
+                        } catch (DuplicateKey e) {
+                            // dup keys are expected here
+                            ++dup;
+                        }
+                    }
+                    ++count;
+                }
+                DBObject res = new BasicDBObject("count", count);
+                res.put("dups", dup);
+                return res;
+            }
+
+            @Override
+            public String getNS() {
+                return "*";
+            }
+
+            @Override
+            public String getShortName() {
+                return "Fix Collection";
+            }
+        }.addJob();
     }
 }
