@@ -38,7 +38,11 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         rsFreeze,
         rsFreezeTime,
         isMaster,
-        serverStatusCmd
+        serverStatusCmd,
+        setParameter,
+        setParameterValue,
+        setLogLevel,
+        setLogLevelValue
     }
 
     public ServerPanel() {
@@ -107,4 +111,19 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     public void oplogInfo() {
         new DocView(null, "Oplog Info", MongoUtils.getReplicaSetInfo(getServerNode().getServerMongo()), "Oplog of " + getServerNode().getServerAddress(), null).addToTabbedDiv();
     }
+
+    public void setParameter() {
+        BasicDBObject cmd = new BasicDBObject("setParameter", 1);
+        DBObject param = ((DocBuilderField)getBoundUnit(Item.setParameterValue)).getDBObject();
+        cmd.putAll(param);
+        new DocView(null, "Set Param", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
+    }
+
+    public void setLogLevel() {
+        BasicDBObject cmd = new BasicDBObject("setParameter", 1);
+        int level = getIntFieldValue(Item.setLogLevelValue);
+        cmd.put("logLevel", level);
+        new DocView(null, "Log Level", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
+    }
+
 }

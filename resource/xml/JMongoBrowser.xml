@@ -77,6 +77,7 @@
                 <Menu id="command">
                     <MenuItem id="serverStatus" call="serverStatus"/>
                     <MenuItem id="isMaster" call="isMaster"/>
+                    <MenuSeparator/>
                     <MenuItem id="currentOps" call="currentOps">
                         <FormDialog>
                             <org.mongo.jmongob.DocBuilderField id="currentOpsQuery" label="Query Filter" toolTipText="Optional, a query to filter operations. Use {'$all': 1} to also see internal commands."/>
@@ -465,6 +466,17 @@
                 <Menu id="command">
                     <MenuItem id="serverStatusCmd" label="Server Status" call="serverStatus"/>
                     <MenuItem id="isMaster" call="isMaster"/>
+                    <MenuSeparator/>
+                    <MenuItem id="setParameter" call="setParameter">
+                        <FormDialog>
+                            <org.mongo.jmongob.DocBuilderField id="setParameterValue" label="Parameter" nonEmpty="true" toolTipText="Modify a parameter without restarting the server, for example {logLevel: 4}"/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuItem id="setLogLevel" call="setLogLevel">
+                        <FormDialog>
+                            <IntSpinner id="setLogLevelValue" label="Level" value="0" toolTipText="Set the log level, 0 is default"/>
+                        </FormDialog>
+                    </MenuItem>
                 </Menu>
                 <Menu id="replica">
                     <MenuItem id="replicaSetStatus" call="replicaSetStatus" label="RS Status"/>
