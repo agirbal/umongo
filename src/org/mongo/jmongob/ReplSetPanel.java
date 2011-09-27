@@ -8,6 +8,7 @@ import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.edgytech.swingfast.XmlUnit;
 import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
@@ -29,6 +30,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         oplogInfo,
         maxObjectSize,
         compareReplicas,
+        crStat
     }
 
     public ReplSetPanel() {
@@ -49,8 +51,8 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         }
     }
 
+    @Override
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public void replicaSetStatus() {
@@ -62,6 +64,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void compareReplicas() {
+        final String stat = getStringFieldValue(Item.crStat);
         new DbJob() {
 
             @Override
@@ -90,20 +93,26 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
                     for (String colname: db.getCollectionNames()) {
                         DBCollection col = db.getCollection(colname);
                         BasicDBObject colres = new BasicDBObject();
-                        BasicDBObject counts = new BasicDBObject();
+                        BasicDBObject values = new BasicDBObject();
                         boolean same = true;
-                        long value = -1;
+                        long ref = -1;
                         for (Mongo svrm : svrs) {
                             DBCollection svrcol = svrm.getDB(dbname).getCollection(colname);
-                            long count = svrcol.count();
-                            counts.append(svrm.getConnectPoint(), count);
-                            if (value < 0)
-                                value = count;
-                            else if (value != count)
+                            long value = 0;
+                            if (stat.startsWith("Count")) {
+                                value = svrcol.count();
+                            } else if (stat.startsWith("Data Size")) {
+                                CommandResult stats = svrcol.getStats();
+                                value = stats.getLong("size");
+                            }
+                            values.append(svrm.getConnectPoint(), value);
+                            if (ref < 0)
+                                ref = value;
+                            else if (ref != value)
                                 same = false;
                         }
                         if (!same) {
-                            colres.append("count", counts);
+                            colres.append("values", values);
                             dbres.append(colname, colres);
                         }
                     }

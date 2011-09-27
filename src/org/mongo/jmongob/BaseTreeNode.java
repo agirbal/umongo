@@ -14,8 +14,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 
 /**
  *
@@ -41,7 +39,10 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
         cachedIcon = SwingFast.createIcon(icon, iconGroup);
         List<ImageIcon> overlays = new ArrayList<ImageIcon>();
         try {
+            long start = System.currentTimeMillis();
             updateNode(overlays);
+            getLogger().log(Level.FINE, "Node " + toString() + " took " + (System.currentTimeMillis() - start));
+
         } catch (MongoException e) {
             if (e.getCode() == 10057)
                 overlays.add(SwingFast.createIcon("overlay/lock.png", iconGroup));

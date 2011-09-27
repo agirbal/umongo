@@ -4,20 +4,18 @@
  */
 package org.mongo.jmongob;
 
+import com.edgytech.swingfast.ConfirmDialog;
 import com.edgytech.swingfast.EnumListener;
-import com.edgytech.swingfast.InfoDialog;
 import com.edgytech.swingfast.MenuBar;
 import com.edgytech.swingfast.MenuItem;
+import com.edgytech.swingfast.TabbedDiv;
 import com.edgytech.swingfast.XmlComponentUnit;
-import com.mongodb.DBObject;
 import com.mongodb.Mongo;
-import com.mongodb.MongoOptions;
 import com.mongodb.MongoURI;
 import com.mongodb.ServerAddress;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.mongo.jmongob.MainMenu.Item;
 
 /**
@@ -29,6 +27,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     public enum Item {
 
         connect,
+        exit,
         preferences,
         prefDialog,
         importFile
@@ -89,20 +88,23 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
                 MongoURI muri = new MongoURI(uri);
                 mongo = new Mongo(muri);
                 String db = muri.getDatabase();
-                if (db != null && !db.trim().isEmpty())
+                if (db != null && !db.trim().isEmpty()) {
                     dbs.add(db.trim());
+                }
             } else {
                 String servers = dialog.getStringFieldValue(ConnectDialog.Item.servers);
-                if (servers.trim().isEmpty())
+                if (servers.trim().isEmpty()) {
                     return;
+                }
                 String[] serverList = servers.split(",");
                 ArrayList<ServerAddress> addrs = new ArrayList<ServerAddress>();
                 for (String server : serverList) {
                     String[] tmp = server.split(":");
-                    if (tmp.length > 1)
+                    if (tmp.length > 1) {
                         addrs.add(new ServerAddress(tmp[0], Integer.valueOf(tmp[1]).intValue()));
-                    else
+                    } else {
                         addrs.add(new ServerAddress(tmp[0]));
+                    }
                 }
                 mongo = new Mongo(addrs, dialog.getMongoOptions());
                 String sdbs = dialog.getStringFieldValue(ConnectDialog.Item.databases);
@@ -113,11 +115,16 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
                 }
             }
 
-            if (dbs.size() == 0)
+            if (dbs.size() == 0) {
                 dbs = null;
+            }
             JMongoBrowser.instance.addMongo(mongo, dbs);
         } catch (Exception ex) {
             JMongoBrowser.instance.showError(id, ex);
         }
+    }
+
+    public void exit() {
+        JMongoBrowser.instance.windowClosing(null);
     }
 }

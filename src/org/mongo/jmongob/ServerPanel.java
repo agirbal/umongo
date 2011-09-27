@@ -39,6 +39,10 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         rsFreezeTime,
         isMaster,
         serverStatusCmd,
+        currentOps,
+        currentOpsQuery,
+        killOp,
+        killOpId,
         setParameter,
         setParameterValue,
         setLogLevel,
@@ -124,6 +128,19 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         int level = getIntFieldValue(Item.setLogLevelValue);
         cmd.put("logLevel", level);
         new DocView(null, "Log Level", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
+    }
+
+    public void currentOps() {
+        final Mongo mongo = getServerNode().getServerMongo();
+        final DBObject query = ((DocBuilderField) getBoundUnit(Item.currentOpsQuery)).getDBObject();
+        CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.inprog"), query, null, null, 0, 0, 0, false);
+    }
+
+    public void killOp() {
+        final Mongo mongo = getServerNode().getServerMongo();
+        final int opid = getIntFieldValue(Item.killOpId);
+        final DBObject query = new BasicDBObject("op", opid);
+        CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query, null, null, 0, 0, 0, false);
     }
 
 }

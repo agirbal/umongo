@@ -4,7 +4,6 @@
  */
 package org.mongo.jmongob;
 
-import com.edgytech.swingfast.ConfirmDialog;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
@@ -16,7 +15,6 @@ import com.mongodb.MongoException;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
-import com.mongodb.util.JSON;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JPanel;
@@ -56,6 +54,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         listCommands,
         eval,
         evalCode,
+        evalNoLock,
         options,
         authenticate,
         authUser,
@@ -135,7 +134,10 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void eval() {
         final DB db = getDbNode().getDb();
         final String sfunc = getStringFieldValue(Item.evalCode);
+        final boolean noLock = getBooleanFieldValue(Item.evalNoLock);
         BasicDBObject cmd = new BasicDBObject("$eval", sfunc);
+        if (noLock)
+            cmd.put("nolock", true);
         new DocView(null, "Eval", db, cmd).addToTabbedDiv();
 
 //        new DbJob() {

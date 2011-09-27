@@ -54,9 +54,10 @@ public class DbNode extends BaseTreeNode {
     @Override
     protected void updateNode(List<ImageIcon> overlays) {
         label = db.getName();
-        CommandResult res = db.getStats();
-        res.throwOnError();
-        label += " (" + res.getInt("objects") + "/" + res.getInt("dataSize") + ")";
+        // db.getStats is too slow..
+//        CommandResult res = db.getStats();
+//        res.throwOnError();
+//        label += " (" + res.getInt("objects") + "/" + res.getInt("dataSize") + ")";
         if (db.isAuthenticated())
             overlays.add(SwingFast.createIcon("overlay/unlock.png", iconGroup));
     }

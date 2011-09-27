@@ -49,7 +49,7 @@ public class CollectionNode extends BaseTreeNode {
         label = collection.getName();
         CommandResult res = collection.getStats();
         res.throwOnError();
-        label += " (" + res.getInt("count") + "/" + res.getInt("size") + ")";
+        label += " (" + res.getLong("count") + "/" + res.getLong("size") + ")";
         if (res.getBoolean("sharded"))
             overlays.add(SwingFast.createIcon("overlay/superman.png", iconGroup));
     }

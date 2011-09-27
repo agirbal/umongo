@@ -165,6 +165,7 @@
                     <MenuItem id="eval" call="eval">
                         <FormDialog>
                             <TextArea id="evalCode" label="JS Code" toolTipText="JavaScript code to evaluate on the server" nonEmpty="true"/>
+                            <CheckBox id="evalNoLock" label="No Lock" toolTipText="Run the eval without the taking the global write lock"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
@@ -467,6 +468,17 @@
                     <MenuItem id="serverStatusCmd" label="Server Status" call="serverStatus"/>
                     <MenuItem id="isMaster" call="isMaster"/>
                     <MenuSeparator/>
+                    <MenuItem id="currentOps" call="currentOps">
+                        <FormDialog>
+                            <org.mongo.jmongob.DocBuilderField id="currentOpsQuery" label="Query Filter" toolTipText="Optional, a query to filter operations. Use {'$all': 1} to also see internal commands."/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuItem id="killOp" call="killOp">
+                        <FormDialog>
+                            <IntField id="killOpId" label="opid" toolTipText="ID of the operation to kill, should be visible from Current Ops"/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuSeparator/>
                     <MenuItem id="setParameter" call="setParameter">
                         <FormDialog>
                             <org.mongo.jmongob.DocBuilderField id="setParameterValue" label="Parameter" nonEmpty="true" toolTipText="Modify a parameter without restarting the server, for example {logLevel: 4}"/>
@@ -511,7 +523,12 @@
                     <MenuItem id="oplogInfo" call="oplogInfo" label="Oplog Info"/>
                 </Menu>
                 <Menu id="tools">
-                    <MenuItem id="compareReplicas" call="compareReplicas"/>
+                    <MenuItem id="compareReplicas" call="compareReplicas">
+                        <FormDialog>
+                            <Text value="This tool will compare all replicas, stop writing to the db for better accuracy."/>
+                            <ComboBox id="crStat" label="Comparison Stat" items="Count;Data Size" toolTipText="What to compare"/>
+                        </FormDialog>
+                    </MenuItem>
                 </Menu>
             </MenuBar>
             <Zone zone="CENTER">
@@ -642,7 +659,7 @@
                     </org.mongo.jmongob.ConnectDialog>
                 </MenuItem>
                 <MenuSeparator/>
-                <MenuItem id="exit" label="Quit" alt="q" key="q" keyMod="cmd"/>
+                <MenuItem id="exit" label="Quit" alt="q" key="q" keyMod="cmd" call="exit"/>
             </Menu>
             <Menu id="tools" alt="o">
                 <MenuItem id="importFile" alt="i" call="importFile"/>
@@ -671,7 +688,7 @@
             </Menu>
             <Menu id="help" alt="h">
                 <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="mongo_leaf.png" signIconGroup="icons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBro/wser v1.0.3&lt;br&gt;By Edgytech / Antoine Girbal"/>
+                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="etIcons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v1.0.4&lt;br&gt;By Edgytech / Antoine Girbal"/>
                 </MenuItem>
             </Menu>
         </org.mongo.jmongob.MainMenu>

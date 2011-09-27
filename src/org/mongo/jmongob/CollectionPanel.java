@@ -983,6 +983,16 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                     int min = (Integer)doc.get("min");
                     int max = (Integer)doc.get("max");
                     return min + (int)(Math.random() * ((max - min) + 1));
+                } else if(type.equals("str")) {
+                    int len = (Integer)doc.get("len");
+                    StringBuilder sb = new StringBuilder(len);
+                    byte min = 0x61;
+                    byte max = 0x7a;
+                    for (int i = 0; i < len; ++i) {
+                        char c = (char) (min + (byte) (Math.random() * ((max - min) + 1)));
+                        sb.append(c);
+                    }
+                    return sb.toString();
                 }
             }
             Object val = doc.get(field);

@@ -5,26 +5,21 @@
 package org.mongo.jmongob;
 
 import com.edgytech.swingfast.Application;
+import com.edgytech.swingfast.ConfirmDialog;
 import com.edgytech.swingfast.Frame;
 import com.edgytech.swingfast.Scroller;
 import com.edgytech.swingfast.TabbedDiv;
 import com.edgytech.swingfast.Tree;
 import com.edgytech.swingfast.XmlJComponentUnit;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
-import com.mongodb.MongoURI;
+import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import org.xml.sax.SAXException;
 
@@ -47,7 +42,7 @@ public class JMongoBrowser extends Application implements Runnable {
         docViewDialog,
         docTree,
         tabbedResult,
-        jobBar
+        jobBar,
     }
     public final static JMongoBrowser instance = new JMongoBrowser();
     private ArrayList<MongoNode> mongos = new ArrayList<MongoNode>();
@@ -184,6 +179,10 @@ public class JMongoBrowser extends Application implements Runnable {
         return (TabbedDiv) getBoundUnit(Item.tabbedResult);
     }
 
+    JobBar getJobBar() {
+        return (JobBar) getBoundUnit(Item.jobBar);
+    }
+    
     public void displayNode(BaseTreeNode node) {
         BasePanel panel = null;
         if (node instanceof MongoNode)
@@ -206,12 +205,12 @@ public class JMongoBrowser extends Application implements Runnable {
     }
 
     public void runJob(DbJob job) {
-        ((JobBar) getBoundUnit(Item.jobBar)).addJob(job);
+        getJobBar().addJob(job);
         job.start();
     }
 
     public void removeJob(DbJob job) {
-        ((JobBar) getBoundUnit(Item.jobBar)).removeJob(job);
+        getJobBar().removeJob(job);
     }
 
     long _nextTreeUpdate = System.currentTimeMillis();
@@ -225,7 +224,9 @@ public class JMongoBrowser extends Application implements Runnable {
                     _nextTreeUpdate = now + treeRate;
                     SwingUtilities.invokeAndWait(new Runnable() {
                         public void run() {
-                           getTree().updateComponent();
+                            long start = System.currentTimeMillis();
+                            getTree().updateComponent();
+                            getLogger().log(Level.FINE, "Tree update took " + (System.currentTimeMillis() - start));
 //                           getTree().structureComponent();
                         }
                     });
@@ -240,4 +241,16 @@ public class JMongoBrowser extends Application implements Runnable {
             }
         }
     }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        if (getJobBar().hasChildren()) {
+            String text = "There are jobs running, force exit?";
+            ConfirmDialog confirm = new ConfirmDialog(null, "Confirm Exit", null, text);
+            if (!confirm.show())
+                return;
+        }
+        super.windowClosing(e);
+    }
+    
 }
