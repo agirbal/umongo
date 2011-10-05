@@ -47,7 +47,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         downloadQuery,
         downloadFileName,
         downloadFilePath,
-        command,
+        commandCmd,
         commandStr,
         commandJson,
         commandHelp,
