@@ -85,7 +85,6 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
 
 
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public void addShard() {
@@ -98,7 +97,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         String server = host;
         if (port > 0)
             server += ":" + port;
-        if (replSetName != null)
+        if (!replSetName.isEmpty())
             server = replSetName + "/" + server;
 
         final BasicDBObject cmd = new BasicDBObject("addshard", server);
