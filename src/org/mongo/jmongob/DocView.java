@@ -543,9 +543,16 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     }
 
     private void updateButtons() {
-        getComponentBoundUnit(Item.getMore).enabled = iterator.hasNext();
+        boolean canGetMore = false;
+        if (dbcursor != null) {
+            // can always get more from tailable cursor
+            canGetMore = iterator.hasNext() || dbcursor.getCursorId() > 0;
+        } else {
+            canGetMore = iterator.hasNext();
+        }
+        getComponentBoundUnit(Item.getMore).enabled = canGetMore;
         getComponentBoundUnit(Item.getMore).updateComponent();
-        getComponentBoundUnit(Item.getAll).enabled = iterator.hasNext();
+        getComponentBoundUnit(Item.getAll).enabled = canGetMore;
         getComponentBoundUnit(Item.getAll).updateComponent();
     }
 
