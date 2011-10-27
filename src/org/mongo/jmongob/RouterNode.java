@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.mongo.jmongob;
 
 import com.mongodb.BasicDBList;
@@ -41,27 +40,29 @@ public class RouterNode extends BaseTreeNode {
             try {
                 DBObject shard = (DBObject) obj;
                 String id = (String) shard.get("_id");
-                String host = (String) shard.get("host");
+                String hosts = (String) shard.get("host");
                 String repl = null;
-                int slash = host.indexOf('/');
+                int slash = hosts.indexOf('/');
                 if (slash >= 0) {
-                    repl = host.substring(0, slash);
-                    host = host.substring(slash + 1);
-                }
-                int colon = host.indexOf(':');
-                ServerAddress addr = null;
-                if (colon >= 0) {
-                    addr = new ServerAddress(host.substring(0, colon), Integer.parseInt(host.substring(colon + 1)));
-                } else {
-                    addr = new ServerAddress(host);
+                    repl = hosts.substring(0, slash);
+                    hosts = hosts.substring(slash + 1);
                 }
 
-                if (repl != null) {
-                    ArrayList<ServerAddress> addrs = new ArrayList<ServerAddress>();
-                    addrs.add(addr);
+                String[] hostList = hosts.split(",");
+                ArrayList<ServerAddress> addrs = new ArrayList<ServerAddress>();
+                for (String host : hostList) {
+                    int colon = host.indexOf(':');
+                    if (colon >= 0) {
+                        addrs.add(new ServerAddress(host.substring(0, colon), Integer.parseInt(host.substring(colon + 1))));
+                    } else {
+                        addrs.add(new ServerAddress(host));
+                    }
+                }
+
+                if (repl != null || addrs.size() > 1) {
                     addChild(new ReplSetNode(repl, addrs));
                 } else {
-                    addChild(new ServerNode(addr));
+                    addChild(new ServerNode(addrs.get(0)));
                 }
             } catch (Exception e) {
                 getLogger().log(Level.WARNING, null, e);
@@ -81,5 +82,4 @@ public class RouterNode extends BaseTreeNode {
     protected void updateNode(List<ImageIcon> overlays) {
         label = getAddress().toString();
     }
-
 }

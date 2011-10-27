@@ -16,6 +16,7 @@ function package_build {
 	rm -rf $appdir ${appdir}.zip
 	mkdir $appdir
 
+    cp ./common-files/* $appdir/
 	cp ${os}-files/* $appdir/
 	cp ../dist/JMongoBrowser.jar $appdir/
 	mkdir $appdir/lib
