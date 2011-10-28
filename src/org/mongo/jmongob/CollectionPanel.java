@@ -82,6 +82,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         mrReduce,
         mrFinalize,
         mrQuery,
+        mrSort,
         mrType,
         mrOut,
         mrOutDB,
@@ -299,6 +300,9 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         DBObject query = ((DocBuilderField) getBoundUnit(Item.mrQuery)).getDBObject();
         int limit = getIntFieldValue(Item.mrLimit);
         final MapReduceCommand cmd = new MapReduceCommand(col, map, reduce, out, type, query);
+        DBObject sort = ((DocBuilderField) getBoundUnit(Item.mrSort)).getDBObject();
+        if (sort != null)
+            cmd.setSort(sort);
         if (!outDB.isEmpty()) {
             cmd.setOutputDB(outDB);
         }
