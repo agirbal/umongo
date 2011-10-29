@@ -24,8 +24,10 @@ public class OptionDialog extends FormDialog {
         awaitData,
         exhaust,
         writeFactor,
+        writePolicy,
         writeTimeout,
-        fsync
+        fsync,
+        jsync
     }
 
     public OptionDialog() {
@@ -39,8 +41,12 @@ public class OptionDialog extends FormDialog {
         setBooleanFieldValue(Item.noTimeout, (options & Bytes.QUERYOPTION_NOTIMEOUT) != 0);
         setBooleanFieldValue(Item.awaitData, (options & Bytes.QUERYOPTION_AWAITDATA) != 0);
         setBooleanFieldValue(Item.exhaust, (options & Bytes.QUERYOPTION_EXHAUST) != 0);
-        
-        setIntFieldValue(Item.writeFactor, wc.getW());
+
+        Object w = wc.getWObject();
+        int wInt = (Integer) (w instanceof Integer ? w : 0);
+        String wStr = (String) (w instanceof String ? w : "");
+        setIntFieldValue(Item.writeFactor, wInt);
+        setStringFieldValue(Item.writePolicy, wStr);
         setIntFieldValue(Item.writeTimeout, wc.getWtimeout());
         setBooleanFieldValue(Item.fsync, wc.fsync());
     }
@@ -58,8 +64,12 @@ public class OptionDialog extends FormDialog {
 
     WriteConcern getWriteConcern() {
         int w = getIntFieldValue(Item.writeFactor);
+        String wPolicy = getStringFieldValue(Item.writePolicy);
         int wtimeout = getIntFieldValue(Item.writeTimeout);
         boolean fsync = getBooleanFieldValue(Item.fsync);
-        return new WriteConcern(w, wtimeout, fsync);
+        boolean jsync = getBooleanFieldValue(Item.jsync);
+        if (!wPolicy.trim().isEmpty())
+            return new WriteConcern(wPolicy, wtimeout, fsync, jsync);
+        return new WriteConcern(w, wtimeout, fsync, jsync);
     }
 }

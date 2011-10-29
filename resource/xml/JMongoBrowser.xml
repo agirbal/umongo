@@ -23,9 +23,11 @@
                     <CheckBox id="opLogReplay" toolTipText="Internal replication use only - driver should not set"/>
                 </Div>
                 <Div id="writeConcern">
-                    <IntSpinner id="writeFactor" minValue="0" value="0" toolTipText="Sets the number of server that data should be written to, before returning the call. 0 means 'fire-and-forget', 1 means write to primary and wait for acknowledgment.'"/>
+                    <IntSpinner id="writeFactor" minValue="0" value="0" toolTipText="Sets the number of servers that write should be acknowledged from. 0 means 'fire-and-forget'."/>
+                    <TextField id="writePolicy" toolTipText="Sets the write policy. If set, will override the write factor number."/>
                     <IntSpinner id="writeTimeout" minValue="0" value="0" toolTipText="Timeout in milliseconds for primary server to ensure that write operation was fulfilled on all servers."/>
                     <CheckBox id="fsync" value="false" toolTipText="Forces syncing of memory to disk on the server before acknowledgment of write operation success."/>
+                    <CheckBox id="jsync" value="false" toolTipText="Waits that the data has been commited to the journal on disk."/>
                 </Div>
             </TabbedDiv>
         </org.mongo.jmongob.OptionDialog>
