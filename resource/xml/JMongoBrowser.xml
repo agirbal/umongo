@@ -63,7 +63,7 @@
             <CheckBox id="dropCollection" toolTipText="Drop collection before import"/>
             <CheckBox id="upsert" toolTipText="Upsert values instead of insert"/>
             <TextField id="upsertFields" toolTipText="Comma-separated list of fields to upsert by. If not specified, save() will be used."/>
-            <CheckBox id="bulk" toolTipText="If turned on, the bulk insert function of the driver will be used. It may be faster but more client memory will be used, and error reporting is not accurate."/>
+            <CheckBox id="bulk" value="false" toolTipText="If turned on, the bulk insert function of the driver will be used. It may be faster but more client memory will be used, and error reporting is not accurate."/>
         </org.mongo.jmongob.ImportDialog>
         <org.mongo.jmongob.MongoPanel id="mongoPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
@@ -354,7 +354,7 @@
                         <FormDialog>
                             <org.mongo.jmongob.DocBuilderField id="insertDoc" label="JSON Document" toolTipText="Document to insert in JSON format" nonEmpty="true"/>
                             <IntSpinner id="insertCount" label="Insert Count" minValue="1" value="1" toolTipText="Number of documents to insert"/>
-                            <CheckBox id="insertBulk" label="Bulk Insert" value="true" toolTipText="If multiple objects are inserted, use the bulk operation, faster but uses more memory."/>
+                            <CheckBox id="insertBulk" label="Bulk Insert" value="false" toolTipText="If multiple objects are inserted, use the bulk operation, faster but uses more memory."/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="save" call="save">
