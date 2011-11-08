@@ -521,12 +521,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     public void options() {
         final DBCollection col = getCollectionNode().getCollection();
         OptionDialog od = JMongoBrowser.instance.getGlobalStore().getOptionDialog();
-        od.update(col.getOptions(), col.getWriteConcern());
+        od.update(col.getOptions(), col.getWriteConcern(), col.getReadPreference());
         if (!od.show()) {
             return;
         }
         col.setOptions(od.getQueryOptions());
         col.setWriteConcern(od.getWriteConcern());
+        col.setReadPreference(od.getReadPreference());
         refresh();
     }
 

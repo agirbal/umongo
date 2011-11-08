@@ -5,10 +5,12 @@
 
 package org.mongo.jmongob;
 
+import com.edgytech.swingfast.ComboBox;
 import com.edgytech.swingfast.FormDialog;
 import com.mongodb.Bytes;
 import com.mongodb.MongoException;
 import com.mongodb.MongoOptions;
+import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 
 /**
@@ -27,14 +29,15 @@ public class OptionDialog extends FormDialog {
         writePolicy,
         writeTimeout,
         fsync,
-        jsync
+        jsync,
+        rpPreference
     }
 
     public OptionDialog() {
         setEnumBinding(Item.values(), null);
     }
 
-    void update(int options, WriteConcern wc) {
+    void update(int options, WriteConcern wc, ReadPreference rp) {
         setBooleanFieldValue(Item.tailable, (options & Bytes.QUERYOPTION_TAILABLE) != 0);
         setBooleanFieldValue(Item.slaveOk, (options & Bytes.QUERYOPTION_SLAVEOK) != 0);
         setBooleanFieldValue(Item.opLogReplay, (options & Bytes.QUERYOPTION_OPLOGREPLAY) != 0);
@@ -49,6 +52,14 @@ public class OptionDialog extends FormDialog {
         setStringFieldValue(Item.writePolicy, wStr);
         setIntFieldValue(Item.writeTimeout, wc.getWtimeout());
         setBooleanFieldValue(Item.fsync, wc.fsync());
+        
+        ComboBox readBox = (ComboBox) getBoundUnit(Item.rpPreference);
+        if (rp == null)
+            readBox.value = 0;
+        else if (rp instanceof ReadPreference.PrimaryReadPreference)
+            readBox.value = 1;
+        else if (rp instanceof ReadPreference.SecondaryReadPreference)
+            readBox.value = 2;
     }
 
     int getQueryOptions() {
@@ -71,5 +82,16 @@ public class OptionDialog extends FormDialog {
         if (!wPolicy.trim().isEmpty())
             return new WriteConcern(wPolicy, wtimeout, fsync, jsync);
         return new WriteConcern(w, wtimeout, fsync, jsync);
+    }
+    
+    ReadPreference getReadPreference() {
+        ComboBox readBox = (ComboBox) getBoundUnit(Item.rpPreference);
+        if (readBox.value == 0)
+            return null;
+        if (readBox.value == 1)
+            return ReadPreference.PRIMARY;
+        if (readBox.value == 2)
+            return ReadPreference.SECONDARY;
+        return null;
     }
 }

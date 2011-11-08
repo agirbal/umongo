@@ -295,12 +295,13 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void options() {
         final DB db = getDbNode().getDb();
         OptionDialog od = JMongoBrowser.instance.getGlobalStore().getOptionDialog();
-        od.update(db.getOptions(), db.getWriteConcern());
+        od.update(db.getOptions(), db.getWriteConcern(), db.getReadPreference());
         if (!od.show()) {
             return;
         }
         db.setOptions(od.getQueryOptions());
         db.setWriteConcern(od.getWriteConcern());
+        db.setReadPreference(od.getReadPreference());
         refresh();
     }
 

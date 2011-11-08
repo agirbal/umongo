@@ -167,12 +167,13 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     public void options() {
         Mongo mongo = getMongoNode().getMongo();
         OptionDialog od = JMongoBrowser.instance.getGlobalStore().getOptionDialog();
-        od.update(mongo.getOptions(), mongo.getWriteConcern());
+        od.update(mongo.getOptions(), mongo.getWriteConcern(), mongo.getReadPreference());
         if (!od.show()) {
             return;
         }
         mongo.setOptions(od.getQueryOptions());
         mongo.setWriteConcern(od.getWriteConcern());
+        mongo.setReadPreference(od.getReadPreference());
         refresh();
     }
 

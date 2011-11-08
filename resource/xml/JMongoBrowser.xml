@@ -29,6 +29,9 @@
                     <CheckBox id="fsync" value="false" toolTipText="Forces syncing of memory to disk on the server before acknowledgment of write operation success."/>
                     <CheckBox id="jsync" value="false" toolTipText="Waits that the data has been commited to the journal on disk."/>
                 </Div>
+                <Div id="readPreference">
+                    <ComboBox id="rpPreference" label="Read Preference" items="None;Primary;Secondary" value="0" toolTipText="The read preference mode. Primary to read from master, Secondary to read from slaves."/>
+                </Div>
             </TabbedDiv>
         </org.mongo.jmongob.OptionDialog>
         <org.mongo.jmongob.ErrorDialog id="errorDialog">
