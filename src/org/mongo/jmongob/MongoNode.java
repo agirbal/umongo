@@ -50,7 +50,7 @@ public class MongoNode extends BaseTreeNode {
             // check if mongos
             boolean added = false;
             ServerAddress addr = addrs.get(0);
-            ServerNode node = new ServerNode(addr);
+            ServerNode node = new ServerNode(mongo);
             try {
                 CommandResult res = node.getServerDB().command("isdbgrid");
                 if (res.ok()) {

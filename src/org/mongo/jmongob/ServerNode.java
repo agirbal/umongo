@@ -6,6 +6,7 @@ package org.mongo.jmongob;
 
 import com.edgytech.swingfast.SwingFast;
 import com.mongodb.BasicDBObject;
+import com.mongodb.Bytes;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
@@ -24,11 +25,22 @@ public class ServerNode extends BaseTreeNode {
     ServerAddress serverAddress;
     Mongo serverMongo;
 
-    public ServerNode(ServerAddress serverAddress) {
+    public ServerNode(Mongo mongo) {
+        serverMongo = mongo;
+        serverAddress = mongo.getAddress();
+        try {
+            xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
+        } catch (Exception ex) {
+            getLogger().log(Level.SEVERE, null, ex);
+        }
+        markStructured();
+    }
+    
+    public ServerNode(ServerAddress serverAddress, MongoOptions opts) {
         this.serverAddress = serverAddress;
-        MongoOptions opts = new MongoOptions();
-        opts.slaveOk = true;
         serverMongo = new Mongo(serverAddress, opts);
+        serverMongo.addOption( Bytes.QUERYOPTION_SLAVEOK );
+        
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
         } catch (Exception ex) {

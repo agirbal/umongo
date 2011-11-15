@@ -6,6 +6,7 @@
 package org.mongo.jmongob;
 
 import com.mongodb.Mongo;
+import com.mongodb.MongoOptions;
 import com.mongodb.ServerAddress;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,8 +32,8 @@ public class ReplSetNode extends BaseTreeNode {
         markStructured();
     }
 
-    public ReplSetNode(String name, List<ServerAddress> addrs) {
-        this.mongo = new Mongo(addrs);
+    public ReplSetNode(String name, List<ServerAddress> addrs, MongoOptions opts) {
+        this.mongo = new Mongo(addrs, opts);
         this.name = name != null ? name : "Replica Set";
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.replSetNode, null);
@@ -47,7 +48,7 @@ public class ReplSetNode extends BaseTreeNode {
         mongo.getDatabaseNames();
         List<ServerAddress> addrs = mongo.getServerAddressList();
         for (ServerAddress addr : addrs) {
-            addChild(new ServerNode(addr));
+            addChild(new ServerNode(addr, mongo.getMongoOptions()));
         }
     }
 
