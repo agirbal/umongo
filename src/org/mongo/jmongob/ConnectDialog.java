@@ -6,6 +6,7 @@ package org.mongo.jmongob;
 
 import com.edgytech.swingfast.FormDialog;
 import com.mongodb.MongoOptions;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  *
@@ -21,6 +22,7 @@ public class ConnectDialog extends FormDialog {
         connectionsPerHost,
         blockingThreadMultiplier,
         maxWaitTime,
+        socketType,
         connectTimeout,
         socketTimeout,
         autoConnectRetry,
@@ -50,6 +52,10 @@ public class ConnectDialog extends FormDialog {
         moptions.socketTimeout = getIntFieldValue(Item.socketTimeout);
         moptions.autoConnectRetry = getBooleanFieldValue(Item.autoConnectRetry);
         moptions.safe = getBooleanFieldValue(Item.safe);
+        
+        int stype = getIntFieldValue(Item.socketType);
+        if (stype == 1)
+            moptions.socketFactory = SSLSocketFactory.getDefault();
         return moptions;
     }
 
