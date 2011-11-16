@@ -422,6 +422,11 @@
                             <CheckBox id="validateFull" label="Full" toolTipText="Turns on full validation, which is slower"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="compact" call="compact">
+                        <FormDialog>
+                            <CheckBox id="compactForce" label="Force" toolTipText="Force compaction even if ran on the primary server"/>
+                        </FormDialog>
+                    </MenuItem>
                     <MenuItem id="fixCollection" call="fixCollection" showDialog="false">
                         <FormDialog id="fcDialog">
                             <ComboBox id="fcSrcMongo" label="Source Mongo" toolTipText="Pick one of the other Mongo instances as source"/>

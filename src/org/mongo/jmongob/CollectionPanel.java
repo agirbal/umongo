@@ -128,6 +128,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         findChunks,
         validate,
         validateFull,
+        compact,
+        compactForce,
         moveChunk,
         mvckQuery,
         mvckToShard,
@@ -908,6 +910,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         if (getBooleanFieldValue(Item.validateFull))
             cmd.put("full", true);
         new DocView(null, "Validate", getCollectionNode().getDbNode().getDb(), cmd).addToTabbedDiv();
+    }
+    
+    public void compact() {
+        BasicDBObject cmd = new BasicDBObject("compact", getCollectionNode().getCollection().getName());
+        if (getBooleanFieldValue(Item.compactForce))
+            cmd.put("force", true);
+        new DocView(null, "Compact", getCollectionNode().getDbNode().getDb(), cmd).addToTabbedDiv();
     }
     
     public void shardingInfo() {
