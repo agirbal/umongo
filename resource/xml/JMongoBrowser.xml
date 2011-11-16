@@ -104,7 +104,7 @@
                     </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="shutdown" call="shutdown">
-                        <ConfirmDialog text="Really shutdown this mongo server?"/>
+                        <ConfirmDialog text="Are you sure you want to shutdown this mongo server?"/>
                     </MenuItem>
                 </Menu>
                 <Menu id="tools">
@@ -155,7 +155,7 @@
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                     <MenuSeparator/>
                     <MenuItem id="dropDatabase" label="Drop Database" call="dropDatabase" icon="stock_delete.png" iconGroup="icons">
-                        <ConfirmDialog text="Drop entire database?"/>
+                        <ConfirmDialog text="Are you sure you want to drop this database?"/>
                     </MenuItem>
                 </Menu>
                 <Menu id="command">
@@ -225,7 +225,7 @@
                 </Menu>
                 <Menu id="tools">
                     <MenuItem id="repair" call="repair">
-                        <ConfirmDialog text="Repair operation may take a long time and requires extra storage space on the server. Run repair?"/>
+                        <ConfirmDialog text="Repair operation may take a long time and requires extra storage space on the server. Are you sure?"/>
                     </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="profile" call="profile">
@@ -283,7 +283,7 @@
                     <MenuItem id="export" call="export"/>
                     <MenuSeparator/>
                     <MenuItem id="dropCollection" label="Drop Collection" call="dropCollection" icon="stock_delete.png" iconGroup="icons">
-                        <ConfirmDialog text="Drop entire collection?"/>
+                        <ConfirmDialog text="Are you sure you want to drop this collection?"/>
                     </MenuItem>
                 </Menu>
                 <Menu id="command">
@@ -454,7 +454,7 @@
                 <Menu id="index">
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                     <MenuItem id="drop" label="Drop" call="drop" icon="stock_delete.png" iconGroup="icons">
-                        <ConfirmDialog text="Drop index?"/>
+                        <ConfirmDialog text="Are you sure you want to drop this index?"/>
                     </MenuItem>
                 </Menu>
                 <Menu id="command">
