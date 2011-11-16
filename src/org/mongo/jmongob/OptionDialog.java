@@ -8,8 +8,6 @@ package org.mongo.jmongob;
 import com.edgytech.swingfast.ComboBox;
 import com.edgytech.swingfast.FormDialog;
 import com.mongodb.Bytes;
-import com.mongodb.MongoException;
-import com.mongodb.MongoOptions;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 
@@ -25,6 +23,7 @@ public class OptionDialog extends FormDialog {
         noTimeout,
         awaitData,
         exhaust,
+        partial,
         writeFactor,
         writePolicy,
         writeTimeout,
@@ -44,6 +43,7 @@ public class OptionDialog extends FormDialog {
         setBooleanFieldValue(Item.noTimeout, (options & Bytes.QUERYOPTION_NOTIMEOUT) != 0);
         setBooleanFieldValue(Item.awaitData, (options & Bytes.QUERYOPTION_AWAITDATA) != 0);
         setBooleanFieldValue(Item.exhaust, (options & Bytes.QUERYOPTION_EXHAUST) != 0);
+        setBooleanFieldValue(Item.partial, (options & Bytes.QUERYOPTION_PARTIAL) != 0);
 
         Object w = wc.getWObject();
         int wInt = (Integer) (w instanceof Integer ? w : 0);
@@ -70,6 +70,7 @@ public class OptionDialog extends FormDialog {
         if (getBooleanFieldValue(Item.noTimeout)) options |= Bytes.QUERYOPTION_NOTIMEOUT;
         if (getBooleanFieldValue(Item.awaitData)) options |= Bytes.QUERYOPTION_AWAITDATA;
         if (getBooleanFieldValue(Item.exhaust)) options |= Bytes.QUERYOPTION_EXHAUST;
+        if (getBooleanFieldValue(Item.partial)) options |= Bytes.QUERYOPTION_PARTIAL;
         return options;
     }
 

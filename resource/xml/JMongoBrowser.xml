@@ -20,6 +20,7 @@
                     <CheckBox id="tailable" toolTipText="Tailable means cursor is not closed when the last data is retrieved. You can resume using the cursor later, if more data exists."/>
                     <CheckBox id="awaitData" toolTipText="Use with TailableCursor. If cursor is at the end of the data, it blocks for a while rather than returning no data."/>
                     <CheckBox id="exhaust" toolTipText="Stream the data down full blast in multiple 'getMore' packages, on the assumption that the client will fully read all data queried."/>
+                    <CheckBox id="partial" toolTipText="Allows mongos to return partial results from a sharded system if any shard is down."/>
                     <CheckBox id="opLogReplay" toolTipText="Internal replication use only - driver should not set"/>
                 </Div>
                 <Div id="writeConcern">
