@@ -200,6 +200,11 @@
                 </Menu>
                 <Menu id="sharding">
                     <MenuItem id="enableSharding" call="enableSharding"/>
+                    <MenuItem id="movePrimary" call="movePrimary">
+                        <FormDialog>
+                            <TextField id="mvpToShard" label="To Shard" nonEmpty="true" toolTipText="Name of the new primary shard for this database"/>
+                        </FormDialog>
+                    </MenuItem>
                     <MenuItem id="shardingInfo" call="shardingInfo"/>
                 </Menu>
                 <Menu id="GridFS" label="GridFS">

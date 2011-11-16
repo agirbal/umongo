@@ -72,6 +72,8 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         createCollCount,
         createCollAutoIndex,
         enableSharding,
+        movePrimary,
+        mvpToShard,
         shardingInfo,
         profile,
         profileLevel,
@@ -465,6 +467,15 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final DB config = db.getSisterDB("config");
         final DBCollection col = config.getCollection("databases");
         CollectionPanel.doFind(col, new BasicDBObject("_id", db.getName()), null, null, 0, 0, 0, false);
+    }
+    
+    public void movePrimary() {
+        Mongo m = getDbNode().getMongoNode().getMongo();
+        DB admin = m.getDB("admin");
+        String shard = getStringFieldValue(Item.mvpToShard);
+        DBObject cmd = new BasicDBObject("movePrimary", getDbNode().getDb().getName());
+        cmd.put("to", shard);
+        new DocView(id, "Move Primary", admin, cmd, null, this, null).addToTabbedDiv();
     }
 
     public void findJSFunction() {
