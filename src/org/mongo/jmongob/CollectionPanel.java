@@ -104,6 +104,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         eiKeys,
         eiUnique,
         eiName,
+        eiDropDups,
+        eiSparse,
+        eiBackground,
+        eiConfirm,
         findAndModify,
         famQuery,
         famFields,
@@ -650,14 +654,29 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final CollectionNode node = getCollectionNode();
         final DBCollection col = getCollectionNode().getCollection();
         final DBObject keys = ((DocBuilderField) getBoundUnit(Item.eiKeys)).getDBObject();
-        final String name = getStringFieldValue(Item.eiName);
-        final boolean unique = getBooleanFieldValue(Item.eiUnique);
 
+        final DBObject opts = new BasicDBObject();
+        final String name = getStringFieldValue(Item.eiName);
+        if (name != null && !name.trim().isEmpty())
+            opts.put("name", name);
+        if (getBooleanFieldValue(Item.eiUnique))
+            opts.put("unique", true);
+        if (getBooleanFieldValue(Item.eiDropDups))
+            opts.put("dropDups", true);
+        if (getBooleanFieldValue(Item.eiSparse))
+            opts.put("sparse", true);
+        if (getBooleanFieldValue(Item.eiBackground))
+            opts.put("background", true);
+
+        ConfirmDialog confirm = (ConfirmDialog) getBoundUnit(Item.eiConfirm);
+        if (!confirm.show())
+            return;
+        
         new DbJob() {
 
             @Override
             public Object doRun() throws IOException {
-                col.ensureIndex(keys, name, unique);
+                col.ensureIndex(keys, opts);
                 return null;
             }
 

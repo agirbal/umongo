@@ -267,8 +267,12 @@
                         <FormDialog>
                             <org.mongo.jmongob.DocBuilderField id="eiKeys" label="Index Keys" toolTipText="keys to index by, in JSON format" nonEmpty="true"/>
                             <CheckBox id="eiUnique" label="Unique" toolTipText="If checked, index will be unique"/>
+                            <CheckBox id="eiDropDups" label="Drop Duplicates" toolTipText="If creating a unique index, remove documents with duplicate keys"/>
+                            <CheckBox id="eiSparse" label="Sparse" toolTipText="Make index sparse, meaning that documents missing the key will not be indexed"/>
+                            <CheckBox id="eiBackground" label="Background" toolTipText="Create the index in the background without locking the database. Index creation will be slower."/>
                             <TextField id="eiName" label="Index Name" toolTipText="Optional, a custom name for the index"/>
                         </FormDialog>
+                        <ConfirmDialog id="eiConfirm" text="Are you sure you want to create this index? It can potentially lock the db for a long time."/>
                     </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
