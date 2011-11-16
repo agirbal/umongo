@@ -671,7 +671,7 @@
                             <IntSpinner id="maxWaitTime" minValue="0" value="120000" toolTipText="Maximum time in milliseconds that a thread should wait for a connection to be available"/>
                         </Div>
                         <Div id="connection" titled="true">
-                            <ComboBox id="socketType" value="0" items="Plain;SSL" toolTipText="Type of socket to use."/>
+                            <ComboBox id="socketType" value="0" items="Plain;SSL;SSL no validation" toolTipText="Type of socket to use."/>
                             <IntSpinner id="connectTimeout" minValue="0" value="0" toolTipText="Timeout for the socket connect operation"/>
                             <IntSpinner id="socketTimeout" minValue="0" value="0" toolTipText="Timeout for the socket read/write operations"/>
                             <CheckBox id="autoConnectRetry" value="false" toolTipText="If true, then driver will keep retrying to connect to the server in case of connection failure"/>

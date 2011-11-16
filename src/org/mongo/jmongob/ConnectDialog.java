@@ -6,7 +6,11 @@ package org.mongo.jmongob;
 
 import com.edgytech.swingfast.FormDialog;
 import com.mongodb.MongoOptions;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  *
@@ -54,8 +58,30 @@ public class ConnectDialog extends FormDialog {
         moptions.safe = getBooleanFieldValue(Item.safe);
         
         int stype = getIntFieldValue(Item.socketType);
-        if (stype == 1)
+        if (stype == 1) {
             moptions.socketFactory = SSLSocketFactory.getDefault();
+        } else if (stype == 2) {
+            // Create a trust manager that does not validate certificate chains
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                    public void checkClientTrusted(
+                        java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+                    public void checkServerTrusted(
+                        java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+                }
+            };
+            try {
+                SSLContext sc = SSLContext.getInstance("SSL");
+                sc.init(null, trustAllCerts, new java.security.SecureRandom());
+                moptions.socketFactory = sc.getSocketFactory();
+            } catch (Exception e) {
+            }
+        }
         return moptions;
     }
 
