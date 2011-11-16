@@ -473,7 +473,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final DB db = getDbNode().getDb();
         final DB config = db.getSisterDB("config");
         final DBCollection col = config.getCollection("databases");
-        CollectionPanel.doFind(col, new BasicDBObject("_id", db.getName()), null, null, 0, 0, 0, false);
+        CollectionPanel.doFind(col, new BasicDBObject("_id", db.getName()));
     }
     
     public void movePrimary() {
@@ -492,7 +492,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         DBObject query = new BasicDBObject();
         if (name != null && !name.isEmpty())
             query.put("_id", name);
-        CollectionPanel.doFind(col, query, null, null, 0, 0, 0, false);
+        CollectionPanel.doFind(col, query);
     }
 
     public void addJSFunction() {
@@ -500,7 +500,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final DBCollection col = db.getCollection("system.js");
         final String name = getStringFieldValue(Item.addJSFunctionName);
         final String code = getStringFieldValue(Item.addJSFunctionCode);
-        CollectionPanel.doFind(col, new BasicDBObject("_id", name), null, null, 0, 0, 0, false);
+        CollectionPanel.doFind(col, new BasicDBObject("_id", name));
 
         new DbJob() {
 

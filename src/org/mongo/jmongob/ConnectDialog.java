@@ -6,7 +6,6 @@ package org.mongo.jmongob;
 
 import com.edgytech.swingfast.FormDialog;
 import com.mongodb.MongoOptions;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;

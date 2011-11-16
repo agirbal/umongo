@@ -133,14 +133,14 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     public void currentOps() {
         final Mongo mongo = getServerNode().getServerMongo();
         final DBObject query = ((DocBuilderField) getBoundUnit(Item.currentOpsQuery)).getDBObject();
-        CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.inprog"), query, null, null, 0, 0, 0, false);
+        CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.inprog"), query);
     }
 
     public void killOp() {
         final Mongo mongo = getServerNode().getServerMongo();
         final int opid = getIntFieldValue(Item.killOpId);
         final DBObject query = new BasicDBObject("op", opid);
-        CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query, null, null, 0, 0, 0, false);
+        CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query);
     }
 
 }

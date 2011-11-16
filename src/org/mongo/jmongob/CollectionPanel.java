@@ -4,14 +4,12 @@
  */
 package org.mongo.jmongob;
 
-import com.edgytech.swingfast.CheckBox;
 import com.edgytech.swingfast.ComboBox;
 import com.edgytech.swingfast.ConfirmDialog;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.FormDialog;
 import com.edgytech.swingfast.InfoDialog;
 import com.edgytech.swingfast.MenuItem;
-import com.edgytech.swingfast.Showable;
 import com.edgytech.swingfast.TreeNodeLabel;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBList;
@@ -34,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JPanel;
-import org.bson.BSONObject;
 import org.mongo.jmongob.CollectionPanel.Item;
 
 /**
@@ -68,6 +65,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         findBatchSize,
         findExplain,
         findExport,
+        findHint,
         findOne,
         foQuery,
         foFields,
@@ -194,6 +192,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         DBObject query = ((DocBuilderField) getBoundUnit(Item.findQuery)).getDBObject();
         DBObject fields = ((DocBuilderField) getBoundUnit(Item.findFields)).getDBObject();
         DBObject sort = ((DocBuilderField) getBoundUnit(Item.findSort)).getDBObject();
+        DBObject hint = ((DocBuilderField) getBoundUnit(Item.findHint)).getDBObject();
         int skip = getIntFieldValue(Item.findSkip);
         int limit = getIntFieldValue(Item.findLimit);
         int bs = getIntFieldValue(Item.findBatchSize);
@@ -202,7 +201,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         if (export) {
             exportToFile(col, query, fields, sort, skip, limit, bs);
         } else {
-            doFind(col, query, fields, sort, skip, limit, bs, explain);
+            doFind(col, query, fields, sort, skip, limit, bs, explain, hint);
         }
     }
 
@@ -355,7 +354,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                         res = output.results();
                     } else {
                         // spawn a find
-                        doFind(output.getOutputCollection(), null, null, null, 0, 0, 0, false);
+                        doFind(output.getOutputCollection(), null);
                         res = output.getRaw();
                     }
                 }
@@ -379,7 +378,11 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    static void doFind(final DBCollection col, final DBObject query, final DBObject fields, final DBObject sort, final int skip, final int limit, final int batchSize, final boolean explain) {
+    static void doFind(final DBCollection col, final DBObject query) {
+        doFind(col, query, null, null, 0, 0, 0, false, null);
+    }
+    
+    static void doFind(final DBCollection col, final DBObject query, final DBObject fields, final DBObject sort, final int skip, final int limit, final int batchSize, final boolean explain, final DBObject hint) {
         new DbJob() {
 
             @Override
@@ -391,6 +394,9 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 }
                 if (limit > 0) {
                     cur.limit(limit);
+                }
+                if (hint != null) {
+                    cur.hint(hint);
                 }
                 if (explain) {
                     return cur.explain();
@@ -949,13 +955,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     public void shardingInfo() {
         final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
         final DBCollection col = config.getCollection("collections");
-        CollectionPanel.doFind(col, new BasicDBObject("_id", getCollectionNode().getCollection().getFullName()), null, null, 0, 0, 0, false);
+        CollectionPanel.doFind(col, new BasicDBObject("_id", getCollectionNode().getCollection().getFullName()));
     }
     
     public void findChunks() {
         final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
         final DBCollection col = config.getCollection("chunks");
-        CollectionPanel.doFind(col, new BasicDBObject("ns", getCollectionNode().getCollection().getFullName()), null, null, 0, 0, 0, false);
+        CollectionPanel.doFind(col, new BasicDBObject("ns", getCollectionNode().getCollection().getFullName()));
     }
     
     public void moveChunk() {

@@ -340,6 +340,7 @@
                             <IntSpinner id="findSkip" label="Skip" minValue="0" value="0" toolTipText="Number of documents to skip"/>
                             <IntSpinner id="findLimit" label="Limit" minValue="0" value="0" toolTipText="Maximum number of documents to return"/>
                             <IntSpinner id="findBatchSize" label="Batch Size" value="0" toolTipText="If positive, the ideal batch size to return from server. If negative, instructs the server to close the cursor after 1 batch of given size."/>
+                            <org.mongo.jmongob.DocBuilderField id="findHint" label="Hint" toolTipText="Object with keys that represent the index to use. Use '$natural' to force full scan."/>
                             <CheckBox id="findExplain" label="Explain" toolTipText="Explain the find processing"/>
                             <CheckBox id="findExport" label="Export to File" toolTipText="Export to file, like mongoexport utility"/>
                         </FormDialog>
