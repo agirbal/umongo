@@ -308,7 +308,8 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void authenticate() {
-        final DB db = getDbNode().getDb();
+        final DbNode dbNode = getDbNode();
+        final DB db = dbNode.getDb();
         final String user = getStringFieldValue(Item.authUser);
         final String pass = getStringFieldValue(Item.authPassword);
         new DbJob() {
@@ -332,6 +333,12 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             @Override
             public void wrapUp(Object res) {
                 super.wrapUp(res);
+                if (dbNode.getDb().getName().equals("admin")) {
+                    // now we can list dbs, refresh whole mongo
+                    dbNode.getMongoNode().structureComponent();
+                } else {
+                    dbNode.structureComponent();
+                }
             }
         }.addJob();
     }

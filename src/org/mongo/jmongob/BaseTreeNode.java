@@ -28,7 +28,7 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
         try {
             populateChildren();
         } catch (Exception e) {
-            getLogger().log(Level.WARNING, null, e);
+            getLogger().log(Level.WARNING, e.getMessage(), e);
         }
         super.structureComponentCustom(old);
         getTree().expandNode(this);
@@ -44,7 +44,7 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
             getLogger().log(Level.FINE, "Node " + toString() + " took " + (System.currentTimeMillis() - start));
 
         } catch (MongoException e) {
-            if (e.getCode() == 10057)
+            if (e.getCode() == 10057 || e.getMessage().startsWith("unauthorized"))
                 overlays.add(SwingFast.createIcon("overlay/lock.png", iconGroup));
             else
                 overlays.add(SwingFast.createIcon("overlay/error.png", iconGroup));

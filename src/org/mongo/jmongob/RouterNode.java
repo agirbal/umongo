@@ -36,6 +36,9 @@ public class RouterNode extends BaseTreeNode {
     protected void populateChildren() {
         CommandResult res = mongo.getDB("admin").command("listShards");
         BasicDBList shards = (BasicDBList) res.get("shards");
+        if (shards == null)
+            return;
+        
         for (Object obj : shards) {
             try {
                 DBObject shard = (DBObject) obj;
