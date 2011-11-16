@@ -455,6 +455,8 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void repair() {
         DB db = getDbNode().getDb();
         final DBObject cmd = new BasicDBObject("repairDatabase", 1);
+        if (!JMongoBrowser.instance.getGlobalStore().confirmLockingOperation())
+            return;
         new DocView(null, "Repair", db, cmd).addToTabbedDiv();
     }
 

@@ -5,6 +5,7 @@
 
 package org.mongo.jmongob;
 
+import com.edgytech.swingfast.ConfirmDialog;
 import com.edgytech.swingfast.XmlUnit;
 
 /**
@@ -26,7 +27,8 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
         exportDialog,
         importDialog,
         autoUpdateDialog,
-        docBuilderDialog
+        docBuilderDialog,
+        lockingOperationDialog
     }
 
     public GlobalStore() {
@@ -85,4 +87,13 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
         return (DocBuilderDialog) getBoundUnit(Item.docBuilderDialog);
     }
 
+    ConfirmDialog getLockingOperationDialog() {
+        return (ConfirmDialog) getBoundUnit(Item.lockingOperationDialog);
+    }
+
+    boolean confirmLockingOperation() {
+        if (!getLockingOperationDialog().show())
+            return false;
+        return true;
+    }
 }

@@ -66,6 +66,7 @@
             <TextField id="upsertFields" toolTipText="Comma-separated list of fields to upsert by. If not specified, save() will be used."/>
             <CheckBox id="bulk" value="false" toolTipText="If turned on, the bulk insert function of the driver will be used. It may be faster but more client memory will be used, and error reporting is not accurate."/>
         </org.mongo.jmongob.ImportDialog>
+        <ConfirmDialog id="lockingOperationDialog" text="Are you sure you want to run this command? It can potentially lock the db for a long time."/>
         <org.mongo.jmongob.MongoPanel id="mongoPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="mongo_leaf_32.png" iconGroup="icons" toolTipText="Mongo"/>
@@ -224,9 +225,7 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="tools">
-                    <MenuItem id="repair" call="repair">
-                        <ConfirmDialog text="Repair operation may take a long time and requires extra storage space on the server. Are you sure?"/>
-                    </MenuItem>
+                    <MenuItem id="repair" call="repair"/>
                     <MenuSeparator/>
                     <MenuItem id="profile" call="profile">
                         <FormDialog>
@@ -272,7 +271,6 @@
                             <CheckBox id="eiBackground" label="Background" toolTipText="Create the index in the background without locking the database. Index creation will be slower."/>
                             <TextField id="eiName" label="Index Name" toolTipText="Optional, a custom name for the index"/>
                         </FormDialog>
-                        <ConfirmDialog id="eiConfirm" text="Are you sure you want to create this index? It can potentially lock the db for a long time."/>
                     </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
@@ -431,6 +429,7 @@
                             <CheckBox id="compactForce" label="Force" toolTipText="Force compaction even if ran on the primary server"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="reIndex" call="reIndex"/>
                     <MenuItem id="fixCollection" call="fixCollection" showDialog="false">
                         <FormDialog id="fcDialog">
                             <ComboBox id="fcSrcMongo" label="Source Mongo" toolTipText="Pick one of the other Mongo instances as source"/>

@@ -107,7 +107,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         eiDropDups,
         eiSparse,
         eiBackground,
-        eiConfirm,
         findAndModify,
         famQuery,
         famFields,
@@ -134,6 +133,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         validateFull,
         compact,
         compactForce,
+        reIndex,
         moveChunk,
         mvckQuery,
         mvckToShard,
@@ -668,8 +668,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         if (getBooleanFieldValue(Item.eiBackground))
             opts.put("background", true);
 
-        ConfirmDialog confirm = (ConfirmDialog) getBoundUnit(Item.eiConfirm);
-        if (!confirm.show())
+        if (!JMongoBrowser.instance.getGlobalStore().confirmLockingOperation())
             return;
         
         new DbJob() {
@@ -935,7 +934,16 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         BasicDBObject cmd = new BasicDBObject("compact", getCollectionNode().getCollection().getName());
         if (getBooleanFieldValue(Item.compactForce))
             cmd.put("force", true);
+        if (!JMongoBrowser.instance.getGlobalStore().confirmLockingOperation())
+            return;
         new DocView(null, "Compact", getCollectionNode().getDbNode().getDb(), cmd).addToTabbedDiv();
+    }
+    
+    public void reIndex() {
+        BasicDBObject cmd = new BasicDBObject("reIndex", getCollectionNode().getCollection().getName());
+        if (!JMongoBrowser.instance.getGlobalStore().confirmLockingOperation())
+            return;
+        new DocView(null, "Re-Index", getCollectionNode().getDbNode().getDb(), cmd).addToTabbedDiv();
     }
     
     public void shardingInfo() {
