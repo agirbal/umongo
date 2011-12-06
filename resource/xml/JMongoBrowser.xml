@@ -710,7 +710,7 @@
             </Menu>
             <Menu id="help" alt="h">
                 <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="etIcons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v1.1.1&lt;br&gt;By Edgytech / Antoine Girbal"/>
+                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="etIcons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v1.1.2&lt;br&gt;By Edgytech / Antoine Girbal"/>
                 </MenuItem>
             </Menu>
         </org.mongo.jmongob.MainMenu>
