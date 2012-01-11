@@ -228,6 +228,13 @@
                             </FileChooserField>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="deleteFile" call="deleteFile">
+                        <FormDialog id="deleteFileDialog">
+                            <Text value="Specify a query object or a file name"/>
+                            <org.mongo.jmongob.DocBuilderField id="deleteQuery" label="Query" toolTipText="Find the file using this query"/>
+                            <TextField id="deleteFileName" label="File Name" toolTipText="Name of the file as stored on the server"/>
+                        </FormDialog>
+                    </MenuItem>
                 </Menu>
                 <Menu id="tools">
                     <MenuItem id="repair" call="repair"/>

@@ -47,6 +47,9 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         downloadQuery,
         downloadFileName,
         downloadFilePath,
+        deleteFile,
+        deleteQuery,
+        deleteFileName,
         commandCmd,
         commandStr,
         commandJson,
@@ -204,12 +207,12 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public String getShortName() {
-                return "Upload";
+                return "Upload File";
             }
 
             @Override
             public Object getRoot(Object result) {
-                return "path=" + path;
+                return " path=" + path;
             }
 
             @Override
@@ -230,7 +233,6 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             return;
         }
         final File dfile = new File(dpath);
-        dfile.mkdirs();
 
         new DbJob() {
 
@@ -255,12 +257,45 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public String getShortName() {
-                return "Download";
+                return "Download File";
             }
 
             @Override
             public Object getRoot(Object result) {
-                return "filename=" + fname + " path=" + dpath;
+                return "filename=" + fname + ", query=" + query + ", path=" + dpath;
+            }
+        }.addJob();
+    }
+
+    public void deleteFile() {
+        final DB db = getDbNode().getDb();
+        final DBObject query = ((DocBuilderField)getBoundUnit(Item.downloadQuery)).getDBObject();
+        final String fname = getStringFieldValue(Item.downloadFileName);
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() throws IOException {
+                if (query != null)
+                    getGridFS().remove(query);
+                else
+                    getGridFS().remove(fname);
+                return true;
+            }
+
+            @Override
+            public String getNS() {
+                return db.getName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Delete File";
+            }
+
+            @Override
+            public Object getRoot(Object result) {
+                return "filename=" + fname + ", query=" + query;
             }
         }.addJob();
     }
