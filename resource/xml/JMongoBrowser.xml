@@ -305,7 +305,7 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="mapReduce" call="mapReduce">
-                        <FormDialog>
+                        <FormDialog buttons="OK_CANCEL_RESET">
                             <TextArea id="mrMap" label="Map JS Function" toolTipText="map javascript function with signature 'void function map()' which should contain one or more calls to emit(key, obj)" nonEmpty="true" value="function(){ emit(this._id, {count: 1}); }"/>
                             <TextArea id="mrReduce" label="Reduce JS Function" toolTipText="reduce javascript function with signature 'result reduce(key, values)' where key is the emit key and values is the list of values to reduce.'" nonEmpty="true" value="function(key, values) { total = 0; for (var i = 0; i &lt; values.length; ++i) { total += values[i].count; }; return {count: total}; }"/>
                             <TextArea id="mrFinalize" label="Finalize JS Function" toolTipText="optional finalize javascript function with signature 'result finalize(key, out)' where out is the result for that key"/>
@@ -315,8 +315,8 @@
                             <ComboBox id="mrType" label="Output Type" items="replace;merge;reduce;inline" toolTipText="How to process the output"/>
                             <TextField id="mrOut" label="Output Collection" toolTipText="Name of the output collection" nonEmpty="true"/>
                             <TextField id="mrOutDB" label="Output Database" toolTipText="Name of the output database, if different from the input database"/>
-                            <CheckBox id="mrOutSharded" label="Sharded Output" toolTipText="If true, the result collection will be sharded using the _id key."/>
-                            <CheckBox id="mrJSMode" label="JS Mode"/>
+                            <CheckBox id="mrOutSharded" label="Sharded Output" value="false" toolTipText="If true, the result collection will be sharded using the _id key."/>
+                            <CheckBox id="mrJSMode" value="false" label="JS Mode"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="geoNear" call="geoNear">

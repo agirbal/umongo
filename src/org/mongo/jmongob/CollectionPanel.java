@@ -338,10 +338,12 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
                 // if type in inline, then query options like slaveOk is fine
                 CommandResult res = null;
-                if (type == MapReduceCommand.OutputType.INLINE)
+                if (type == MapReduceCommand.OutputType.INLINE) {
                     res = col.getDB().command( cmdobj, col.getOptions() );
-                else
-                    res = col.getDB().command( cmdobj );
+                    return res;
+                }
+
+                res = col.getDB().command( cmdobj );
                 res.throwOnError();
                 output = new MapReduceOutput( col , cmdobj, res );
                 return output;
