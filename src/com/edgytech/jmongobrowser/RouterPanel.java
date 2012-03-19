@@ -31,6 +31,8 @@ import org.bson.types.BSONTimestamp;
 import org.bson.types.MaxKey;
 import org.bson.types.MinKey;
 import com.edgytech.jmongobrowser.RouterPanel.Item;
+import com.edgytech.swingfast.*;
+import com.mongodb.*;
 
 /**
  *
@@ -50,6 +52,8 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         asShardName,
         asReplSetName,
         asMaxSize,
+        removeShard,
+        rsShard,
         autoBalance,
         regenConfigDB,
         regenServers,
@@ -110,6 +114,21 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
             cmd.put("maxSize", maxsize);
         final DB db = router.getMongo().getDB("admin");
         new DocView(null, "Add Shard", db, cmd, null, this, null).addToTabbedDiv();
+    }
+
+    public void removeShard() {
+        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.removeShard)).getDialog();
+        ComboBox combo = (ComboBox) getBoundUnit(Item.rsShard);
+        combo.value = 0;
+        combo.items = getRouterNode().getShardNames();
+        combo.structureComponent();
+
+        if (!dialog.show())
+            return;
+        
+        final BasicDBObject cmd = new BasicDBObject("removeshard", getStringFieldValue(Item.rsShard));
+        final DB db = getRouterNode().getMongo().getDB("admin");
+        new DocView(null, "Remove Shard", db, cmd, null, this, null).addToTabbedDiv();
     }
 
     public void listShards() {

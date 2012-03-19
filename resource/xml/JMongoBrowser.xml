@@ -200,12 +200,12 @@
                 </Menu>
                 <Menu id="sharding">
                     <MenuItem id="enableSharding" call="enableSharding"/>
-                    <MenuItem id="movePrimary" call="movePrimary">
+                    <MenuItem id="shardingInfo" call="shardingInfo"/>
+                    <MenuItem id="movePrimary" call="movePrimary" showDialog="false">
                         <FormDialog>
-                            <TextField id="mvpToShard" label="To Shard" nonEmpty="true" toolTipText="Name of the new primary shard for this database"/>
+                            <ComboBox id="mvpToShard" label="To Shard" items="None" toolTipText="the new primary shard for this database"/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuItem id="shardingInfo" call="shardingInfo"/>
                 </Menu>
                 <Menu id="GridFS" label="GridFS">
                     <MenuItem id="uploadFile" call="uploadFile">
@@ -586,6 +586,11 @@
                             <TextField id="asShardName" label="Shard Name" toolTipText="Optional, a shard name"/>
                             <TextField id="asReplSetName" label="Replica Set Name" toolTipText="If adding a replica set, the replica set name"/>
                             <IntSpinner id="asMaxSize" label="Max Size MB" minValue="0" toolTipText="Maximum size in megabytes to store in the shard"/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuItem id="removeShard" call="removeShard" showDialog="false">
+                        <FormDialog>
+                            <ComboBox id="rsShard" label="Shard" items="None" toolTipText="Shard to remove"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>

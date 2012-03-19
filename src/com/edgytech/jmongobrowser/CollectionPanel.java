@@ -973,16 +973,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.moveChunk)).getDialog();
         ComboBox combo = (ComboBox) getBoundUnit(Item.mvckToShard);
         combo.value = 0;
-        BasicDBList shards = getCollectionNode().getDbNode().getMongoNode().getShards();
-        if (!shards.isEmpty()) {
-            String[] items = new String[shards.size()];
-            for (int i = 0; i < shards.size(); ++i) {
-                DBObject shard = (DBObject) shards.get(i);
-                items[i] = (shard.get("_id")).toString();
-            }
-            combo.items = items;
-            combo.structureComponent();
-        }
+        combo.items = getCollectionNode().getDbNode().getMongoNode().getShardNames();
+        combo.structureComponent();
 
         if (!dialog.show())
             return;

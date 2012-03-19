@@ -20,6 +20,7 @@ import java.io.IOException;
 import javax.swing.JPanel;
 import org.bson.types.Code;
 import com.edgytech.jmongobrowser.DbPanel.Item;
+import com.edgytech.swingfast.*;
 
 /**
  *
@@ -512,6 +513,15 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     }
     
     public void movePrimary() {
+        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.movePrimary)).getDialog();
+        ComboBox combo = (ComboBox) getBoundUnit(Item.mvpToShard);
+        combo.value = 0;
+        combo.items = getDbNode().getMongoNode().getShardNames();
+        combo.structureComponent();
+
+        if (!dialog.show())
+            return;
+        
         Mongo m = getDbNode().getMongoNode().getMongo();
         DB admin = m.getDB("admin");
         String shard = getStringFieldValue(Item.mvpToShard);

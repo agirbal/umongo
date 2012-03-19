@@ -91,4 +91,16 @@ public class RouterNode extends BaseTreeNode {
     BasicDBList getShards() {
         return shards;
     }
+    
+    String[] getShardNames() {
+        if (!shards.isEmpty()) {
+            String[] items = new String[shards.size()];
+            for (int i = 0; i < shards.size(); ++i) {
+                DBObject shard = (DBObject) shards.get(i);
+                items[i] = (shard.get("_id")).toString();
+            }
+            return items;
+        }
+        return null;
+    }
 }

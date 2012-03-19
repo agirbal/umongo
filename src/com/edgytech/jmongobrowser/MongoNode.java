@@ -98,4 +98,12 @@ public class MongoNode extends BaseTreeNode {
         }
         return null;
     }
+    
+    String[] getShardNames() {
+        XmlUnit child = getChild(0);
+        if (child instanceof RouterNode) {
+            return ((RouterNode)child).getShardNames();
+        }
+        return null;        
+    }
 }
