@@ -8,11 +8,11 @@
         Purpose of the document follows.
 -->
 
-<org.mongo.jmongob.JMongoBrowser id="jmongob" start="start" stop="stop">
+<com.edgytech.jmongobrowser.JMongoBrowser id="jmongob" start="start" stop="stop">
     <IconGroup id="icons" folder="img" resource="true"/>
     <IconGroup id="etIcons" folder="com/edgytech/swingfast/img" resource="true"/>
-    <org.mongo.jmongob.GlobalStore id="globalStore">
-        <org.mongo.jmongob.OptionDialog id="optionDialog">
+    <com.edgytech.jmongobrowser.GlobalStore id="globalStore">
+        <com.edgytech.jmongobrowser.OptionDialog id="optionDialog">
             <TabbedDiv>
                 <Div id="queryOption">
                     <CheckBox id="slaveOk" toolTipText="When turned on, read queries will be directed to slave servers instead of the primary server"/>
@@ -34,28 +34,28 @@
                     <ComboBox id="rpPreference" label="Read Preference" items="None;Primary;Secondary" value="0" toolTipText="The read preference mode. Primary to read from master, Secondary to read from slaves."/>
                 </Div>
             </TabbedDiv>
-        </org.mongo.jmongob.OptionDialog>
-        <org.mongo.jmongob.ErrorDialog id="errorDialog">
+        </com.edgytech.jmongobrowser.OptionDialog>
+        <com.edgytech.jmongobrowser.ErrorDialog id="errorDialog">
             <Text id="errorIcon" icon="error.png" iconGroup="icons"/>
             <Text id="errorIn" label="Error in" field="true"/>
             <Text id="errorMsg" label="Message" field="true"/>
             <Text id="errorCode" label="Code" field="true"/>
             <TextArea id="errorTrace" label="Trace" rows="20" columns="50" editable="false"/>
-        </org.mongo.jmongob.ErrorDialog>
-        <org.mongo.jmongob.AutoUpdateDialog id="autoUpdateDialog">
+        </com.edgytech.jmongobrowser.ErrorDialog>
+        <com.edgytech.jmongobrowser.AutoUpdateDialog id="autoUpdateDialog">
             <ComboBox id="autoType" lable="Update Type" items="Refresh;Append"/>
             <IntSpinner id="autoInterval" label="Interval" minValue="0" value="5000" toolTipText="Interval between each update, in milliseconds"/>
             <IntSpinner id="autoCount" label="Count" minValue="0" value="100" toolTipText="Number of times to update, 0 means forever"/>
-        </org.mongo.jmongob.AutoUpdateDialog>
-        <org.mongo.jmongob.ExportDialog id="exportDialog">
+        </com.edgytech.jmongobrowser.AutoUpdateDialog>
+        <com.edgytech.jmongobrowser.ExportDialog id="exportDialog">
             <FileChooserField id="outputFile">
                 <FileChooserDialog type="SAVE" mode="FILES_ONLY"/>
             </FileChooserField>
             <ComboBox id="format" items="JSON;JSON Array;CSV;BSON" toolTipText="Format to use for the export"/>
             <TextField id="fields" toolTipText="Comma-separated list of fields to export, mandatory for CSV format"/>
             <CheckBox id="continueOnError" toolTipText="Continue after an error occurs"/>
-        </org.mongo.jmongob.ExportDialog>
-        <org.mongo.jmongob.ImportDialog id="importDialog">
+        </com.edgytech.jmongobrowser.ExportDialog>
+        <com.edgytech.jmongobrowser.ImportDialog id="importDialog">
             <FileChooserField id="inputFile">
                 <FileChooserDialog type="OPEN" mode="FILES_ONLY"/>
             </FileChooserField>
@@ -65,9 +65,9 @@
             <CheckBox id="upsert" toolTipText="Upsert values instead of insert"/>
             <TextField id="upsertFields" toolTipText="Comma-separated list of fields to upsert by. If not specified, save() will be used."/>
             <CheckBox id="bulk" value="false" toolTipText="If turned on, the bulk insert function of the driver will be used. It may be faster but more client memory will be used, and error reporting is not accurate."/>
-        </org.mongo.jmongob.ImportDialog>
+        </com.edgytech.jmongobrowser.ImportDialog>
         <ConfirmDialog id="lockingOperationDialog" text="Are you sure you want to run this command? It can potentially lock the db for a long time."/>
-        <org.mongo.jmongob.MongoPanel id="mongoPanel">
+        <com.edgytech.jmongobrowser.MongoPanel id="mongoPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="mongo_leaf_32.png" iconGroup="icons" toolTipText="Mongo"/>
                 <Menu id="mongo">
@@ -87,7 +87,7 @@
                     <MenuSeparator/>
                     <MenuItem id="currentOps" call="currentOps">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="currentOpsQuery" label="Query Filter" toolTipText="Optional, a query to filter operations. Use {'$all': 1} to also see internal commands."/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="currentOpsQuery" label="Query Filter" toolTipText="Optional, a query to filter operations. Use {'$all': 1} to also see internal commands."/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="killOp" call="killOp">
@@ -131,15 +131,15 @@
                 <Div zone="NORTH" gap="true" bgColor="255;255;255">
                     <Text id="version" label="Driver Version" field="true"/>
                     <Text id="queryOptions" field="true"/>
-                    <org.mongo.jmongob.DocField id="writeConcern"/>
+                    <com.edgytech.jmongobrowser.DocField id="writeConcern"/>
                     <Text id="masterServer" field="true"/>
                     <Text id="seedServers" field="true"/>
                     <Text id="activeServers" field="true"/>
                     <Text id="maxObjectSize" field="true"/>
                 </Div>
             </Zone>
-        </org.mongo.jmongob.MongoPanel>
-        <org.mongo.jmongob.DbPanel id="dbPanel">
+        </com.edgytech.jmongobrowser.MongoPanel>
+        <com.edgytech.jmongobrowser.DbPanel id="dbPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="database.png" iconGroup="icons" toolTipText="Database"/>
                 <Menu id="database">
@@ -164,7 +164,7 @@
                         <FormDialog>
                             <Text value="Input either a command name, or a JSON command"/>
                             <TextField id="commandStr" label="Command Name"/>
-                            <org.mongo.jmongob.DocBuilderField id="commandJson" label="JSON Command"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="commandJson" label="JSON Command"/>
                             <CheckBox id="commandHelp" label="Show Help"/>
                         </FormDialog>
                     </MenuItem>
@@ -215,13 +215,13 @@
                             </FileChooserField>
                             <TextField id="uploadFileName" label="File Name" toolTipText="Optional, Name of the file as stored on the server"/>
                             <TextField id="uploadContentType" toolTipText="Optional, Content type to associate with file"/>
-                            <org.mongo.jmongob.DocBuilderField id="uploadMetadata" label="Metadata" toolTipText="Optional, JSON object representing the file's metadata"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="uploadMetadata" label="Metadata" toolTipText="Optional, JSON object representing the file's metadata"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="downloadFile" call="downloadFile">
                         <FormDialog id="downloadFileDialog">
                             <Text value="Specify a query object or a file name"/>
-                            <org.mongo.jmongob.DocBuilderField id="downloadQuery" label="Query" toolTipText="Find the file using this query"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="downloadQuery" label="Query" toolTipText="Find the file using this query"/>
                             <TextField id="downloadFileName" label="File Name" toolTipText="Name of the file as stored on the server"/>
                             <FileChooserField id="downloadFilePath" label="Save As">
                                 <FileChooserDialog type="SAVE" selectionMode="FILES_ONLY"/>
@@ -231,7 +231,7 @@
                     <MenuItem id="deleteFile" call="deleteFile">
                         <FormDialog id="deleteFileDialog">
                             <Text value="Specify a query object or a file name"/>
-                            <org.mongo.jmongob.DocBuilderField id="deleteQuery" label="Query" toolTipText="Find the file using this query"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="deleteQuery" label="Query" toolTipText="Find the file using this query"/>
                             <TextField id="deleteFileName" label="File Name" toolTipText="Name of the file as stored on the server"/>
                         </FormDialog>
                     </MenuItem>
@@ -265,18 +265,18 @@
                 <Div zone="NORTH" gap="true" bgColor="255;255;255">
                     <Text id="name" field="true"/>
                     <Text id="queryOptions" field="true"/>
-                    <org.mongo.jmongob.DocField id="writeConcern"/>
-                    <org.mongo.jmongob.CmdField id="stats" cmd="dbstats"/>
+                    <com.edgytech.jmongobrowser.DocField id="writeConcern"/>
+                    <com.edgytech.jmongobrowser.CmdField id="stats" cmd="dbstats"/>
                 </Div>
             </Zone>
-        </org.mongo.jmongob.DbPanel>
-        <org.mongo.jmongob.CollectionPanel id="collectionPanel">
+        </com.edgytech.jmongobrowser.DbPanel>
+        <com.edgytech.jmongobrowser.CollectionPanel id="collectionPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="folder.png" iconGroup="icons" toolTipText="Collection"/>
                 <Menu id="collection">
                     <MenuItem id="ensureIndex" call="ensureIndex">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="eiKeys" label="Index Keys" toolTipText="keys to index by, in JSON format" nonEmpty="true"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="eiKeys" label="Index Keys" toolTipText="keys to index by, in JSON format" nonEmpty="true"/>
                             <CheckBox id="eiUnique" label="Unique" toolTipText="If checked, index will be unique"/>
                             <CheckBox id="eiDropDups" label="Drop Duplicates" toolTipText="If creating a unique index, remove documents with duplicate keys"/>
                             <CheckBox id="eiSparse" label="Sparse" toolTipText="Make index sparse, meaning that documents missing the key will not be indexed"/>
@@ -304,9 +304,9 @@
                     <MenuItem id="statsCmd" label="Stats" call="stats"/>
                     <MenuItem id="group" call="group">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="grpKeys" label="Keys" toolTipText="Keys to group by, in JSON format" nonEmpty="true"/>
-                            <org.mongo.jmongob.DocBuilderField id="grpQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="grpInitialValue" label="Initial Value" toolTipText="Initial value for the job, in JSON format" nonEmpty="true" value='{"count": 0}'/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="grpKeys" label="Keys" toolTipText="Keys to group by, in JSON format" nonEmpty="true"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="grpQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="grpInitialValue" label="Initial Value" toolTipText="Initial value for the job, in JSON format" nonEmpty="true" value='{"count": 0}'/>
                             <TextArea id="grpReduce" label="Reduce JS Function" toolTipText="reduce javascript function with signature 'void function(obj, out)' where obj is the object to process and out is the current result for that key" nonEmpty="true" value="function(obj,out){ out.count += 1; }"/>
                             <TextArea id="grpFinalize" label="Finalize JS Function" toolTipText="optional finalize javascript function with signature 'void function(out)' where out is the result for that key"/>
                         </FormDialog>
@@ -316,51 +316,56 @@
                             <TextArea id="mrMap" label="Map JS Function" toolTipText="map javascript function with signature 'void function map()' which should contain one or more calls to emit(key, obj)" nonEmpty="true" value="function(){ emit(this._id, {count: 1}); }"/>
                             <TextArea id="mrReduce" label="Reduce JS Function" toolTipText="reduce javascript function with signature 'result reduce(key, values)' where key is the emit key and values is the list of values to reduce.'" nonEmpty="true" value="function(key, values) { total = 0; for (var i = 0; i &lt; values.length; ++i) { total += values[i].count; }; return {count: total}; }"/>
                             <TextArea id="mrFinalize" label="Finalize JS Function" toolTipText="optional finalize javascript function with signature 'result finalize(key, out)' where out is the result for that key"/>
-                            <org.mongo.jmongob.DocBuilderField id="mrQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="mrSort" label="Sort" toolTipText="Sort key for the input, in JSON format. Sort by the emit key to optimize performance."/>
+                            <Div id="input">
+                            <com.edgytech.jmongobrowser.DocBuilderField id="mrQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="mrSort" label="Sort" toolTipText="Sort key for the input, in JSON format. Sort by the emit key to optimize performance."/>
                             <IntSpinner id="mrLimit" label="Limit" toolTipText="Limit of the number of input entries to process" minValue="0"/>
+                            </Div>
+                            <Div id="output">
                             <ComboBox id="mrType" label="Output Type" items="replace;merge;reduce;inline" toolTipText="How to process the output"/>
                             <TextField id="mrOut" label="Output Collection" toolTipText="Name of the output collection" nonEmpty="true"/>
                             <TextField id="mrOutDB" label="Output Database" toolTipText="Name of the output database, if different from the input database"/>
                             <CheckBox id="mrOutSharded" label="Sharded Output" value="false" toolTipText="If true, the result collection will be sharded using the _id key."/>
+                            <CheckBox id="mrNonAtomic" label="Non Atomic" value="false" toolTipText="If true, the output will be applied without taking a lock, which means partial results can be seen." />
+                            </Div>
                             <CheckBox id="mrJSMode" value="false" label="JS Mode"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="geoNear" call="geoNear">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="gnOrigin" label="Origin" toolTipText="Point of origin, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="gnOrigin" label="Origin" toolTipText="Point of origin, in JSON format"/>
                             <IntSpinner id="gnNum" label="Num" toolTipText="Maximum number of entries to return" minValue="0" value="100"/>
                             <IntSpinner id="gnMaxDistance" label="Max Distance" toolTipText="Maximum distance from the point of origin" minValue="0"/>
                             <DoubleSpinner id="gnDistanceMultiplier" label="Distance Multiplier" toolTipText="Distance multiplier" minValue="0"/>
-                            <org.mongo.jmongob.DocBuilderField id="gnQuery" label="Query" toolTipText="Query to filter the results by, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="gnQuery" label="Query" toolTipText="Query to filter the results by, in JSON format"/>
                             <CheckBox id="gnSpherical" label="Spherical" toolTipText="Takes into account that earth is a sphere. Coordinates must be in decimal degrees and the distance must be in radians (divide by 6371 km or 3959 miles)."/>
-                            <org.mongo.jmongob.DocBuilderField id="gnSearch" label="Search" toolTipText="Search criteria for geo haystack indexing, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="gnSearch" label="Search" toolTipText="Search criteria for geo haystack indexing, in JSON format"/>
                         </FormDialog>
                     </MenuItem>
                 </Menu>
                 <Menu id="document">
                     <MenuItem id="find" call="find" key="f" keyMod="cmd+shift">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="findQuery" label="Query" toolTipText="Query to find by, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="findFields" label="Fields" toolTipText="Fields to include in results, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="findSort" label="Sort" toolTipText="Sort object, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="findQuery" label="Query" toolTipText="Query to find by, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="findFields" label="Fields" toolTipText="Fields to include in results, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="findSort" label="Sort" toolTipText="Sort object, in JSON format"/>
                             <IntSpinner id="findSkip" label="Skip" minValue="0" value="0" toolTipText="Number of documents to skip"/>
                             <IntSpinner id="findLimit" label="Limit" minValue="0" value="0" toolTipText="Maximum number of documents to return"/>
                             <IntSpinner id="findBatchSize" label="Batch Size" value="0" toolTipText="If positive, the ideal batch size to return from server. If negative, instructs the server to close the cursor after 1 batch of given size."/>
-                            <org.mongo.jmongob.DocBuilderField id="findHint" label="Hint" toolTipText="Object with keys that represent the index to use. Use '$natural' to force full scan."/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="findHint" label="Hint" toolTipText="Object with keys that represent the index to use. Use '$natural' to force full scan."/>
                             <CheckBox id="findExplain" label="Explain" toolTipText="Explain the find processing"/>
                             <CheckBox id="findExport" label="Export to File" toolTipText="Export to file, like mongoexport utility"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="findOne" call="findOne" key="o" keyMod="cmd+shift">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="foQuery" label="Query" toolTipText="Query to find by, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="foFields" label="Fields" toolTipText="Fields to include in results, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="foQuery" label="Query" toolTipText="Query to find by, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="foFields" label="Fields" toolTipText="Fields to include in results, in JSON format"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="count" call="count" key="c" keyMod="cmd+shift">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="countQuery" label="Query" toolTipText="Query to find by, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="countQuery" label="Query" toolTipText="Query to find by, in JSON format"/>
                             <IntSpinner id="countSkip" label="Skip" minValue="0" value="0" toolTipText="Number of documents to skip"/>
                             <IntSpinner id="countLimit" label="Limit" minValue="0" value="0" toolTipText="Maximum number of documents to return"/>
                         </FormDialog>
@@ -368,20 +373,20 @@
                     <MenuSeparator/>
                     <MenuItem id="insert" call="insert">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="insertDoc" label="JSON Document" toolTipText="Document to insert in JSON format" nonEmpty="true"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="insertDoc" label="JSON Document" toolTipText="Document to insert in JSON format" nonEmpty="true"/>
                             <IntSpinner id="insertCount" label="Insert Count" minValue="1" value="1" toolTipText="Number of documents to insert"/>
                             <CheckBox id="insertBulk" label="Bulk Insert" value="false" toolTipText="If multiple objects are inserted, use the bulk operation, faster but uses more memory."/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="save" call="save">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="saveDoc" label="JSON Document" toolTipText="Document to save in JSON format" nonEmpty="true"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="saveDoc" label="JSON Document" toolTipText="Document to save in JSON format" nonEmpty="true"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="update" call="update">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="upQuery" label="Query" toolTipText="Query to match, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="upUpdate" label="Update" toolTipText="Update to apply to document, in JSON format" nonEmpty="true"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="upQuery" label="Query" toolTipText="Query to match, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="upUpdate" label="Update" toolTipText="Update to apply to document, in JSON format" nonEmpty="true"/>
                             <CheckBox id="upUpsert" label="Upsert" toolTipText="Insert document if not present"/>
                             <CheckBox id="upMulti" label="Multi" toolTipText="Update all matched documents"/>
                             <CheckBox id="upSafe" label="Safe" toolTipText="Displays a confirmation dialog with count information before applying update."/>
@@ -389,15 +394,15 @@
                     </MenuItem>
                     <MenuItem id="remove" call="remove">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="removeQuery" label="Query" toolTipText="Query to remove by, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="removeQuery" label="Query" toolTipText="Query to remove by, in JSON format"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="findAndModify" call="findAndModify">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="famQuery" label="Query" toolTipText="Query to match, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="famFields" label="Fields" toolTipText="Fields to be returned, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="famSort" label="Sort" toolTipText="Sort to find 1st document by, in JSON format"/>
-                            <org.mongo.jmongob.DocBuilderField id="famUpdate" label="Update" toolTipText="Update to apply to document, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="famQuery" label="Query" toolTipText="Query to match, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="famFields" label="Fields" toolTipText="Fields to be returned, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="famSort" label="Sort" toolTipText="Sort to find 1st document by, in JSON format"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="famUpdate" label="Update" toolTipText="Update to apply to document, in JSON format"/>
                             <CheckBox id="famRemove" label="Remove" toolTipText="Remove the document found"/>
                             <CheckBox id="famReturnNew" label="Return New" toolTipText="Return the document after update"/>
                             <CheckBox id="famUpsert" label="Upsert" toolTipText="Insert document if not present"/>
@@ -411,7 +416,7 @@
                         <FormDialog>
                             <Text value="Either pick a key from an existing index, or specify your own"/>
                             <ComboBox id="shardKeyCombo" label="Existing Key" items="None" toolTipText="Choose this option if you want to use an existing index for sharding"/>
-                            <org.mongo.jmongob.DocBuilderField id="shardCustomKey" label="Custom Key" toolTipText="Specify a custom shard key. An index may be created to back that key."/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="shardCustomKey" label="Custom Key" toolTipText="Specify a custom shard key. An index may be created to back that key."/>
                             <CheckBox id="shardUniqueIndex" label="Unique" toolTipText="If true, will make sure the underlying index has a unique constraint." value="false"/>
                             <Text text="Choose the shard key carefully, this operation cannot be undone."/>
                         </FormDialog>
@@ -420,13 +425,13 @@
                     <MenuItem id="findChunks" call="findChunks"/>
                     <MenuItem id="moveChunk" call="moveChunk">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="mvckQuery" label="Chunk Query" toolTipText="Query to find the chunk by"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="mvckQuery" label="Chunk Query" toolTipText="Query to find the chunk by"/>
                             <TextField id="mvckToShard" label="To Shard" nonEmpty="true" toolTipText="Name of shard to send the chunk to"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="splitChunk" call="splitChunk">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="spckQuery" label="Chunk Query" toolTipText="Query to find the chunk by"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="spckQuery" label="Chunk Query" toolTipText="Query to find the chunk by"/>
                             <CheckBox id="spckOnValue" label="Split on Value" value="false" toolTipText="If true, split chunk on provided query value, otherwise split chunk in the middle"/>
                         </FormDialog>
                     </MenuItem>
@@ -459,12 +464,12 @@
                     <Text id="name" field="true"/>
                     <Text id="fullName" field="true"/>
                     <Text id="queryOptions" field="true"/>
-                    <org.mongo.jmongob.DocField id="writeConcern"/>
-                    <org.mongo.jmongob.CmdField id="stats" cmd="collstats"/>
+                    <com.edgytech.jmongobrowser.DocField id="writeConcern"/>
+                    <com.edgytech.jmongobrowser.CmdField id="stats" cmd="collstats"/>
                 </Div>
             </Zone>
-        </org.mongo.jmongob.CollectionPanel>
-        <org.mongo.jmongob.IndexPanel id="indexPanel">
+        </com.edgytech.jmongobrowser.CollectionPanel>
+        <com.edgytech.jmongobrowser.IndexPanel id="indexPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="index.png" iconGroup="icons" toolTipText="Index"/>
                 <Menu id="index">
@@ -481,12 +486,12 @@
                 <Div zone="NORTH" gap="true" bgColor="255;255;255">
                     <Text id="name" field="true"/>
                     <Text id="ns" label="NS" field="true"/>
-                    <org.mongo.jmongob.DocField id="key"/>
-                    <org.mongo.jmongob.DocField id="info"/>
+                    <com.edgytech.jmongobrowser.DocField id="key"/>
+                    <com.edgytech.jmongobrowser.DocField id="info"/>
                 </Div>
             </Zone>
-        </org.mongo.jmongob.IndexPanel>
-        <org.mongo.jmongob.ServerPanel id="serverPanel">
+        </com.edgytech.jmongobrowser.IndexPanel>
+        <com.edgytech.jmongobrowser.ServerPanel id="serverPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="server.png" iconGroup="icons" toolTipText="Server"/>
                 <Menu id="server">
@@ -498,7 +503,7 @@
                     <MenuSeparator/>
                     <MenuItem id="currentOps" call="currentOps">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="currentOpsQuery" label="Query Filter" toolTipText="Optional, a query to filter operations. Use {'$all': 1} to also see internal commands."/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="currentOpsQuery" label="Query Filter" toolTipText="Optional, a query to filter operations. Use {'$all': 1} to also see internal commands."/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="killOp" call="killOp">
@@ -509,7 +514,7 @@
                     <MenuSeparator/>
                     <MenuItem id="setParameter" call="setParameter">
                         <FormDialog>
-                            <org.mongo.jmongob.DocBuilderField id="setParameterValue" label="Parameter" nonEmpty="true" toolTipText="Modify a parameter without restarting the server, for example {logLevel: 4}"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="setParameterValue" label="Parameter" nonEmpty="true" toolTipText="Modify a parameter without restarting the server, for example {logLevel: 4}"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="setLogLevel" call="setLogLevel">
@@ -536,11 +541,11 @@
                     <Text id="replication" field="true" toolTipText="Replication status" icon="overlay/tick_circle.png" iconGroup="icons"/>
                     <Text id="maxObjectSize" field="true"/>
                     <Text id="durability" field="true" icon="overlay/shield_blue.png" iconGroup="icons"/>
-                    <org.mongo.jmongob.CmdField id="serverStatus" cmd="serverStatus"/>
+                    <com.edgytech.jmongobrowser.CmdField id="serverStatus" cmd="serverStatus"/>
                 </Div>
             </Zone>
-        </org.mongo.jmongob.ServerPanel>
-        <org.mongo.jmongob.ReplSetPanel id="replSetPanel">
+        </com.edgytech.jmongobrowser.ServerPanel>
+        <com.edgytech.jmongobrowser.ReplSetPanel id="replSetPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="replSet.png" iconGroup="icons" toolTipText="Server"/>
                 <Menu id="replSet">
@@ -565,8 +570,8 @@
                     <Text id="maxObjectSize" field="true"/>
                 </Div>
             </Zone>
-        </org.mongo.jmongob.ReplSetPanel>
-        <org.mongo.jmongob.RouterPanel id="routerPanel">
+        </com.edgytech.jmongobrowser.ReplSetPanel>
+        <com.edgytech.jmongobrowser.RouterPanel id="routerPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="superman_icon.png" iconGroup="icons" toolTipText="MongoS router"/>
                 <Menu id="router" label="MongoS">
@@ -592,7 +597,7 @@
                             <TextArea id="regenServers" label="Servers" rows="10" columns="50" editable="true" toolTipText="List of servers containing the data, one by line, in format host:port/shardName. You must provide at least one available server per shard." nonEmpty="true"/>
                             <TextField id="regenDB" label="Database" toolTipText="Database to scan" nonEmpty="true"/>
                             <TextField id="regenCollection" label="Collection" toolTipText="Collection to scan" nonEmpty="true"/>
-                            <org.mongo.jmongob.DocBuilderField id="regenShardKey" label="Sharding Key" nonEmpty="true"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="regenShardKey" label="Sharding Key" nonEmpty="true"/>
                             <CheckBox id="regenKeyUnique" label="Unique Key" toolTipText="Whether sharding key is unique" value="false"/>
                         </FormDialog>
                         <FormDialog id="regenRSList" label="Replica Set List" okLabel="Next">
@@ -610,27 +615,27 @@
                     <Text id="address" field="true"/>
                 </Div>
             </Zone>
-        </org.mongo.jmongob.RouterPanel>
-        <org.mongo.jmongob.EditBinaryDialog>
+        </com.edgytech.jmongobrowser.RouterPanel>
+        <com.edgytech.jmongobrowser.EditBinaryDialog>
             <IntSpinner id="size"/>
-        </org.mongo.jmongob.EditBinaryDialog>
-        <org.mongo.jmongob.EditBooleanDialog>
+        </com.edgytech.jmongobrowser.EditBinaryDialog>
+        <com.edgytech.jmongobrowser.EditBooleanDialog>
             <CheckBox id="value" label="True"/>
-        </org.mongo.jmongob.EditBooleanDialog>
-        <org.mongo.jmongob.EditCodeDialog>
+        </com.edgytech.jmongobrowser.EditBooleanDialog>
+        <com.edgytech.jmongobrowser.EditCodeDialog>
             <TextField id="value" label="Code"/>
             <TextField id="scope"/>
-        </org.mongo.jmongob.EditCodeDialog>
-        <org.mongo.jmongob.EditDateDialog>
+        </com.edgytech.jmongobrowser.EditCodeDialog>
+        <com.edgytech.jmongobrowser.EditDateDialog>
             <DateSpinner id="value" label="Date"/>
-        </org.mongo.jmongob.EditDateDialog>
-        <org.mongo.jmongob.EditDoubleDialog>
+        </com.edgytech.jmongobrowser.EditDateDialog>
+        <com.edgytech.jmongobrowser.EditDoubleDialog>
             <DoubleSpinner id="value"/>
-        </org.mongo.jmongob.EditDoubleDialog>
-        <org.mongo.jmongob.EditLongDialog>
+        </com.edgytech.jmongobrowser.EditDoubleDialog>
+        <com.edgytech.jmongobrowser.EditLongDialog>
             <LongSpinner id="value"/>
-        </org.mongo.jmongob.EditLongDialog>
-        <org.mongo.jmongob.EditObjectIdDialog>
+        </com.edgytech.jmongobrowser.EditLongDialog>
+        <com.edgytech.jmongobrowser.EditObjectIdDialog>
             <Text value="Fill in either a String, or values, or leave blank to auto-generate"/>
             <TextField id="string" toolTipText="A 24 character string describing the id"/>
             <IntSpinner id="time" toolTipText="Creation time in second"/>
@@ -641,33 +646,33 @@
             <Text id="currentInc" field="true"/>
             <Text value="Add a namespace to make a DBRef"/>
             <TextField id="namespace" toolTipText="Namespace identifying the collection of the reference"/>
-        </org.mongo.jmongob.EditObjectIdDialog>
-        <org.mongo.jmongob.EditPatternDialog>
+        </com.edgytech.jmongobrowser.EditObjectIdDialog>
+        <com.edgytech.jmongobrowser.EditPatternDialog>
             <TextField id="value"/>
-        </org.mongo.jmongob.EditPatternDialog>
-        <org.mongo.jmongob.EditStringDialog>
+        </com.edgytech.jmongobrowser.EditPatternDialog>
+        <com.edgytech.jmongobrowser.EditStringDialog>
             <TextField id="value"/>
-        </org.mongo.jmongob.EditStringDialog>
-        <org.mongo.jmongob.EditTimestampDialog>
+        </com.edgytech.jmongobrowser.EditStringDialog>
+        <com.edgytech.jmongobrowser.EditTimestampDialog>
             <IntSpinner id="time"/>
             <IntSpinner id="increment"/>
-        </org.mongo.jmongob.EditTimestampDialog>
-        <org.mongo.jmongob.EditUuidDialog>
+        </com.edgytech.jmongobrowser.EditTimestampDialog>
+        <com.edgytech.jmongobrowser.EditUuidDialog>
             <TextField id="value"/>
-        </org.mongo.jmongob.EditUuidDialog>
-        <org.mongo.jmongob.DocBuilderDialog id="docBuilderDialog">
+        </com.edgytech.jmongobrowser.EditUuidDialog>
+        <com.edgytech.jmongobrowser.DocBuilderDialog id="docBuilderDialog">
             <Scroller fixedSize="600;400">
                 <Zone>
                     <Div id="div" zone="NORTH"/>
                 </Zone>
             </Scroller>
-        </org.mongo.jmongob.DocBuilderDialog>
-    </org.mongo.jmongob.GlobalStore>
+        </com.edgytech.jmongobrowser.DocBuilderDialog>
+    </com.edgytech.jmongobrowser.GlobalStore>
     <Frame id="frame" title="JMongoBrowser" masterFrame="true" menuId="mainmenu" icon="mongo_leaf_32.png" iconGroup="icons" contexts="default;Connect" preferredSize="1100;700" bgColor="255;255;255">
-        <org.mongo.jmongob.MainMenu id="mainMenu" start="start">
+        <com.edgytech.jmongobrowser.MainMenu id="mainMenu" start="start">
             <Menu id="file" alt="f">
                 <MenuItem id="connect" alt="c" key="k" keyMod="cmd" call="connect">
-                    <org.mongo.jmongob.ConnectDialog id="connectDialog">
+                    <com.edgytech.jmongobrowser.ConnectDialog id="connectDialog">
                         <Text value="Either provide a URI ..."/>
                         <TextField id="uri" label="URI" toolTipText="Enter URI of mongo dbs like 'mongodb://...'"/>
                         <Text value="Or the settings below"/>
@@ -685,7 +690,7 @@
                             <CheckBox id="autoConnectRetry" value="false" toolTipText="If true, then driver will keep retrying to connect to the server in case of connection failure"/>
                             <CheckBox id="safe" label="Safe Writes" value="true" toolTipText="Sets the global WriteConcern as SAFE, which means that writes are acknowledged by the server"/>
                         </Div>
-                    </org.mongo.jmongob.ConnectDialog>
+                    </com.edgytech.jmongobrowser.ConnectDialog>
                 </MenuItem>
                 <MenuSeparator/>
                 <MenuItem id="exit" label="Quit" alt="q" key="q" keyMod="cmd" call="exit"/>
@@ -694,7 +699,7 @@
                 <MenuItem id="importFile" alt="i" call="importFile"/>
                 <MenuSeparator/>
                 <MenuItem id="preferences" alt="p" key="comma" keyMod="cmd">
-                    <org.mongo.jmongob.AppPreferences id="prefDialog" start="start" buttons="OK_CANCEL_RESET">
+                    <com.edgytech.jmongobrowser.AppPreferences id="prefDialog" start="start" buttons="OK_CANCEL_RESET">
                         <TabbedDiv id="optionTabs">
                             <Div id="general" gap="true">
                                 <Div id="view" gap="true" titled="true">
@@ -712,20 +717,20 @@
                             </Div>
                         </TabbedDiv>
                         <Text value="* setting requires an application restart."/>
-                    </org.mongo.jmongob.AppPreferences>
+                    </com.edgytech.jmongobrowser.AppPreferences>
                 </MenuItem>
             </Menu>
             <Menu id="help" alt="h">
                 <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="etIcons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser v1.1.2&lt;br&gt;By Edgytech / Antoine Girbal"/>
+                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="etIcons" signBorderColor="128;128;128" text="&lt;html&gt;JMongoBrowser&lt;br&gt;By Edgytech / Antoine Girbal"/>
                 </MenuItem>
             </Menu>
-        </org.mongo.jmongob.MainMenu>
+        </com.edgytech.jmongobrowser.MainMenu>
         <Zone id="mainZone" bgColor="255;255;255">
-<!--            <org.mongo.jmongob.MainToolBar id="mainToolBar" zone="NORTH" minHeight="50" prefHeight="50" start="start" stop="stop" contexts="Connect">
+<!--            <com.edgytech.jmongobrowser.MainToolBar id="mainToolBar" zone="NORTH" minHeight="50" prefHeight="50" start="start" stop="stop" contexts="Connect">
                 <ToolBarSeparator/>
                 <MemoryBar id="memBar" focusable="false" maximumSize="120;-1"/>
-            </org.mongo.jmongob.MainToolBar> -->
+            </com.edgytech.jmongobrowser.MainToolBar> -->
             <SplitPane axis="X" zone="CENTER" resizeWeight="0.2" bgColor="255;255;255">
                 <Scroller id="treeScroll" preferredSize="125;-1" maximumSize="125;-1" verticalSpeed="50">
                     <Tree id="tree" label="Mongo Instances" bgColor="255;255;255">
@@ -736,7 +741,7 @@
                 </Scroller>
                 <SplitPane axis="Y" resizeWeight="0.3">
                     <Scroller preferredSize="-1;300">
-                        <org.mongo.jmongob.Workspace id="workspace" bgColor="255;255;255"/>
+                        <com.edgytech.jmongobrowser.Workspace id="workspace" bgColor="255;255;255"/>
                     </Scroller>
                     <TabbedDiv id="tabbedResult" preferredSize="-1;700" layout="SCROLL" bgColor="255;255;255" opaque="false"/>
                 </SplitPane>
@@ -744,9 +749,9 @@
             <Div id="jobDiv" axis="X" gap="true" zone="SOUTH" bgColor="255;255;255">
                 <Text value="Jobs:"/>
                 <Scroller>
-                    <org.mongo.jmongob.JobBar id="jobBar" axis="X" preferredSize="-1;30"  bgColor="255;255;255" opaque="false"/>
+                    <com.edgytech.jmongobrowser.JobBar id="jobBar" axis="X" preferredSize="-1;30"  bgColor="255;255;255" opaque="false"/>
                 </Scroller>
             </Div>
         </Zone>
     </Frame>
-</org.mongo.jmongob.JMongoBrowser>
+</com.edgytech.jmongobrowser.JMongoBrowser>

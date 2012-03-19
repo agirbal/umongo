@@ -32,7 +32,7 @@
         <Menu id="document" enabled="false">
             <MenuItem id="update" call="update" showDialog="false">
                 <FormDialog>
-                    <org.mongo.jmongob.DocBuilderField id="upUpdate" label="Update" toolTipText="Update to apply to document, in JSON format"/>
+                    <com.edgytech.jmongobrowser.DocBuilderField id="upUpdate" label="Update" toolTipText="Update to apply to document, in JSON format"/>
                     <CheckBox id="upMulti" label="Multi" toolTipText="Update all matched documents"/>
                 </FormDialog>
             </MenuItem>

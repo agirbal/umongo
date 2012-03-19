@@ -1,6 +1,7 @@
 #!/bin/sh
 
 pkgdir=`dirname $0`
+pkgdir=`dirname pkgdir`
 echo Moving to package folder $pkgdir
 cd $pkgdir
 version=`cat version`
@@ -16,16 +17,15 @@ function package_build {
 	rm -rf $appdir ${appdir}.zip
 	mkdir $appdir
 
-	cp ./common-files/* $appdir/
-	cp ${os}/* $appdir/
-	cp ../dist/JMongoBrowser.jar $appdir/
-	mkdir $appdir/lib
-	cp ../lib/*.jar $appdir/lib/
+	cp -r ${os}/JMongoBrowser.app $appdir
+	app=${appdir}/JMongoBrowser.app
+        sed -i "" -e "N; s/\(.*CFBundleShortVersionString.*\n\).*/\1        <string>$version<\/string>/" $app/Contents/Info.plist
+
+	cp ../dist/JMongoBrowser.jar $app/Contents/Resources/Java/
+	cp ../lib/*.jar $app/Contents/Resources/Java/
 
 	zip -r ${appdir}.zip $appdir
 }
 
-package_build windows all
-package_build linux all
+package_build osx all
 
-./osx/package.sh
