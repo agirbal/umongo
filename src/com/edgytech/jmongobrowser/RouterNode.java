@@ -4,6 +4,7 @@
  */
 package com.edgytech.jmongobrowser;
 
+import com.edgytech.swingfast.XmlUnit;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
@@ -25,6 +26,7 @@ public class RouterNode extends BaseTreeNode {
 
     Mongo mongo;
     ServerAddress addr;
+    BasicDBList shards;
 
     public RouterNode(ServerAddress addr, Mongo mongo) throws IOException, SAXException {
         this.addr = addr;
@@ -35,7 +37,7 @@ public class RouterNode extends BaseTreeNode {
     @Override
     protected void populateChildren() {
         CommandResult res = mongo.getDB("admin").command("listShards");
-        BasicDBList shards = (BasicDBList) res.get("shards");
+        shards = (BasicDBList) res.get("shards");
         if (shards == null)
             return;
         
@@ -84,5 +86,9 @@ public class RouterNode extends BaseTreeNode {
     @Override
     protected void updateNode(List<ImageIcon> overlays) {
         label = getAddress().toString();
+    }
+    
+    BasicDBList getShards() {
+        return shards;
     }
 }

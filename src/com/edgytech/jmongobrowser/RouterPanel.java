@@ -42,6 +42,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         refresh,
         host,
         address,
+        shards,
         listShards,
         addShard,
         asHost,
@@ -76,6 +77,8 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
             ServerAddress addr = getRouterNode().getAddress();
             setStringFieldValue(Item.host, addr.getHost() + ":" + addr.getPort());
             setStringFieldValue(Item.address, addr.getSocketAddress().toString());
+            ((DocField) getBoundUnit(Item.shards)).setDoc(((RouterNode)node).shards);
+
             final Mongo mongo = getRouterNode().getMongo();
             setBooleanFieldValue(Item.autoBalance, MongoUtils.isBalancerOn(mongo));
         } catch (Exception e) {
@@ -101,7 +104,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
             server = replSetName + "/" + server;
 
         final BasicDBObject cmd = new BasicDBObject("addshard", server);
-        if (shardName != null)
+        if (!shardName.isEmpty())
             cmd.put("name", shardName);
         if (maxsize > 0)
             cmd.put("maxSize", maxsize);

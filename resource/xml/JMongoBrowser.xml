@@ -423,15 +423,15 @@
                     </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="findChunks" call="findChunks"/>
-                    <MenuItem id="moveChunk" call="moveChunk">
+                    <MenuItem id="moveChunk" call="moveChunk" showDialog="false">
                         <FormDialog>
-                            <com.edgytech.jmongobrowser.DocBuilderField id="mvckQuery" label="Chunk Query" toolTipText="Query to find the chunk by"/>
-                            <TextField id="mvckToShard" label="To Shard" nonEmpty="true" toolTipText="Name of shard to send the chunk to"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="mvckQuery" label="Chunk Query" toolTipText="Query to find the chunk by" nonEmpty="true"/>
+                            <ComboBox id="mvckToShard" label="To Shard" items="None" toolTipText="Shard to send the chunk to"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="splitChunk" call="splitChunk">
                         <FormDialog>
-                            <com.edgytech.jmongobrowser.DocBuilderField id="spckQuery" label="Chunk Query" toolTipText="Query to find the chunk by"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="spckQuery" label="Chunk Query" toolTipText="Query to find the chunk by" nonEmpty="true"/>
                             <CheckBox id="spckOnValue" label="Split on Value" value="false" toolTipText="If true, split chunk on provided query value, otherwise split chunk in the middle"/>
                         </FormDialog>
                     </MenuItem>
@@ -613,6 +613,7 @@
                 <Div zone="NORTH" gap="true" bgColor="255;255;255">
                     <Text id="host" field="true"/>
                     <Text id="address" field="true"/>
+                    <com.edgytech.jmongobrowser.DocField id="shards"/>
                 </Div>
             </Zone>
         </com.edgytech.jmongobrowser.RouterPanel>

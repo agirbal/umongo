@@ -4,6 +4,8 @@
  */
 package com.edgytech.jmongobrowser;
 
+import com.edgytech.swingfast.XmlUnit;
+import com.mongodb.BasicDBList;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
@@ -76,7 +78,7 @@ public class MongoNode extends BaseTreeNode {
             }
         }
 
-        // get local and remove dbs
+        // get local and remote dbs
         for (DB db : mongo.getUsedDatabases()) {
             addChild(new DbNode(db));
         }
@@ -89,4 +91,11 @@ public class MongoNode extends BaseTreeNode {
         label += " (" + list.size() + ")";
     }
 
+    BasicDBList getShards() {
+        XmlUnit child = getChild(0);
+        if (child instanceof RouterNode) {
+            return ((RouterNode)child).getShards();
+        }
+        return null;
+    }
 }
