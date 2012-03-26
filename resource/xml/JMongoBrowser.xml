@@ -316,12 +316,12 @@
                             <TextArea id="mrMap" label="Map JS Function" toolTipText="map javascript function with signature 'void function map()' which should contain one or more calls to emit(key, obj)" nonEmpty="true" value="function(){ emit(this._id, {count: 1}); }"/>
                             <TextArea id="mrReduce" label="Reduce JS Function" toolTipText="reduce javascript function with signature 'result reduce(key, values)' where key is the emit key and values is the list of values to reduce.'" nonEmpty="true" value="function(key, values) { total = 0; for (var i = 0; i &lt; values.length; ++i) { total += values[i].count; }; return {count: total}; }"/>
                             <TextArea id="mrFinalize" label="Finalize JS Function" toolTipText="optional finalize javascript function with signature 'result finalize(key, out)' where out is the result for that key"/>
-                            <Div id="input">
+                            <Div id="input" titled="true">
                             <com.edgytech.jmongobrowser.DocBuilderField id="mrQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
                             <com.edgytech.jmongobrowser.DocBuilderField id="mrSort" label="Sort" toolTipText="Sort key for the input, in JSON format. Sort by the emit key to optimize performance."/>
                             <IntSpinner id="mrLimit" label="Limit" toolTipText="Limit of the number of input entries to process" minValue="0"/>
                             </Div>
-                            <Div id="output">
+                            <Div id="output" titled="true">
                             <ComboBox id="mrType" label="Output Type" items="replace;merge;reduce;inline" toolTipText="How to process the output"/>
                             <TextField id="mrOut" label="Output Collection" toolTipText="Name of the output collection" nonEmpty="true"/>
                             <TextField id="mrOutDB" label="Output Database" toolTipText="Name of the output database, if different from the input database"/>
@@ -524,8 +524,10 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="replica">
-                    <MenuItem id="replicaSetStatus" call="replicaSetStatus" label="RS Status"/>
-                    <MenuItem id="oplogInfo" call="oplogInfo" label="Oplog Info"/>
+                    <MenuItem id="rsConfig" call="rsConfig" label="Config"/>
+                    <MenuItem id="rsStatus" call="rsStatus" label="Status"/>
+                    <MenuItem id="rsOplogInfo" call="rsOplogInfo" label="Oplog Info"/>
+                    <MenuSeparator/>
                     <MenuItem id="rsStepDown" call="rsStepDown" label="Step Down" toolTipText="If primary, the server will step down to secondary to let another server be elected."/>
                     <MenuItem id="rsFreeze" call="rsFreeze" label="Freeze" toolTipText="This server will not attempt to become primary for next N seconds">
                         <FormDialog>
@@ -540,7 +542,7 @@
                     <Text id="address" field="true"/>
                     <Text id="replication" field="true" toolTipText="Replication status" icon="overlay/tick_circle.png" iconGroup="icons"/>
                     <Text id="maxObjectSize" field="true"/>
-                    <Text id="durability" field="true" icon="overlay/shield_blue.png" iconGroup="icons"/>
+                    <Text id="journaling" field="true" icon="overlay/shield_blue.png" iconGroup="icons"/>
                     <com.edgytech.jmongobrowser.CmdField id="serverStatus" cmd="serverStatus"/>
                 </Div>
             </Zone>
@@ -548,12 +550,39 @@
         <com.edgytech.jmongobrowser.ReplSetPanel id="replSetPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="replSet.png" iconGroup="icons" toolTipText="Server"/>
-                <Menu id="replSet">
+                <Menu id="replSet" label="ReplicaSet">
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
+                    <MenuSeparator/>
+                    <MenuItem id="initiate" call="initiate">
+                            <com.edgytech.jmongobrowser.DocBuilderField id="initConfig" label="Config" toolTipText="An object representing the configuration. Leave empty to start with a single server."/>
+                    </MenuItem>
+                    <MenuItem id="reconfigure" call="reconfigure" showDialog="false">
+                        <FormDialog>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="reconfConfig" label="Config" toolTipText="An object representing the new configuration." nonEmpty="true"/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuItem id="addReplica" call="addReplica">
+                        <FormDialog>
+                            <TextField id="arHost" label="Host" toolTipText="Name of host to add to the replica set" nonEmpty="true"/>
+                            <CheckBox id="arArbiterOnly" label="Arbiter only" toolTipText="Whether this replica should be an arbiter only, with no data" value="false"/>
+                            <CheckBox id="arHidden" label="Hidden" toolTipText="If true, the replica will not be seen by the client applications (e.g. backup only server)" value="false"/>
+                            <DoubleSpinner id="arPriority" label="Priority" toolTipText="Priority of the replica to become primary, between 0 and 1000 (1 is default, 0 means never primary)" minValue="0" maxValue="1000" value="1"/>
+                            <com.edgytech.jmongobrowser.DocBuilderField id="arTags" label="Tags" toolTipText="An object representing tags for this server"/>
+                            <IntSpinner id="arSlaveDelay" label="Slave delay" minValue="0" value="0" toolTipText="Time in second to remain behind the primary"/>
+                            <IntSpinner id="arVotes" label="Votes" minValue="0" value="1" toolTipText="Number of votes for this replica. This option should generally be set to 1."/>
+                            <CheckBox id="arIgnoreIndexes" label="Ignore indexes" toolTipText="If true, the replica will not build indexes (e.g. backup only server)" value="false"/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuItem id="removeReplica" call="removeReplica" showDialog="false">
+                        <FormDialog>
+                            <ComboBox id="rrHost" label="Host" items="None" toolTipText="Name of host to remove"/>
+                        </FormDialog>
+                    </MenuItem>
                 </Menu>
                 <Menu id="command">
-                    <MenuItem id="replicaSetStatus" call="replicaSetStatus" label="RS Status"/>
-                    <MenuItem id="oplogInfo" call="oplogInfo" label="Oplog Info"/>
+                    <MenuItem id="rsConfig" call="rsConfig" label="Config"/>
+                    <MenuItem id="rsStatus" call="rsStatus" label="Status"/>
+                    <MenuItem id="rsOplogInfo" call="rsOplogInfo" label="Oplog Info"/>
                 </Menu>
                 <Menu id="tools">
                     <MenuItem id="compareReplicas" call="compareReplicas">
@@ -568,6 +597,7 @@
                 <Div zone="NORTH" gap="true" bgColor="255;255;255">
                     <Text id="name" field="true"/>
                     <Text id="maxObjectSize" field="true"/>
+                    <Text id="replicas" field="true"/>
                 </Div>
             </Zone>
         </com.edgytech.jmongobrowser.ReplSetPanel>
@@ -577,14 +607,15 @@
                 <Menu id="router" label="MongoS">
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                 </Menu>
-                <Menu id="Sharding">
+                <Menu id="sharding">
                     <MenuItem id="listShards" call="listShards"/>
+                    <MenuItem id="flushConfiguration" call="flushConfiguration"/>
+                    <MenuSeparator/>
                     <MenuItem id="addShard" call="addShard">
                         <FormDialog>
-                            <TextField id="asHost" label="Server Name" toolTipText="Server hostname" nonEmpty="true"/>
-                            <IntSpinner id="asPort" label="Server Port" minValue="1" value="27017" toolTipText="Server port"/>
-                            <TextField id="asShardName" label="Shard Name" toolTipText="Optional, a shard name"/>
+                            <TextField id="asHost" label="Server Names" toolTipText="Comma-separated list of seed servers for that shard" nonEmpty="true"/>
                             <TextField id="asReplSetName" label="Replica Set Name" toolTipText="If adding a replica set, the replica set name"/>
+                            <TextField id="asShardName" label="Shard Name" toolTipText="Optional, the shard name"/>
                             <IntSpinner id="asMaxSize" label="Max Size MB" minValue="0" toolTipText="Maximum size in megabytes to store in the shard"/>
                         </FormDialog>
                     </MenuItem>
@@ -593,7 +624,8 @@
                             <ComboBox id="rsShard" label="Shard" items="None" toolTipText="Shard to remove"/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuSeparator/>
+                </Menu>
+                <Menu id="tools">
                     <CheckBoxMenuItem id="autoBalance" call="autoBalance"/>
                     <MenuSeparator/>
                     <MenuItem id="regenConfigDB" label="Regenerate Config DB" call="regenConfigDB">

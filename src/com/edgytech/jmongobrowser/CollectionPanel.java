@@ -1024,7 +1024,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             new InfoDialog(null, "Empty key", null, "You must select a shard key").show();
             return;
         }
-        if (!new ConfirmDialog(null, "Confirm shard key", null, "About to shard collection with key " + key + ", is that correct?").show())
+        if (!new ConfirmDialog(null, "Confirm shard key", null, "About to shard collection with key " + key + ", is it correct? This operation cannot be undone.").show())
             return;
 
         boolean unique = getBooleanFieldValue(Item.shardUniqueIndex);

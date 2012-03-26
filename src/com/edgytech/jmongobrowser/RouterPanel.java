@@ -46,9 +46,9 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         address,
         shards,
         listShards,
+        flushConfiguration,
         addShard,
         asHost,
-        asPort,
         asShardName,
         asReplSetName,
         asMaxSize,
@@ -97,13 +97,10 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
     public void addShard() {
         final RouterNode router = getRouterNode();
         final String host = getStringFieldValue(Item.asHost);
-        final int port = getIntFieldValue(Item.asPort);
         final String shardName = getStringFieldValue(Item.asShardName);
         final String replSetName = getStringFieldValue(Item.asReplSetName);
         final int maxsize = getIntFieldValue(Item.asMaxSize);
         String server = host;
-        if (port > 0)
-            server += ":" + port;
         if (!replSetName.isEmpty())
             server = replSetName + "/" + server;
 
@@ -133,6 +130,10 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
 
     public void listShards() {
         new DocView(null, "List Shards", getRouterNode().getMongo().getDB("admin"), "listShards").addToTabbedDiv();
+    }
+
+    public void flushConfiguration() {
+        new DocView(null, "Flush Config", getRouterNode().getMongo().getDB("admin"), "flushRouterConfig").addToTabbedDiv();
     }
 
     public void autoBalance() {

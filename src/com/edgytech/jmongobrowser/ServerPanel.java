@@ -14,6 +14,8 @@ import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
 import javax.swing.JPanel;
 import com.edgytech.jmongobrowser.ServerPanel.Item;
+import com.mongodb.*;
+import java.util.logging.Level;
 
 /**
  *
@@ -27,16 +29,18 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         host,
         address,
         maxObjectSize,
-        durability,
+        journaling,
         replication,
         clientPorts,
         serverStatus,
-        replicaSetStatus,
-        oplogInfo,
+        rsConfig,
+        rsStatus,
+        rsOplogInfo,
         refresh,
         rsStepDown,
         rsFreeze,
         rsFreezeTime,
+        rsRemove,
         isMaster,
         serverStatusCmd,
         currentOps,
@@ -79,8 +83,8 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
 
             DBObject svrStatus = ((DocField) getBoundUnit(Item.serverStatus)).getDoc();
             boolean dur = svrStatus.containsField("dur");
-            ((Text)getBoundUnit(Item.durability)).setStringValue(dur ? "On" : "Off");
-            ((Text)getBoundUnit(Item.durability)).showIcon = dur;
+            ((Text)getBoundUnit(Item.journaling)).setStringValue(dur ? "On" : "Off");
+            ((Text)getBoundUnit(Item.journaling)).showIcon = dur;
         } catch (Exception e) {
             JMongoBrowser.instance.showError(this.getClass().getSimpleName() + " update", e);
         }
@@ -89,9 +93,46 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void rsStepDown() {
-        DBObject cmd = new BasicDBObject("replSetStepDown", 1);
-        new DocView(null, "RS Step Down", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
+    public void rsStepDown() {        
+        final DBObject cmd = new BasicDBObject("replSetStepDown", 1);
+        final DB admin = getServerNode().getServerMongo().getDB("admin");
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                Object res = null;
+                try {
+                    res = admin.command(cmd);
+                } catch (MongoException.Network e) {
+                    res = "Operation was likely successful, but connection error: " + e.toString();
+                }
+                
+                try {
+                    // sleep a bit since it takes time for driver to see change
+                    Thread.sleep(6000);
+                } catch (InterruptedException ex) {
+                    getLogger().log(Level.WARNING, null, ex);
+                }
+                return res;
+            }
+
+            @Override
+            public String getNS() {
+                return null;
+            }
+
+            @Override
+            public String getShortName() {
+                return "RS Step Down";
+            }
+
+            @Override
+            public Object getRoot(Object result) {
+                return cmd.toString();
+            }
+
+        }.addJob();
     }
 
     public void rsFreeze() {
@@ -99,7 +140,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         DBObject cmd = new BasicDBObject("replSetFreeze", sec);
         new DocView(null, "RS Freeze", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
     }
-
+    
     public void serverStatus() {
         new DocView(null, "Server Status", getServerNode().getServerMongo().getDB("admin"), "serverStatus").addToTabbedDiv();
     }
@@ -108,11 +149,16 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         new DocView(null, "Is Master", getServerNode().getServerMongo().getDB("admin"), "isMaster").addToTabbedDiv();
     }
 
-    public void replicaSetStatus() {
+    public void rsConfig() {
+        final DBCollection col = getServerNode().getServerMongo().getDB("local").getCollection("system.replset");
+        CollectionPanel.doFind(col, null);
+    }
+
+    public void rsStatus() {
         new DocView(null, "RS Status", getServerNode().getServerMongo().getDB("admin"), "replSetGetStatus").addToTabbedDiv();
     }
 
-    public void oplogInfo() {
+    public void rsOplogInfo() {
         new DocView(null, "Oplog Info", MongoUtils.getReplicaSetInfo(getServerNode().getServerMongo()), "Oplog of " + getServerNode().getServerAddress(), null).addToTabbedDiv();
     }
 

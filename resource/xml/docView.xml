@@ -29,6 +29,10 @@
             <MenuItem id="getMore" call="getMore" enabled="false"/>
             <MenuItem id="getAll" call="getAll" enabled="false"/>
         </Menu>
+        <Menu id="view">
+            <MenuItem id="expandAll" call="expandAll"/>
+            <MenuItem id="collapseAll" call="collapseAll"/>            
+        </Menu>
         <Menu id="document" enabled="false">
             <MenuItem id="update" call="update" showDialog="false">
                 <FormDialog>

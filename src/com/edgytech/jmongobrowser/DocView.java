@@ -59,6 +59,8 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         tools,
         startAutoUpdate,
         stopAutoUpdate,
+        expandAll,
+        collapseAll
     }
     DB db;
     DBObject cmd;
@@ -90,7 +92,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         setStringFieldValue(Item.tabTitle, label);
         getTree().label = root.toString();
         if (doc != null) {
-            addDocument(doc, job);
+            addDocument(doc, job, true);
         }
     }
 
@@ -305,7 +307,8 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                     }
                     addDocument(result, this);
                     getTree().structureComponent();
-                    getTree().expandNode(getTree().getTreeNode());
+                    // result of command should be fully expanded
+                    getTree().expandAll();
 
                     // panel info may need to be refreshed
                     if (panel != null)
@@ -615,10 +618,16 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     }
 
     private void addDocument(DBObject doc, DbJob job) {
+        addDocument(doc, job, false);
+    }
+
+    private void addDocument(DBObject doc, DbJob job, boolean expand) {
         TreeNodeLabel node = new TreeNodeDBObject(doc, job);
         final PopUpMenu popUp = (PopUpMenu) getBoundUnit(Item.popUp);
         node.setPopUpMenu(popUp);
         getTree().addChild(node);
+        if (expand)
+            getTree().expandNode(node);
     }
 
 //    protected void appendDoc(DBObject doc) {
@@ -626,4 +635,14 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 //        node.forceTreeNode(MongoUtils.dbObjectToTreeNode(doc));
 //        getTree().addChild(node);
 //    }
+    
+    public void collapseAll() {
+        getTree().collapseAll();
+        // need to reexpand root
+        getTree().expandNode(getTree().getTreeNode());
+    }
+
+    public void expandAll() {
+        getTree().expandAll();
+    }
 }

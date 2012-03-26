@@ -16,6 +16,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 import com.edgytech.jmongobrowser.ReplSetPanel.Item;
+import com.edgytech.swingfast.*;
+import com.mongodb.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,9 +30,26 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     enum Item {
         refresh,
         name,
-        replicaSetStatus,
-        oplogInfo,
         maxObjectSize,
+        replicas,
+        initiate,
+        initConfig,
+        reconfigure,
+        reconfConfig,
+        addReplica,
+        arHost,
+        arArbiterOnly,
+        arHidden,
+        arPriority,
+        arVotes,
+        arTags,
+        arSlaveDelay,
+        arIgnoreIndexes,
+        removeReplica,
+        rrHost,
+        rsConfig,
+        rsStatus,
+        rsOplogInfo,
         compareReplicas,
         crStat
     }
@@ -46,6 +67,12 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         try {
             setStringFieldValue(Item.name, getReplSetNode().getName());
             setStringFieldValue(Item.maxObjectSize, String.valueOf(getReplSetNode().getMongo().getReplicaSetStatus().getMaxBsonObjectSize()));
+            String replicas = "";
+            for (String replica : getReplSetNode().getReplicaNames()) {
+                replicas += replica + ",";
+            }
+            replicas = replicas.substring(0, replicas.length() - 1);
+            setStringFieldValue(Item.replicas, replicas);
         } catch (Exception e) {
             JMongoBrowser.instance.showError(this.getClass().getSimpleName() + " update", e);
         }
@@ -55,12 +82,168 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void replicaSetStatus() {
+    public void rsConfig() {
+        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
+        CollectionPanel.doFind(col, null);
+    }
+    
+    public void rsStatus() {
         new DocView(null, "RS Status", getReplSetNode().getMongo().getDB("admin"), "replSetGetStatus").addToTabbedDiv();
     }
     
-    public void oplogInfo() {
+    public void rsOplogInfo() {
         new DocView(null, "Oplog Info", MongoUtils.getReplicaSetInfo(getReplSetNode().getMongo()),  "Oplog of " + getReplSetNode().getMongo().toString(), null).addToTabbedDiv();
+    }
+    
+    public void initiate() {
+        DBObject config = ((DocBuilderField)getBoundUnit(Item.initConfig)).getDBObject();
+        DBObject cmd = new BasicDBObject("replSetInitiate", config);
+        DB admin = getReplSetNode().getMongo().getDB("admin");
+        new DocView(null, "RS Initiate", admin, cmd).addToTabbedDiv();
+    }
+    
+    public void reconfigure() {
+        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
+        DBObject oldConf = col.findOne();
+        if (oldConf == null) {
+            new InfoDialog(null, "reconfig error", null, "No existing replica set configuration").show();
+            return;
+        }
+        ((DocBuilderField)getBoundUnit(Item.reconfConfig)).setDBObject(oldConf);
+        if (!((MenuItem)getBoundUnit(Item.reconfigure)).getDialog().show())
+            return;
+        
+        DBObject config = ((DocBuilderField)getBoundUnit(Item.reconfConfig)).getDBObject();
+        reconfigure(config);
+    }
+
+    public void reconfigure(DBObject config) {
+        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
+        DBObject oldConf = col.findOne();
+        int version = ((Integer) oldConf.get("version")) + 1;
+        config.put("version", version);
+        
+        // reconfig usually triggers an error as connections are bounced.. try to absorb it
+        final DBObject cmd = new BasicDBObject("replSetReconfig", config);
+        final DB admin = getReplSetNode().getMongo().getDB("admin");
+        final ReplSetNode node = getReplSetNode();
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                Object res = null;
+                try {
+                    res = admin.command(cmd);
+                } catch (MongoException.Network e) {
+                    res = "Operation was likely successful, but connection error: " + e.toString();
+                }
+                
+                try {
+                    // sleep a bit since it takes time for driver to see change
+                    Thread.sleep(6000);
+                } catch (InterruptedException ex) {
+                    getLogger().log(Level.WARNING, null, ex);
+                }
+                return res;
+            }
+
+            @Override
+            public String getNS() {
+                return null;
+            }
+
+            @Override
+            public String getShortName() {
+                return "RS Reconfig";
+            }
+
+            @Override
+            public Object getRoot(Object result) {
+                return cmd.toString();
+            }
+
+            @Override
+            public void wrapUp(Object res) {
+                // try to restructure but changes arent seen for a few seconds
+                super.wrapUp(res);
+                node.structureComponent();
+            }
+        }.addJob();
+    }
+
+    public void addReplica() {
+        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
+        DBObject config = col.findOne();
+        if (config == null) {
+            new InfoDialog(null, "reconfig error", null, "No existing replica set configuration").show();
+            return;
+        }
+        
+        BasicDBList members = (BasicDBList) config.get("members");
+        int max = 0;
+        for (int i = 0; i < members.size(); ++i) {
+            int id = (Integer)((DBObject)members.get(i)).get("_id");
+            if (id > max)
+                max = id;
+        }
+        
+        DBObject member = new BasicDBObject("_id", max + 1);
+        member.put("host", getStringFieldValue(Item.arHost));
+        boolean arb = getBooleanFieldValue(Item.arArbiterOnly);
+        if (arb) member.put("arbiterOnly", true);
+        boolean hidden = getBooleanFieldValue(Item.arHidden);
+        if (hidden) member.put("hidden", true);
+        boolean ignoreIndexes = getBooleanFieldValue(Item.arIgnoreIndexes);
+        if (ignoreIndexes) member.put("buildIndexes", false);
+        double priority = getDoubleFieldValue(Item.arPriority);
+        if (priority != 1.0) member.put("priority", priority);
+        int slaveDelay = getIntFieldValue(Item.arSlaveDelay);
+        if (slaveDelay > 0) member.put("slaveDelay", slaveDelay);
+        int votes = getIntFieldValue(Item.arVotes);
+        if (votes != 1) member.put("votes", votes);
+        DBObject tags = ((DocBuilderField)getBoundUnit(Item.arTags)).getDBObject();
+        if (tags != null) member.put("tags", tags);
+        members.add(member);
+        reconfigure(config);
+    }
+    
+    public void removeReplica() {
+        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
+        DBObject config = col.findOne();
+        if (config == null) {
+            new InfoDialog(null, "reconfig error", null, "No existing replica set configuration").show();
+            return;
+        }
+
+        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.removeReplica)).getDialog();
+        ComboBox combo = (ComboBox) getBoundUnit(Item.rrHost);
+        combo.value = 0;
+        combo.items = getReplSetNode().getReplicaNames();
+        combo.structureComponent();
+
+        if (!dialog.show())
+            return;
+        
+        String host = getStringFieldValue(Item.rrHost);
+        
+        if (!new ConfirmDialog(null, "Remove Replica", null, "Are you sure you want to remove " + host + "? This server should be stopped before removing.").show())
+            return;
+        
+        BasicDBList members = (BasicDBList) config.get("members");
+        int i = 0;
+        for (; i < members.size(); ++i) {
+            if (host.equals(((DBObject)members.get(i)).get("host")))
+                break;
+        }
+        
+        if (i == members.size()) {
+            new InfoDialog(null, "reconfig error", null, "Cannot remove replica " + host).show();
+            return;
+        }    
+        
+        members.remove(i);
+        reconfigure(config);
     }
 
     public void compareReplicas() {

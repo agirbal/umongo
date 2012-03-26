@@ -33,10 +33,11 @@ public class ServerNode extends BaseTreeNode {
         } catch (Exception ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }
+        label = serverAddress.toString();
         markStructured();
     }
     
-    public ServerNode(ServerAddress serverAddress, MongoOptions opts) {
+    public ServerNode(ServerAddress serverAddress, MongoOptions opts, String name) {
         this.serverAddress = serverAddress;
         serverMongo = new Mongo(serverAddress, opts);
         serverMongo.addOption( Bytes.QUERYOPTION_SLAVEOK );
@@ -46,6 +47,7 @@ public class ServerNode extends BaseTreeNode {
         } catch (Exception ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }
+        label = name != null ? name : serverAddress.toString();
         markStructured();
     }
 
@@ -67,15 +69,18 @@ public class ServerNode extends BaseTreeNode {
 
     @Override
     protected void updateNode(List<ImageIcon> overlays) {
-        label = serverAddress.toString();
         CommandResult res = getServerMongo().getDB("local").command("serverStatus");
         if (res.containsField("repl")) {
-            if (((BasicDBObject) res.get("repl")).getBoolean("ismaster", false)) {
+            BasicDBObject repl = (BasicDBObject) res.get("repl");
+            if (repl.getBoolean("ismaster", false)) {
                 overlays.add(SwingFast.createIcon("overlay/tick_circle.png", iconGroup));
+            } else if (!repl.getBoolean("secondary", false)) {
+                overlays.add(SwingFast.createIcon("overlay/error.png", iconGroup));
             }
         }
         if (res.containsField("dur")) {
             overlays.add(SwingFast.createIcon("overlay/shield_blue.png", iconGroup));
         }
+
     }
 }

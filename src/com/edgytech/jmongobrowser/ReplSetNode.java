@@ -5,9 +5,7 @@
 
 package com.edgytech.jmongobrowser;
 
-import com.mongodb.Mongo;
-import com.mongodb.MongoOptions;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.ImageIcon;
@@ -45,10 +43,13 @@ public class ReplSetNode extends BaseTreeNode {
     @Override
     protected void populateChildren() {
         // need to make a query to update server list
-        mongo.getDatabaseNames();
+        try {
+            mongo.getDatabaseNames();
+        } catch (Exception e) {}
+
         List<ServerAddress> addrs = mongo.getServerAddressList();
         for (ServerAddress addr : addrs) {
-            addChild(new ServerNode(addr, mongo.getMongoOptions()));
+            addChild(new ServerNode(addr, mongo.getMongoOptions(), null));
         }
     }
 
@@ -63,6 +64,15 @@ public class ReplSetNode extends BaseTreeNode {
     @Override
     protected void updateNode(List<ImageIcon> overlays) {
         label = getName();
+    }
+
+    String[] getReplicaNames() {
+        List<ServerAddress> addrs = mongo.getServerAddressList();
+        String[] names = new String[addrs.size()];
+        int i = 0;
+        for (ServerAddress addr : addrs)
+            names[i++] = addr.toString();
+        return names;
     }
     
 }

@@ -65,9 +65,9 @@ public class RouterNode extends BaseTreeNode {
                 }
 
                 if (repl != null || addrs.size() > 1) {
-                    addChild(new ReplSetNode(repl, addrs, mongo.getMongoOptions()));
+                    addChild(new ReplSetNode(id + " (" + repl + ")", addrs, mongo.getMongoOptions()));
                 } else {
-                    addChild(new ServerNode(addrs.get(0), mongo.getMongoOptions()));
+                    addChild(new ServerNode(addrs.get(0), mongo.getMongoOptions(), id + " (" + addrs.get(0) + ")"));
                 }
             } catch (Exception e) {
                 getLogger().log(Level.WARNING, null, e);
