@@ -1,12 +1,12 @@
 <!-- Bold elements are required -->
 <launch4jConfig>
   <headerType>gui</headerType>
-  <outfile>JMongoBrowser.exe</outfile>
-  <jar>./JMongoBrowser.jar</jar>
+  <outfile>umongo.exe</outfile>
+  <jar>./umongo.jar</jar>
   <dontWrapJar>true</dontWrapJar>
-  <errTitle>JMongoBrowser error</errTitle>
+  <errTitle>umongo error</errTitle>
   <downloadUrl>http://java.com/download</downloadUrl>
-  <supportUrl>http://10gen.com</supportUrl>
+  <supportUrl>http://www.edgytech.com</supportUrl>
   <cmdLine></cmdLine>
   <priority>normal</priority>
   <customProcName>false</customProcName>
@@ -21,7 +21,7 @@
   ... -->
 
   <classPath>
-    <mainClass>org.mongo.jmongob.JMongoBrowser</mainClass>
+    <mainClass>com.edgytech.umongo.UMongo</mainClass>
     <cp>./lib/*.jar</cp>
   </classPath>
 
@@ -42,14 +42,14 @@
   <versionInfo>
     <fileVersion>1.0.1.0</fileVersion>
     <txtFileVersion>win_1.0.1.0</txtFileVersion>
-    <fileDescription>JMongoBrowser</fileDescription>
+    <fileDescription>umongo</fileDescription>
     <copyright>@10gen.com All rights reserved</copyright>
     <productVersion>1.0.1.0</productVersion>
     <txtProductVersion>win_1.0.1.0</txtProductVersion>
-    <productName>JMongoBrowser</productName>
-    <companyName>10gen</companyName>
-    <internalName>JMongoBrowser</internalName>
-    <originalFilename>JMongoBrowser.exe</originalFilename>
+    <productName>umongo</productName>
+    <companyName>EdgyTech</companyName>
+    <internalName>umongo</internalName>
+    <originalFilename>umongo.exe</originalFilename>
   </versionInfo>
 <!--  <messages>
     <startupErr>text</startupErr>

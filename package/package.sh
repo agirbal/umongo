@@ -11,14 +11,14 @@ cp ../dist/lib/{SwingFast,mongo}.jar ../lib/
 function package_build {
 	os=$1
 	arch=$2
-	appdir=JMongoBrowser-${os}-${arch}_${vdash}
+	appdir=umongo-${os}-${arch}_${vdash}
 	echo Creating folder $appdir
 	rm -rf $appdir ${appdir}.zip
 	mkdir $appdir
 
 	cp ./common-files/* $appdir/
 	cp ${os}/* $appdir/
-	cp ../dist/JMongoBrowser.jar $appdir/
+	cp ../dist/umongo.jar $appdir/
 	mkdir $appdir/lib
 	cp ../lib/*.jar $appdir/lib/
 
