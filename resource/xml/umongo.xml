@@ -733,8 +733,8 @@
                         <Text value="Either provide a URI ..."/>
                         <TextField id="uri" label="URI" toolTipText="Enter URI of mongo dbs like 'mongodb://...'"/>
                         <Text value="Or the settings below"/>
-                        <TextField id="servers" toolTipText="Comma separated list of servers to connect to" value=""/>
-                        <TextField id="databases" toolTipText="Optional, a comma separated list of databases to connect to" value=""/>
+                        <TextField id="servers" toolTipText="Comma separated list of servers to connect to" value="localhost:27017"/>
+                        <TextField id="databases" toolTipText="Optional, a comma separated list of databases to connect to"/>
                         <Div id="connectionPool" titled="true">
                             <IntSpinner id="connectionsPerHost" minValue="1" value="10" toolTipText="Maximum number of concurrent connections for one server"/>
                             <IntSpinner id="blockingThreadMultiplier" minValue="0" value="5" toolTipText="This value multiplied by the maximum number of connections, gives how many threads are allowed to wait on a connection to be available."/>

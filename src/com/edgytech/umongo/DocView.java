@@ -5,9 +5,7 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.EnumListener;
-import com.edgytech.swingfast.Menu;
 import com.edgytech.swingfast.MenuItem;
-import com.edgytech.swingfast.PopUpMenu;
 import com.edgytech.swingfast.TabInterface;
 import com.edgytech.swingfast.TabbedDiv;
 import com.edgytech.swingfast.Tree;

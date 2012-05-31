@@ -49,7 +49,7 @@ public class Workspace extends XmlJComponentUnit<XmlUnit, BoxPanel> {
         if (content != null) {
             view = content.getComponent();
         } else {
-            view = new JLabel("Click on a Tree node to view");
+            view = new JLabel("");
         }
         comp.removeAll();
         comp.add(view);
