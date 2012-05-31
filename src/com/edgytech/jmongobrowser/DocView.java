@@ -45,17 +45,6 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         cursor,
         getMore,
         getAll,
-        document,
-        remove,
-        duplicate,
-        dupCount,
-        update,
-        upUpdate,
-        upMulti,
-        popUp,
-        popUpdate,
-        popDuplicate,
-        popRemove,
         tools,
         startAutoUpdate,
         stopAutoUpdate,
@@ -107,7 +96,6 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
             this.dbcursor = (DBCursor) iterator;
             this.iterator = dbcursor;
             ((MenuItem) getBoundUnit(Item.refresh)).enabled = true;
-            ((Menu) getBoundUnit(Item.document)).enabled = true;
             ((MenuItem) getBoundUnit(Item.startAutoUpdate)).enabled = true;
         } else {
             this.iterator = iterator;
@@ -144,20 +132,21 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         return (Tree) getBoundUnit(Item.docTree);
     }
 
+    public DBCursor getDBCursor() {
+        return dbcursor;
+    }
+    
     public void close() {
         if (dbcursor != null) {
             dbcursor.close();
             dbcursor = null;
         }
-        tabbedDiv.removeChild(this);
-        tabbedDiv.structureComponent();
+        tabbedDiv.removeTab(this);
     }
 
     void addToTabbedDiv() {
         tabbedDiv = JMongoBrowser.instance.getTabbedResult();
-        tabbedDiv.addChild(this);
-        tabbedDiv.structureComponent();
-        tabbedDiv.selectLastTab();
+        tabbedDiv.addTab(this, true);        
 
         getTree().expandNode(getTree().getTreeNode());
     }
@@ -180,10 +169,10 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                 DBObject doc = null;
                 if (obj instanceof DBObject) {
                     doc = (DBObject) obj;
-                } else if (obj instanceof DBObjectWrapper) {
-                    doc = ((DBObjectWrapper) obj).getDBObject();
-                } else if (obj instanceof TreeNodeDBObject) {
-                    doc = ((TreeNodeDBObject) obj).getDBObject();
+                } else if (obj instanceof TreeNodeDocumentField) {
+                    doc = (DBObject) ((TreeNodeDocumentField) obj).getValue();
+                } else if (obj instanceof TreeNodeDocument) {
+                    doc = ((TreeNodeDocument) obj).getDBObject();
                 }
                 if (doc != null) {
                     os.writeObject(doc);
@@ -382,7 +371,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         if (path == null || path.getPathCount() < 2) {
             return null;
         }
-        return (DefaultMutableTreeNode) path.getPathComponent(1);
+        return (DefaultMutableTreeNode) path.getLastPathComponent();
     }
 
     public DBObject getSelectedDocument() {
@@ -390,122 +379,32 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         if (path == null || path.getPathCount() < 2) {
             return null;
         }
-        DefaultMutableTreeNode node = getSelectedNode();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getPathComponent(1);
         Object obj = node.getUserObject();
-        if (obj instanceof DBObjectWrapper) {
-            return ((DBObjectWrapper) obj).getDBObject();
+        if (obj instanceof TreeNodeDocumentField) {
+            return (DBObject) ((TreeNodeDocumentField) obj).getValue();
         } else if (obj instanceof DBObject) {
             return (DBObject) obj;
-        } else if (obj instanceof TreeNodeDBObject) {
-            return ((TreeNodeDBObject) obj).getDBObject();
+        } else if (obj instanceof TreeNodeDocument) {
+            return ((TreeNodeDocument) obj).getDBObject();
         }
         return null;
     }
-
-    public void remove() {
-        DBObject doc = getSelectedDocument();
-        if (doc == null) {
-            return;
+    
+    String getSelectedDocumentPath() {
+        TreePath path = getTree().getSelectionPath();
+        String pathStr = "";
+        if (path.getPathCount() < 2)
+            return null;
+        for (int i = 2; i < path.getPathCount(); ++i) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getPathComponent(i);
+            String key = ((TreeNodeDocumentField) node.getUserObject()).getKey();
+            pathStr += "." + key;
         }
-
-        if (!((MenuItem) getBoundUnit(Item.remove)).getDialog().show()) {
-            return;
-        }
-
-        if (dbcursor == null) {
-            getTree().removeChild((TreeNodeDBObject) getSelectedNode().getUserObject());
-            getTree().structureComponent();
-            getTree().expandNode(getTree().getTreeNode());
-            return;
-        }
-
-        // go by _id if possible
-        final DBObject query = doc.containsField("_id") ? new BasicDBObject("_id", doc.get("_id")) : doc;
-        new DbJob() {
-
-            @Override
-            public Object doRun() throws IOException {
-                return dbcursor.getCollection().remove(query);
-            }
-
-            @Override
-            public String getNS() {
-                return dbcursor.getCollection().getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Remove";
-            }
-
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                updateCursor();
-            }
-
-            @Override
-            public Object getRoot(Object result) {
-                return query;
-            }
-        }.addJob();
+        return pathStr.substring(1);
     }
 
-//    public void duplicate() {
-//        final DBObject doc = getSelectedDocument();
-//        if (doc == null) {
-//            return;
-//        }
-//        final int num = getIntFieldValue(Item.dupCount);
-//
-//        if (dbcursor == null) {
-//            for (int i = 0; i < num; ++i) {
-//                DBObject newdoc = new BasicDBObject(doc.toMap());
-//                newdoc.removeField("_id");
-//                addDocument(newdoc);
-//            }
-//            getTree().structureComponent();
-//            getTree().expandNode(getTree().getTreeNode());
-//            return;
-//        }
-//
-//        new DbJob() {
-//
-//            @Override
-//            public Object doRun() throws IOException {
-//                List list = new ArrayList(num);
-//                for (int i = 0; i < num; ++i) {
-//                    DBObject newdoc = new BasicDBObject(doc.toMap());
-//                    newdoc.removeField("_id");
-//                    list.add(newdoc);
-//                }
-//                return dbcursor.getCollection().insert(list);
-//            }
-//
-//            @Override
-//            public String getNS() {
-//                return dbcursor.getCollection().getFullName();
-//            }
-//
-//            @Override
-//            public String getShortName() {
-//                return "Duplicate";
-//            }
-//
-//            @Override
-//            public void wrapUp(Object res) {
-//                super.wrapUp(res);
-//                updateCursor();
-//            }
-//
-//            @Override
-//            public Object getRoot(Object result) {
-//                return doc;
-//            }
-//        }.addJob();
-//    }
-
-    private void updateCursor() {
+    public void updateCursor() {
         if (dbcursor == null) {
             return;
         }
@@ -559,72 +458,12 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         getComponentBoundUnit(Item.getAll).updateComponent();
     }
 
-    public void update() {
-        final DBObject doc = getSelectedDocument();
-        if (doc == null) {
-            return;
-        }
-
-        ((DocBuilderField) getBoundUnit(Item.upUpdate)).setDBObject((BasicDBObject) doc);
-        if (!((MenuItem) getBoundUnit(Item.update)).getDialog().show()) {
-            return;
-        }
-
-        final DBObject query = doc.containsField("_id") ? new BasicDBObject("_id", doc.get("_id")) : doc;
-        final DBObject update = ((DocBuilderField) getBoundUnit(Item.upUpdate)).getDBObject();
-        final boolean multi = getBooleanFieldValue(Item.upMulti);
-
-        if (dbcursor == null) {
-            getTree().removeChild((TreeNodeDBObject) getSelectedNode().getUserObject());
-            addDocument(update, null);
-            getTree().structureComponent();
-            getTree().expandNode(getTree().getTreeNode());
-            return;
-        }
-
-        final DBCollection col = dbcursor.getCollection();
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                return col.update(query, update, false, multi);
-            }
-
-            @Override
-            public String getNS() {
-                return col.getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Update";
-            }
-
-            @Override
-            public Object getRoot(Object result) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("query=").append(query);
-                sb.append(", update=").append(update);
-                sb.append(", multi=").append(multi);
-                return sb.toString();
-            }
-
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                updateCursor();
-            }
-        }.addJob();
-    }
-
-    private void addDocument(DBObject doc, DbJob job) {
+    public void addDocument(DBObject doc, DbJob job) {
         addDocument(doc, job, false);
     }
 
-    private void addDocument(DBObject doc, DbJob job, boolean expand) {
-        TreeNodeLabel node = new TreeNodeDBObject(doc, job);
-        final PopUpMenu popUp = (PopUpMenu) getBoundUnit(Item.popUp);
-        node.setPopUpMenu(popUp);
+    public void addDocument(DBObject doc, DbJob job, boolean expand) {
+        TreeNodeLabel node = new TreeNodeDocument(doc, job);
         getTree().addChild(node);
         if (expand)
             getTree().expandNode(node);

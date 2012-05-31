@@ -5,6 +5,7 @@
 package com.edgytech.jmongobrowser;
 
 import com.edgytech.swingfast.SwingFast;
+import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -56,7 +57,7 @@ public class DbNode extends BaseTreeNode {
         label = db.getName();
         // db.getStats is too slow.. just do a quick command
 //        CommandResult res = db.getStats();
-        CommandResult res = db.command("getLastError");
+        CommandResult res = db.command(new BasicDBObject("profile", -1));
         res.throwOnError();
 //        label += " (" + res.getInt("objects") + "/" + res.getInt("dataSize") + ")";
 

@@ -23,6 +23,7 @@ function package_build {
 
 	cp ../dist/JMongoBrowser.jar $app/Contents/Resources/Java/
 	cp ../lib/*.jar $app/Contents/Resources/Java/
+        cp ./common-files/* $app/Contents/Resources/Java/
 
 	zip -r ${appdir}.zip $appdir
 }

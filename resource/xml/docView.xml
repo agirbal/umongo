@@ -15,10 +15,6 @@
             <Text label="  "/>
             <Button id="tabClose" icon="dialog-close_16.png" iconGroup="icons" call="close" fixedSize="20;20"/>
         </Div>
-        <PopUpMenu id="popUp">
-            <MenuItem id="popUpdate" label="Update" call="update"/>
-            <MenuItem id="popRemove" label="Remove" call="remove"/>
-        </PopUpMenu>
     </XmlUnit>
     <MenuBar zone="NORTH" id="menuBar">
         <Text id="icon" icon="page_table.png" iconGroup="icons" toolTipText="Index"/>
@@ -32,17 +28,6 @@
         <Menu id="view">
             <MenuItem id="expandAll" call="expandAll"/>
             <MenuItem id="collapseAll" call="collapseAll"/>            
-        </Menu>
-        <Menu id="document" enabled="false">
-            <MenuItem id="update" call="update" showDialog="false">
-                <FormDialog>
-                    <com.edgytech.jmongobrowser.DocBuilderField id="upUpdate" label="Update" toolTipText="Update to apply to document, in JSON format"/>
-                    <CheckBox id="upMulti" label="Multi" toolTipText="Update all matched documents"/>
-                </FormDialog>
-            </MenuItem>
-            <MenuItem id="remove" call="remove">
-                <ConfirmDialog text="Remove document?"/>
-            </MenuItem>
         </Menu>
         <Menu id="tools">
             <MenuItem id="startAutoUpdate" call="startAutoUpdate" enabled="false"/>

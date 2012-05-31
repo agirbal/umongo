@@ -7,6 +7,11 @@ package com.edgytech.jmongobrowser;
 
 import com.edgytech.swingfast.ConfirmDialog;
 import com.edgytech.swingfast.XmlUnit;
+import com.mongodb.DBRefBase;
+import java.util.Date;
+import java.util.UUID;
+import java.util.regex.Pattern;
+import org.bson.types.*;
 
 /**
  *
@@ -28,7 +33,9 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
         importDialog,
         autoUpdateDialog,
         docBuilderDialog,
-        lockingOperationDialog
+        lockingOperationDialog,
+        documentMenu,
+        documentFieldMenu
     }
 
     public GlobalStore() {
@@ -95,5 +102,46 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
         if (!getLockingOperationDialog().show())
             return false;
         return true;
+    }
+    
+    public Object editValue(String key, Object value) {
+        Class ceditor = null;
+        if (value == null) {
+            ceditor = null;
+        } else if (value instanceof String) {
+            ceditor = EditStringDialog.class;
+        } else if (value instanceof Binary) {
+            ceditor = EditBinaryDialog.class;
+        } else if (value instanceof ObjectId || value instanceof DBRefBase) {
+            ceditor = EditObjectIdDialog.class;
+        } else if (value instanceof Boolean) {
+            ceditor = EditBooleanDialog.class;
+        } else if (value instanceof Code || value instanceof CodeWScope) {
+            ceditor = EditCodeDialog.class;
+        } else if (value instanceof Date) {
+            ceditor = EditDateDialog.class;
+        } else if (value instanceof Double || value instanceof Float) {
+            ceditor = EditDoubleDialog.class;
+        } else if (value instanceof Long || value instanceof Integer) {
+            ceditor = EditLongDialog.class;
+        } else if (value instanceof Pattern) {
+            ceditor = EditPatternDialog.class;
+        } else if (value instanceof BSONTimestamp) {
+            ceditor = EditTimestampDialog.class;
+        } else if (value instanceof UUID) {
+            ceditor = EditUuidDialog.class;
+        }
+
+        if (ceditor == null)
+            return null;
+        EditFieldDialog editor = (EditFieldDialog) getFirstChildOfClass(ceditor, null);
+        editor.setKey(key);
+        editor.setValue(value);
+
+        if (!editor.show()) {
+            return value;
+        }
+
+        return editor.getValue();
     }
 }

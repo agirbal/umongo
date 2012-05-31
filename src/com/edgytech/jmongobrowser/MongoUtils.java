@@ -48,16 +48,6 @@ public class MongoUtils {
         return opt;
     }
 
-    public static DefaultMutableTreeNode dbObjectToTreeNode(DBObject obj) {
-        return dbObjectToTreeNode(null, obj);
-    }
-
-    public static DefaultMutableTreeNode dbObjectToTreeNode(Object objkey, DBObject obj) {
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new DBObjectWrapper(objkey, obj));
-        addChildrenToTreeNode(node, obj);
-        return node;
-    }
-
     public static void addChildrenToTreeNode(DefaultMutableTreeNode node, DBObject obj) {
         for (String key : obj.keySet()) {
             Object val = obj.get(key);
@@ -65,15 +55,10 @@ public class MongoUtils {
                 continue;
             }
 
-            DefaultMutableTreeNode child = null;
+            DefaultMutableTreeNode child = new DefaultMutableTreeNode(new TreeNodeDocumentField(key, val));
             if (val instanceof DBObject) {
-                child = dbObjectToTreeNode(key, (DBObject) val);
-            } else {
-                String str = key + " : " + JSON.serialize(val);
-                child = new DefaultMutableTreeNode(limitString(str, 0));
-            }
-
-            if (val instanceof ObjectId) {
+                addChildrenToTreeNode(child, (DBObject) val);
+            } else if (val instanceof ObjectId) {
                 // break it down
                 ObjectId id = (ObjectId) val;
                 child.add(new DefaultMutableTreeNode("Time: " + id.getTime() + " = " + new Date(id.getTime()).toString()));
@@ -84,11 +69,11 @@ public class MongoUtils {
         }
     }
 
-    public static String dbObjectToString(DBObject obj) {
-        return dbObjectToString(obj, 0);
+    public static String getObjectString(Object obj) {
+        return getObjectString(obj, 0);
     }
 
-    public static String dbObjectToString(DBObject obj, int limit) {
+    public static String getObjectString(Object obj, int limit) {
         return limitString(obj.toString(), limit);
     }
 

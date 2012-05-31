@@ -73,46 +73,8 @@ public class DocFieldText extends Div implements EnumListener<Item> {
     }
 
     public void edit() {
-        Class ceditor = null;
-        if (value == null) {
-            ceditor = null;
-        } else if (value instanceof String) {
-            ceditor = EditStringDialog.class;
-        } else if (value instanceof Binary) {
-            ceditor = EditBinaryDialog.class;
-        } else if (value instanceof ObjectId || value instanceof DBRefBase) {
-            ceditor = EditObjectIdDialog.class;
-        } else if (value instanceof Boolean) {
-            ceditor = EditBooleanDialog.class;
-        } else if (value instanceof Code || value instanceof CodeWScope) {
-            ceditor = EditCodeDialog.class;
-        } else if (value instanceof Date) {
-            ceditor = EditDateDialog.class;
-        } else if (value instanceof Double || value instanceof Float) {
-            ceditor = EditDoubleDialog.class;
-        } else if (value instanceof Long || value instanceof Integer) {
-            ceditor = EditLongDialog.class;
-        } else if (value instanceof Pattern) {
-            ceditor = EditPatternDialog.class;
-        } else if (value instanceof BSONTimestamp) {
-            ceditor = EditTimestampDialog.class;
-        } else if (value instanceof UUID) {
-            ceditor = EditUuidDialog.class;
-        }
-
-        if (ceditor == null)
-            return;
-        EditFieldDialog editor = (EditFieldDialog) JMongoBrowser.instance.getGlobalStore().getFirstChildOfClass(ceditor, null);
-        editor.setKey(key);
-        editor.setValue(value);
-
-        if (!editor.show()) {
-            return;
-        }
-        value = editor.getValue();
+        value = JMongoBrowser.instance.getGlobalStore().editValue(key, value);
         setStringFieldValue(Item.value, JSON.serialize(value));
-        System.out.println(value.toString());
-        System.out.println(JSON.serialize(value));
         updateComponent();
         _object.commitComponent();
     }

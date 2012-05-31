@@ -58,7 +58,7 @@ public class DocField extends Text implements MouseListener {
             return;
         }
 
-        value = MongoUtils.dbObjectToString(doc);
+        value = MongoUtils.getObjectString(doc);
     }
 
     public DBObject getDoc() {

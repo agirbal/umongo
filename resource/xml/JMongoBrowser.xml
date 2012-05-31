@@ -12,6 +12,25 @@
     <IconGroup id="icons" folder="img" resource="true"/>
     <IconGroup id="etIcons" folder="com/edgytech/swingfast/img" resource="true"/>
     <com.edgytech.jmongobrowser.GlobalStore id="globalStore">
+        <com.edgytech.jmongobrowser.DocumentMenu id="documentMenu">
+            <MenuItem id="update" call="update" showDialog="false">
+                <FormDialog>
+                    <com.edgytech.jmongobrowser.DocBuilderField id="upUpdate" label="Update" toolTipText="Update to apply to document, in JSON format"/>
+                </FormDialog>
+            </MenuItem>
+            <MenuItem id="remove" call="remove">
+                <ConfirmDialog text="Are you sure you want to remove this document?"/>
+            </MenuItem>
+            <MenuSeparator/>
+            <MenuItem id="copyValue" call="copyValue"/>
+        </com.edgytech.jmongobrowser.DocumentMenu>
+        <com.edgytech.jmongobrowser.DocumentFieldMenu id="documentFieldMenu">
+            <MenuItem id="set" call="set"/>
+            <MenuItem id="unset" call="unset"/>
+            <MenuSeparator/>
+            <MenuItem id="copyField" call="copyField"/>
+            <MenuItem id="copyValue" call="copyValue"/>
+        </com.edgytech.jmongobrowser.DocumentFieldMenu>
         <com.edgytech.jmongobrowser.OptionDialog id="optionDialog">
             <TabbedDiv>
                 <Div id="queryOption">
@@ -48,17 +67,17 @@
             <IntSpinner id="autoCount" label="Count" minValue="0" value="100" toolTipText="Number of times to update, 0 means forever"/>
         </com.edgytech.jmongobrowser.AutoUpdateDialog>
         <com.edgytech.jmongobrowser.ExportDialog id="exportDialog">
-            <FileChooserField id="outputFile">
-                <FileChooserDialog type="SAVE" mode="FILES_ONLY"/>
-            </FileChooserField>
+            <FileSelectorField id="outputFile">
+                <FileSelectorDialog type="SAVE" mode="FILES_ONLY"/>
+            </FileSelectorField>
             <ComboBox id="format" items="JSON;JSON Array;CSV;BSON" toolTipText="Format to use for the export"/>
             <TextField id="fields" toolTipText="Comma-separated list of fields to export, mandatory for CSV format"/>
             <CheckBox id="continueOnError" toolTipText="Continue after an error occurs"/>
         </com.edgytech.jmongobrowser.ExportDialog>
         <com.edgytech.jmongobrowser.ImportDialog id="importDialog">
-            <FileChooserField id="inputFile">
-                <FileChooserDialog type="OPEN" mode="FILES_ONLY"/>
-            </FileChooserField>
+            <FileSelectorField id="inputFile">
+                <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
+            </FileSelectorField>
             <ComboBox id="format" items="JSON;JSON Array;CSV;BSON" toolTipText="Format to use for the export"/>
             <CheckBox id="continueOnError" toolTipText="Continue after an error occurs"/>
             <CheckBox id="dropCollection" toolTipText="Drop collection before import"/>
@@ -210,9 +229,9 @@
                 <Menu id="GridFS" label="GridFS">
                     <MenuItem id="uploadFile" call="uploadFile">
                         <FormDialog id="uploadFileDialog">
-                            <FileChooserField id="uploadFilePath" label="Local File">
-                                <FileChooserDialog type="OPEN" selectionMode="FILES_ONLY"/>
-                            </FileChooserField>
+                            <FileSelectorField id="uploadFilePath" label="Local File">
+                                <FileSelectorDialog type="OPEN" selectionMode="FILES_ONLY"/>
+                            </FileSelectorField>
                             <TextField id="uploadFileName" label="File Name" toolTipText="Optional, Name of the file as stored on the server"/>
                             <TextField id="uploadContentType" toolTipText="Optional, Content type to associate with file"/>
                             <com.edgytech.jmongobrowser.DocBuilderField id="uploadMetadata" label="Metadata" toolTipText="Optional, JSON object representing the file's metadata"/>
@@ -223,9 +242,9 @@
                             <Text value="Specify a query object or a file name"/>
                             <com.edgytech.jmongobrowser.DocBuilderField id="downloadQuery" label="Query" toolTipText="Find the file using this query"/>
                             <TextField id="downloadFileName" label="File Name" toolTipText="Name of the file as stored on the server"/>
-                            <FileChooserField id="downloadFilePath" label="Save As">
-                                <FileChooserDialog type="SAVE" selectionMode="FILES_ONLY"/>
-                            </FileChooserField>
+                            <FileSelectorField id="downloadFilePath" label="Save As">
+                                <FileSelectorDialog type="SAVE" selectionMode="FILES_ONLY"/>
+                            </FileSelectorField>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="deleteFile" call="deleteFile">
@@ -312,7 +331,7 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="mapReduce" call="mapReduce">
-                        <FormDialog buttons="OK_CANCEL_RESET">
+                        <FormDialog>
                             <TextArea id="mrMap" label="Map JS Function" toolTipText="map javascript function with signature 'void function map()' which should contain one or more calls to emit(key, obj)" nonEmpty="true" value="function(){ emit(this._id, {count: 1}); }"/>
                             <TextArea id="mrReduce" label="Reduce JS Function" toolTipText="reduce javascript function with signature 'result reduce(key, values)' where key is the emit key and values is the list of values to reduce.'" nonEmpty="true" value="function(key, values) { total = 0; for (var i = 0; i &lt; values.length; ++i) { total += values[i].count; }; return {count: total}; }"/>
                             <TextArea id="mrFinalize" label="Finalize JS Function" toolTipText="optional finalize javascript function with signature 'result finalize(key, out)' where out is the result for that key"/>
@@ -737,12 +756,12 @@
                 <MenuItem id="importFile" alt="i" call="importFile"/>
                 <MenuSeparator/>
                 <MenuItem id="preferences" alt="p" key="comma" keyMod="cmd">
-                    <com.edgytech.jmongobrowser.AppPreferences id="prefDialog" start="start" buttons="OK_CANCEL_RESET">
+                    <com.edgytech.jmongobrowser.AppPreferences id="prefDialog" start="start">
                         <TabbedDiv id="optionTabs">
                             <Div id="general" gap="true">
                                 <Div id="view" gap="true" titled="true">
-                                    <IntSpinner id="treeUpdateRate" minValue="0" step="1000" value="10000" toolTipText="Rate in ms at which to update the Tree information (server down, master, etc). 0 means no automatic updating."/>
-                                    <IntSpinner id="inlineDocumentLength" minValue="1" value="100" toolTipText="Number of characters to display for the document inline preview"/>
+                                    <IntSpinner id="treeUpdateRate" minValue="0" step="1000" value="0" toolTipText="Rate in ms at which to update the Tree information (server down, master, etc). 0 means no automatic updating."/>
+                                    <IntSpinner id="inlineDocumentLength" minValue="1" value="200" toolTipText="Number of characters to display for the document inline preview"/>
                                 </Div>
                                 <Div id="querying" gap="true" titled="true">
                                     <IntSpinner id="getMoreSize" minValue="1" value="50" toolTipText="Number of documents to fetch when getting more results from a cursor"/>
