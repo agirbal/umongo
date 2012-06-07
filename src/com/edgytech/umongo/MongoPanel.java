@@ -158,7 +158,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
                 }
-                updateComponent();
+
                 super.wrapUp(res);
             }
         }.addJob();

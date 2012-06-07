@@ -586,11 +586,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 return doc.toString();
             }
 
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                CollectionPanel.this.updateComponent();
-            }
         }.addJob();
     }
 
@@ -619,11 +614,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 return doc.toString();
             }
 
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                CollectionPanel.this.updateComponent();
-            }
         }.addJob();
     }
 
@@ -653,11 +643,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 return doc.toString();
             }
 
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                CollectionPanel.this.updateComponent();
-            }
         }.addJob();
     }
 
@@ -773,11 +758,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 return sb.toString();
             }
 
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                CollectionPanel.this.updateComponent();
-            }
         }.addJob();
     }
 
@@ -829,11 +809,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 return sb.toString();
             }
 
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                CollectionPanel.this.updateComponent();
-            }
         }.addJob();
     }
 
@@ -918,11 +893,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 return "Import";
             }
 
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                CollectionPanel.this.updateComponent();
-            }
         }.addJob();
     }
 

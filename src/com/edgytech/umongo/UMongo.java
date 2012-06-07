@@ -47,6 +47,7 @@ public class UMongo extends Application implements Runnable {
     public final static UMongo instance = new UMongo();
     private ArrayList<MongoNode> mongos = new ArrayList<MongoNode>();
     boolean stopped = false;
+    BaseTreeNode node = null;
 
     public UMongo() {
         super(true);
@@ -180,6 +181,7 @@ public class UMongo extends Application implements Runnable {
     }
     
     public void displayNode(BaseTreeNode node) {
+        this.node = node;
         BasePanel panel = null;
         if (node instanceof MongoNode)
             panel = getGlobalStore().getMongoPanel();
@@ -200,6 +202,10 @@ public class UMongo extends Application implements Runnable {
         displayElement(panel);
     }
 
+    public BaseTreeNode getNode() {
+        return node;
+    }
+    
     public void runJob(DbJob job) {
         getJobBar().addJob(job);
         job.start();

@@ -12,12 +12,9 @@ import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import com.edgytech.umongo.DbJob.Item;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -35,6 +32,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     boolean stopped = false;
     ProgressBar _progress;
     ProgressBarWorker _pbw;
+    BaseTreeNode node;
 
     public DbJob() {
         try {
@@ -44,6 +42,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
         }
         setEnumBinding(Item.values(), this);
         setStringFieldValue(Item.jobName, getTitle());
+        this.node = node;
     }
 
     public void start() {
@@ -119,6 +118,10 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
 
     public void wrapUp(Object res) {
         UMongo.instance.removeJob(this);
+        
+        if (node != null)
+            node.updateComponent();
+        
         if (res == null) {
             return;
         }
@@ -172,6 +175,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     }
 
     public void addJob() {
+        node = UMongo.instance.getNode();
         UMongo.instance.runJob(this);
     }
 
