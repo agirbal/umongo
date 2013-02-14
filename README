@@ -1,6 +1,7 @@
+All binaries are available in: GitHub from either:
+- https://github.com/agirbal/umongo/downloads
+- http://www.edgytech.com/umongo
 
-Right now, you can only build the app using the netbeans project.
-All binaries are available in GitHub or from http://www.edgytech.com/umongo/
-Will put together build script soon :)
+Right now, you can only compile the app using the netbeans project, which should be improved soon.
 AG
 
