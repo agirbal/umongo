@@ -324,8 +324,9 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public void wrapUp(Object res) {
-                super.wrapUp(res);
                 node.removeNode();
+                node = null;
+                super.wrapUp(res);
             }
         }.addJob();
     }
