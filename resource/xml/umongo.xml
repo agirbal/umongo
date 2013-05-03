@@ -761,9 +761,9 @@
                 <MenuItem id="connect" alt="c" key="k" keyMod="cmd" call="connect">
                     <com.edgytech.umongo.ConnectDialog id="connectDialog">
                         <Text value="Either provide a URI ..."/>
-                        <TextField id="uri" label="URI" toolTipText="Enter URI of mongo dbs like 'mongodb://...'"/>
+                        <DynamicComboBox id="uri" label="URI" toolTipText="Enter URI of mongo dbs like 'mongodb://...'" items="" value="0" editable="true" recordItems="true"/>
                         <Text value="Or the settings below"/>
-                        <TextField id="servers" toolTipText="Comma separated list of servers to connect to" value="localhost:27017"/>
+                        <DynamicComboBox id="servers" toolTipText="Comma separated list of servers to connect to" items="localhost:27017" value="0" editable="true" recordItems="true"/>
                         <TextField id="databases" toolTipText="Optional, a comma separated list of databases to connect to"/>
                         <Div id="connectionPool" titled="true">
                             <IntSpinner id="connectionsPerHost" minValue="1" value="10" toolTipText="Maximum number of concurrent connections for one server"/>
