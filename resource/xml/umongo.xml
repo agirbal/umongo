@@ -274,6 +274,7 @@
                             </FileSelectorField>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="listFiles" call="listFiles"/>
                     <MenuItem id="deleteFile" call="deleteFile">
                         <FormDialog id="deleteFileDialog">
                             <Text value="Specify a query object or a file name"/>
@@ -747,7 +748,7 @@
         <com.edgytech.umongo.EditUuidDialog>
             <TextField id="value"/>
         </com.edgytech.umongo.EditUuidDialog>
-        <com.edgytech.umongo.DocBuilderDialog id="docBuilderDialog">
+        <com.edgytech.umongo.DocBuilderDialog id="docBuilderDialog" buttons="OK_CANCEL">
             <Scroller fixedSize="600;400">
                 <Zone>
                     <Div id="div" zone="NORTH"/>

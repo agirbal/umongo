@@ -51,6 +51,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         downloadQuery,
         downloadFileName,
         downloadFilePath,
+        listFiles,
         deleteFile,
         deleteQuery,
         deleteFileName,
@@ -270,6 +271,30 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             public Object getRoot(Object result) {
                 return "filename=" + fname + ", query=" + query + ", path=" + dpath;
             }
+        }.addJob();
+    }
+
+    public void listFiles() {
+        final DB db = getDbNode().getDb();
+        final DBCollection col = db.getCollection("fs.files");
+        
+        new DbJob() {
+
+            @Override
+            public Object doRun() throws IOException {
+                return col.find();
+            }
+
+            @Override
+            public String getNS() {
+                return col.getName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "List Files";
+            }
+
         }.addJob();
     }
 
