@@ -47,6 +47,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         fullName,
         queryOptions,
         writeConcern,
+        readPreference,
         stats,
         statsCmd,
         refresh,
@@ -170,6 +171,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             setStringFieldValue(Item.fullName, collection.getFullName());
             setStringFieldValue(Item.queryOptions, MongoUtils.queryOptionsToString(collection.getOptions()));
             ((DocField) getBoundUnit(Item.writeConcern)).setDoc(collection.getWriteConcern().getCommand());
+            ((DocField) getBoundUnit(Item.readPreference)).setDoc(collection.getReadPreference().toDBObject());
             ((CmdField) getBoundUnit(Item.stats)).updateFromCmd(collection);
         } catch (Exception e) {
             UMongo.instance.showError(this.getClass().getSimpleName() + " update", e);

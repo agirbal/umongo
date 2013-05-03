@@ -32,6 +32,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         activeServers,
         queryOptions,
         writeConcern,
+        readPreference,
         serverStatus,
         fsync,
         fsyncAndLock,
@@ -92,16 +93,17 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
             addrs = mongo.getServerAddressList();
             html = "<html>";
             for (ServerAddress addr : addrs) {
-                String ports = MongoUtils.makeInfoString("used", mongo.getConnector().getDBPortPool(addr).inUse(),
-                        "available", mongo.getConnector().getDBPortPool(addr).available(),
-                        "created", mongo.getConnector().getDBPortPool(addr).everCreated());
-                String txt = getServerAddressString(addr) + " - " + ports;
+//                String ports = MongoUtils.makeInfoString("used", mongo.getConnector().getDBPortPool(addr).inUse(),
+//                        "available", mongo.getConnector().getDBPortPool(addr).available(),
+//                        "created", mongo.getConnector().getDBPortPool(addr).everCreated());
+                String txt = getServerAddressString(addr);
                 html += txt + "<br/>";
             }
             setStringFieldValue(Item.activeServers, html);
 
             setStringFieldValue(Item.queryOptions, MongoUtils.queryOptionsToString(mongo.getOptions()));
             ((DocField) getBoundUnit(Item.writeConcern)).setDoc(mongo.getWriteConcern().getCommand());
+            ((DocField) getBoundUnit(Item.readPreference)).setDoc(mongo.getReadPreference().toDBObject());
             setStringFieldValue(Item.maxObjectSize, String.valueOf(mongo.getMaxBsonObjectSize()));
         } catch (Exception e) {
             UMongo.instance.showError(this.getClass().getSimpleName() + " update", e);

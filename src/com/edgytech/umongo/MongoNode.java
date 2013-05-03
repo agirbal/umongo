@@ -97,7 +97,7 @@ public class MongoNode extends BaseTreeNode {
 
     @Override
     protected void updateNode(List<ImageIcon> overlays) {
-        label = mongo.toString();
+        label = "Mongo";
         List list = mongo.getDatabaseNames();
         label += " (" + list.size() + ")";
     }

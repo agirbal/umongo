@@ -36,6 +36,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         name,
         queryOptions,
         writeConcern,
+        readPreference,
         stats,
         statsCmd,
         refresh,
@@ -116,6 +117,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             setStringFieldValue(Item.name, db.getName());
             setStringFieldValue(Item.queryOptions, MongoUtils.queryOptionsToString(db.getOptions()));
             ((DocField) getBoundUnit(Item.writeConcern)).setDoc(db.getWriteConcern().getCommand());
+            ((DocField) getBoundUnit(Item.readPreference)).setDoc(db.getReadPreference().toDBObject());
             ((CmdField) getBoundUnit(Item.stats)).updateFromCmd(db);
         } catch (Exception e) {
             UMongo.instance.showError(this.getClass().getSimpleName() + " update", e);

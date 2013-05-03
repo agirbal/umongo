@@ -31,6 +31,14 @@ public class OptionDialog extends FormDialog {
         jsync,
         rpPreference
     }
+    
+    enum ReadPref {
+        primary,
+        primaryPreferred,
+        secondary,
+        secondaryPreferred,
+        nearest
+    }
 
     public OptionDialog() {
         setEnumBinding(Item.values(), null);
@@ -54,12 +62,10 @@ public class OptionDialog extends FormDialog {
         setBooleanFieldValue(Item.fsync, wc.fsync());
         
         ComboBox readBox = (ComboBox) getBoundUnit(Item.rpPreference);
-        if (rp == null)
-            readBox.value = 0;
-        else if (rp instanceof ReadPreference.PrimaryReadPreference)
-            readBox.value = 1;
-        else if (rp instanceof ReadPreference.SecondaryReadPreference)
-            readBox.value = 2;
+        ReadPref rpEnm = ReadPref.primary;
+        if (rp != null)
+            rpEnm = ReadPref.valueOf(rp.getName());
+        readBox.value = rpEnm.ordinal();
     }
 
     int getQueryOptions() {
@@ -87,12 +93,7 @@ public class OptionDialog extends FormDialog {
     
     ReadPreference getReadPreference() {
         ComboBox readBox = (ComboBox) getBoundUnit(Item.rpPreference);
-        if (readBox.value == 0)
-            return null;
-        if (readBox.value == 1)
-            return ReadPreference.PRIMARY;
-        if (readBox.value == 2)
-            return ReadPreference.SECONDARY;
-        return null;
+        ReadPref rpEnm = ReadPref.values()[readBox.value];
+        return ReadPreference.valueOf(rpEnm.name());        
     }
 }

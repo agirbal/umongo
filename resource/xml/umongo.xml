@@ -53,7 +53,7 @@
                     <CheckBox id="jsync" value="false" toolTipText="Waits that the data has been commited to the journal on disk."/>
                 </Div>
                 <Div id="readPreference">
-                    <ComboBox id="rpPreference" label="Read Preference" items="None;Primary;Secondary" value="0" toolTipText="The read preference mode. Primary to read from master, Secondary to read from slaves."/>
+                    <ComboBox id="rpPreference" label="Read Preference" items="Primary;Primary Preferred;Secondary;Secondary Preferred;Nearest" value="0" toolTipText="The read preference mode. Primary to read from master, Secondary to read from slaves."/>
                 </Div>
             </TabbedDiv>
         </com.edgytech.umongo.OptionDialog>
@@ -154,6 +154,7 @@
                     <Text id="version" label="Driver Version" field="true"/>
                     <Text id="queryOptions" field="true"/>
                     <com.edgytech.umongo.DocField id="writeConcern"/>
+                    <com.edgytech.umongo.DocField id="readPreference"/>
                     <Text id="masterServer" field="true"/>
                     <Text id="seedServers" field="true"/>
                     <Text id="activeServers" field="true"/>
@@ -311,6 +312,7 @@
                     <Text id="name" field="true"/>
                     <Text id="queryOptions" field="true"/>
                     <com.edgytech.umongo.DocField id="writeConcern"/>
+                    <com.edgytech.umongo.DocField id="readPreference"/>
                     <com.edgytech.umongo.CmdField id="stats" cmd="dbstats"/>
                 </Div>
             </Zone>
@@ -510,6 +512,7 @@
                     <Text id="fullName" field="true"/>
                     <Text id="queryOptions" field="true"/>
                     <com.edgytech.umongo.DocField id="writeConcern"/>
+                    <com.edgytech.umongo.DocField id="readPreference"/>
                     <com.edgytech.umongo.CmdField id="stats" cmd="collstats"/>
                 </Div>
             </Zone>
