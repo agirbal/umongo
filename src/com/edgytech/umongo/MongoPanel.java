@@ -103,8 +103,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
             setStringFieldValue(Item.queryOptions, MongoUtils.queryOptionsToString(mongo.getOptions()));
             ((DocField) getBoundUnit(Item.writeConcern)).setDoc(mongo.getWriteConcern().getCommand());
             setStringFieldValue(Item.maxObjectSize, String.valueOf(mongo.getMaxBsonObjectSize()));
-
-            setBooleanFieldValue(Item.fsyncAndLock, mongo.isLocked());
         } catch (Exception e) {
             UMongo.instance.showError(this.getClass().getSimpleName() + " update", e);
         }

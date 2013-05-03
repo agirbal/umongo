@@ -69,18 +69,16 @@ public class ServerNode extends BaseTreeNode {
 
     @Override
     protected void updateNode(List<ImageIcon> overlays) {
-        CommandResult res = getServerMongo().getDB("local").command("serverStatus");
-        if (res.containsField("repl")) {
-            BasicDBObject repl = (BasicDBObject) res.get("repl");
-            if (repl.getBoolean("ismaster", false)) {
-                overlays.add(SwingFast.createIcon("overlay/tick_circle.png", iconGroup));
-            } else if (!repl.getBoolean("secondary", false)) {
-                overlays.add(SwingFast.createIcon("overlay/error.png", iconGroup));
-            }
-        }
-        if (res.containsField("dur")) {
-            overlays.add(SwingFast.createIcon("overlay/shield_blue.png", iconGroup));
+        CommandResult res = getServerMongo().getDB("local").command("isMaster");
+        if (res.getBoolean("ismaster")) {
+            overlays.add(SwingFast.createIcon("overlay/tick_circle.png", iconGroup));
+        } else if (!res.getBoolean("secondary")) {
+            overlays.add(SwingFast.createIcon("overlay/error.png", iconGroup));
         }
 
+//        if (res.containsField("dur")) {
+//            overlays.add(SwingFast.createIcon("overlay/shield_blue.png", iconGroup));
+//        }        
+        
     }
 }

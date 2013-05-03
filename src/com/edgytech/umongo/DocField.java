@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 public class DocField extends Text implements MouseListener {
 
     @Serial
-    int limit;
+    public int limit;
     DBObject _doc;
 
     public DocField() {

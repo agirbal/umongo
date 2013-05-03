@@ -32,7 +32,6 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         journaling,
         replication,
         clientPorts,
-        serverStatus,
         rsConfig,
         rsStatus,
         rsOplogInfo,
@@ -42,7 +41,8 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         rsFreezeTime,
         rsRemove,
         isMaster,
-        serverStatusCmd,
+        serverStatus,
+        serverBuildInfo,
         currentOps,
         currentOpsQuery,
         killOp,
@@ -79,12 +79,12 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
 
             setStringFieldValue(Item.maxObjectSize, String.valueOf(svrMongo.getMaxBsonObjectSize()));
 
-            ((CmdField) getBoundUnit(Item.serverStatus)).updateFromCmd(svrMongo);
-
-            DBObject svrStatus = ((DocField) getBoundUnit(Item.serverStatus)).getDoc();
-            boolean dur = svrStatus.containsField("dur");
-            ((Text)getBoundUnit(Item.journaling)).setStringValue(dur ? "On" : "Off");
-            ((Text)getBoundUnit(Item.journaling)).showIcon = dur;
+//            ((CmdField) getBoundUnit(Item.serverStatus)).updateFromCmd(svrMongo);
+//
+//            DBObject svrStatus = ((DocField) getBoundUnit(Item.serverStatus)).getDoc();
+//            boolean dur = svrStatus.containsField("dur");
+//            ((Text)getBoundUnit(Item.journaling)).setStringValue(dur ? "On" : "Off");
+//            ((Text)getBoundUnit(Item.journaling)).showIcon = dur;
         } catch (Exception e) {
             UMongo.instance.showError(this.getClass().getSimpleName() + " update", e);
         }
@@ -143,6 +143,10 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     
     public void serverStatus() {
         new DocView(null, "Server Status", getServerNode().getServerMongo().getDB("admin"), "serverStatus").addToTabbedDiv();
+    }
+
+    public void serverBuildInfo() {
+        new DocView(null, "Server Build Info", getServerNode().getServerMongo().getDB("admin"), "buildinfo").addToTabbedDiv();
     }
 
     public void isMaster() {

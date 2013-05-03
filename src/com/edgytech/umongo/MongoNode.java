@@ -48,6 +48,7 @@ public class MongoNode extends BaseTreeNode {
         }
 
         List<ServerAddress> addrs = mongo.getServerAddressList();
+        
         if (addrs.size() <= 1) {
             // check if mongos
             boolean added = false;
@@ -60,6 +61,16 @@ public class MongoNode extends BaseTreeNode {
                     added = true;
                 }
             } catch (Exception e) {}
+
+            // could be replset of 1, check
+            try {
+                CommandResult res = node.getServerDB().command("isMaster");
+                if (res.containsField("setName")) {
+                    addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo));
+                    added = true;
+                }
+            } catch (Exception e) {}
+            
             if (!added)
                 addChild(node);
         } else {

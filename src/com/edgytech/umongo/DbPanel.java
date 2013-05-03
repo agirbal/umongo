@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import org.bson.types.Code;
 import com.edgytech.umongo.DbPanel.Item;
 import com.edgytech.swingfast.*;
+import com.mongodb.*;
+import java.util.ArrayList;
 
 /**
  *
@@ -63,12 +65,13 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         authenticate,
         authUser,
         authPassword,
+        manageUsers,
+        userDialog,
+        userList,
         addUser,
-        auUser,
-        auPassword,
-        auReadOnly,
         removeUser,
-        ruUser,
+        editUser,
+        userChange,
         createCollection,
         createCollName,
         createCollCapped,
@@ -380,54 +383,142 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
+    void refreshUserList() {
+        List list = (List) getBoundUnit(Item.userList);        
+        final DB db = getDbNode().getDb();
+        DBCursor cur = db.getCollection("system.users").find().sort(new BasicDBObject("user", 1));
+        ArrayList users = new ArrayList();
+        while (cur.hasNext()) {
+            BasicDBObject user = (BasicDBObject) cur.next();
+            users.add(user.getString("user"));
+        }
+        
+        list.items = (String[]) users.toArray(new String[users.size()]);
+        list.structureComponent();
+    }
+    
+    public void manageUsers() {
+        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.manageUsers)).getDialog();
+        refreshUserList();
+
+        if (!dialog.show())
+            return;
+    }
+    
     public void addUser() {
         final DB db = getDbNode().getDb();
-        final String user = getStringFieldValue(Item.auUser);
-        final String pass = getStringFieldValue(Item.auPassword);
-        final boolean ro = getBooleanFieldValue(Item.auReadOnly);
+        final DBCollection col = db.getCollection("system.users");
+
+        UserDialog ud = (UserDialog) getBoundUnit(Item.userDialog);
+        ud.resetForNew();
+        if (!ud.show())
+            return;
+        
+        final BasicDBObject newUser = ud.getUser(null);
+        
         new DbJob() {
 
             @Override
-            public Object doRun() {
-                db.addUser(user, pass.toCharArray(), ro);
-                return null;
+            public Object doRun() throws IOException {
+                return col.insert(newUser);
             }
 
             @Override
             public String getNS() {
-                return db.getName();
+                return "system.users";
             }
 
             @Override
             public String getShortName() {
                 return "Add User";
             }
-        }.addJob();
+
+            @Override
+            public void wrapUp(Object res) {
+                super.wrapUp(res);
+                refreshUserList();
+            }
+        }.addJob();   
     }
 
     public void removeUser() {
         final DB db = getDbNode().getDb();
-        final String user = getStringFieldValue(Item.ruUser);
+        
+        final String user = getComponentStringFieldValue(Item.userList);        
+        if (user == null) {
+            return;
+        }
+        if (!((ConfirmDialog) getBoundUnit(Item.userChange)).show())
+            return;
+        
         new DbJob() {
 
             @Override
-            public Object doRun() {
-                db.removeUser(user);
-                return null;
+            public Object doRun() throws IOException {
+                return db.removeUser(user);
             }
 
             @Override
             public String getNS() {
-                return db.getName();
+                return "system.users";
             }
 
             @Override
             public String getShortName() {
-                return "Delete User";
+                return "Remove User";
             }
-        }.addJob();
+
+            @Override
+            public void wrapUp(Object res) {
+                super.wrapUp(res);
+                refreshUserList();
+            }
+        }.addJob();        
     }
 
+    public void editUser() {
+        final DB db = getDbNode().getDb();
+        final DBCollection col = db.getCollection("system.users");
+        
+        final String user = getComponentStringFieldValue(Item.userList);        
+        if (user == null) {
+            return;
+        }
+        
+        final BasicDBObject userObj = (BasicDBObject) col.findOne(new BasicDBObject("user", user));
+        UserDialog ud = (UserDialog) getBoundUnit(Item.userDialog);
+        ud.resetForEdit(userObj);
+        if (!ud.show())
+            return;
+        
+        final BasicDBObject newUser = ud.getUser(userObj);
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() throws IOException {
+                return col.save(newUser);
+            }
+
+            @Override
+            public String getNS() {
+                return col.getName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Edit User";
+            }
+
+            @Override
+            public void wrapUp(Object res) {
+                super.wrapUp(res);
+                refreshUserList();
+            }
+        }.addJob();
+        
+    }
+    
     public void createCollection() {
         final DbNode node = getDbNode();
         final DB db = getDbNode().getDb();

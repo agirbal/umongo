@@ -28,6 +28,9 @@
             <MenuItem id="set" call="set"/>
             <MenuItem id="unset" call="unset"/>
             <MenuSeparator/>
+            <MenuItem id="compress" call="compress"/>
+            <MenuItem id="decompress" call="decompress"/>
+            <MenuSeparator/>
             <MenuItem id="copyField" call="copyField"/>
             <MenuItem id="copyValue" call="copyValue"/>
         </com.edgytech.umongo.DocumentFieldMenu>
@@ -204,17 +207,40 @@
                             <PasswordField id="authPassword" label="Password" nonEmpty="true"/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuItem id="addUser" call="addUser">
-                        <FormDialog>
-                            <TextField id="auUser" label="User" nonEmpty="true"/>
-                            <PasswordField id="auPassword" label="Password" nonEmpty="true"/>
-                            <CheckBox id="auReadOnly" label="Read-only"/>
+                    <MenuItem id="manageUsers" call="manageUsers" showDialog="false">
+                        <FormDialog buttons="OK" okLabel="Done">
+                            <Zone>
+                                <Scroller zone="CENTER" preferredSize="320;-1">
+                                    <List id="userList" items=""/>
+                                </Scroller>
+                                <Div axis="Y" zone="EAST">
+                                    <Button id="editUser" icon="edit.png" iconGroup="icons" toolTipText="Edit the user" call="editUser"/>
+                                    <Button id="addUser" icon="add.png" iconGroup="icons" toolTipText="Add a new user" call="addUser"/>
+                                    <Button id="removeUser" icon="dialog-close_16.png" iconGroup="icons" toolTipText="Remove the user" call="removeUser"/>
+                                </Div>
+                            </Zone>
                         </FormDialog>
-                    </MenuItem>
-                    <MenuItem id="removeUser" call="removeUser">
-                        <FormDialog>
-                            <TextField id="ruUser" label="User" nonEmpty="true"/>
-                        </FormDialog>
+                        <ConfirmDialog id="userChange" text="Do you wish to proceed with the User change?"/>
+                        <com.edgytech.umongo.UserDialog id="userDialog" buttons="OK_CANCEL" okLabel="Save" save="false">
+<!--                            <Text id="userRO" field="true" label="User" toolTipText="the username" visible="false"/>-->
+                            <TextField id="user" value="" toolTipText="the username" nonEmpty="true"/>
+                            <PasswordField id="password" value="" toolTipText="the password" nonEmpty="true"/>
+                            <TextField id="userSource" value="" toolTipText="Optional, A string that holds the name of the database that contains the credentials for the user. Use $external for external source."/>
+                            <Div id="roles" label="User Roles" titled="true">
+                                <CheckBox id="read" toolTipText="Provides users with the ability to read data from any collection within a specific logical database"/>
+                                <CheckBox id="readWrite" toolTipText="Provides users with the ability to read from or write to any collection within a specific logical database"/>
+                                <CheckBox id="dbAdmin" toolTipText="Provides the ability to perform administrative operations within the scope of this logical database"/>
+                                <CheckBox id="userAdmin" toolTipText="Allows users to read and write data to the system.users collection of any database"/>
+                            </Div>
+                            <Div id="rolesAdmin" label="Special Admin Roles" titled="true">
+                                <CheckBox id="clusterAdmin" toolTipText="These privileges include but are not limited to replica set and sharded cluster administrative functions"/>
+                                <CheckBox id="readAnyDatabase" toolTipText="provides users with the same read-only permissions as read, except it applies to all logical databases"/>
+                                <CheckBox id="readWriteAnyDatabase" toolTipText="provides users with the same read and write permissions as readWrite, except it applies to all logical databases"/>
+                                <CheckBox id="dbAdminAnyDatabase" toolTipText="provides users with the same access to user administration operations as dbAdmin, except it applies to all logical databases"/>
+                                <CheckBox id="userAdminAnyDatabase" toolTipText="provides users with the same access to database administration operations as userAdmin, except it applies to all logical databases"/>
+                            </Div>
+                            <CheckBox id="version22" label="Legacy v2.2 format" value="false" toolTipText="If checked, will save the user in the legacy format for v2.2 and prior"/>
+                        </com.edgytech.umongo.UserDialog>
                     </MenuItem>
                 </Menu>
                 <Menu id="sharding">
@@ -336,16 +362,16 @@
                             <TextArea id="mrReduce" label="Reduce JS Function" toolTipText="reduce javascript function with signature 'result reduce(key, values)' where key is the emit key and values is the list of values to reduce.'" nonEmpty="true" value="function(key, values) { total = 0; for (var i = 0; i &lt; values.length; ++i) { total += values[i].count; }; return {count: total}; }"/>
                             <TextArea id="mrFinalize" label="Finalize JS Function" toolTipText="optional finalize javascript function with signature 'result finalize(key, out)' where out is the result for that key"/>
                             <Div id="input" titled="true">
-                            <com.edgytech.umongo.DocBuilderField id="mrQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
-                            <com.edgytech.umongo.DocBuilderField id="mrSort" label="Sort" toolTipText="Sort key for the input, in JSON format. Sort by the emit key to optimize performance."/>
-                            <IntSpinner id="mrLimit" label="Limit" toolTipText="Limit of the number of input entries to process" minValue="0"/>
+                                <com.edgytech.umongo.DocBuilderField id="mrQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
+                                <com.edgytech.umongo.DocBuilderField id="mrSort" label="Sort" toolTipText="Sort key for the input, in JSON format. Sort by the emit key to optimize performance."/>
+                                <IntSpinner id="mrLimit" label="Limit" toolTipText="Limit of the number of input entries to process" minValue="0"/>
                             </Div>
                             <Div id="output" titled="true">
-                            <ComboBox id="mrType" label="Output Type" items="replace;merge;reduce;inline" toolTipText="How to process the output"/>
-                            <TextField id="mrOut" label="Output Collection" toolTipText="Name of the output collection" nonEmpty="true"/>
-                            <TextField id="mrOutDB" label="Output Database" toolTipText="Name of the output database, if different from the input database"/>
-                            <CheckBox id="mrOutSharded" label="Sharded Output" value="false" toolTipText="If true, the result collection will be sharded using the _id key."/>
-                            <CheckBox id="mrNonAtomic" label="Non Atomic" value="false" toolTipText="If true, the output will be applied without taking a lock, which means partial results can be seen." />
+                                <ComboBox id="mrType" label="Output Type" items="replace;merge;reduce;inline" toolTipText="How to process the output"/>
+                                <TextField id="mrOut" label="Output Collection" toolTipText="Name of the output collection" nonEmpty="true"/>
+                                <TextField id="mrOutDB" label="Output Database" toolTipText="Name of the output database, if different from the input database"/>
+                                <CheckBox id="mrOutSharded" label="Sharded Output" value="false" toolTipText="If true, the result collection will be sharded using the _id key."/>
+                                <CheckBox id="mrNonAtomic" label="Non Atomic" value="false" toolTipText="If true, the output will be applied without taking a lock, which means partial results can be seen." />
                             </Div>
                             <CheckBox id="mrJSMode" value="false" label="JS Mode"/>
                         </FormDialog>
@@ -517,7 +543,8 @@
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                 </Menu>
                 <Menu id="command">
-                    <MenuItem id="serverStatusCmd" label="Server Status" call="serverStatus"/>
+                    <MenuItem id="serverStatus" call="serverStatus"/>
+                    <MenuItem id="serverBuildInfo" call="serverBuildInfo"/>
                     <MenuItem id="isMaster" call="isMaster"/>
                     <MenuSeparator/>
                     <MenuItem id="currentOps" call="currentOps">
@@ -561,8 +588,7 @@
                     <Text id="address" field="true"/>
                     <Text id="replication" field="true" toolTipText="Replication status" icon="overlay/tick_circle.png" iconGroup="icons"/>
                     <Text id="maxObjectSize" field="true"/>
-                    <Text id="journaling" field="true" icon="overlay/shield_blue.png" iconGroup="icons"/>
-                    <com.edgytech.umongo.CmdField id="serverStatus" cmd="serverStatus"/>
+<!--                    <Text id="journaling" field="true" icon="overlay/shield_blue.png" iconGroup="icons"/>-->
                 </Div>
             </Zone>
         </com.edgytech.umongo.ServerPanel>
@@ -573,7 +599,7 @@
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                     <MenuSeparator/>
                     <MenuItem id="initiate" call="initiate">
-                            <com.edgytech.umongo.DocBuilderField id="initConfig" label="Config" toolTipText="An object representing the configuration. Leave empty to start with a single server."/>
+                        <com.edgytech.umongo.DocBuilderField id="initConfig" label="Config" toolTipText="An object representing the configuration. Leave empty to start with a single server."/>
                     </MenuItem>
                     <MenuItem id="reconfigure" call="reconfigure" showDialog="false">
                         <FormDialog>

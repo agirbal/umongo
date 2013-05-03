@@ -15,6 +15,11 @@ import com.mongodb.DBObject;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  *
@@ -25,6 +30,8 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
     enum Item {
         set,
         unset,
+        compress,
+        decompress,
         copyField,
         copyValue
     }
@@ -155,6 +162,31 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         StringSelection data = new StringSelection(node.getValue().toString());
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(data, data);
+    }
+
+    public void compress() throws IOException {
+        final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
+        TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
+        String data = node.getValue().toString();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length());
+        byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
+        System.out.println("Bytes before: " + bytes.length);
+        
+        baos.reset();
+        DeflaterOutputStream dos = new DeflaterOutputStream(baos);
+        dos.write(bytes);
+        dos.close();
+        byte[] deflate = baos.toByteArray();
+        System.out.println("Bytes deflate: " + deflate.length);
+        
+        baos.reset();
+        GZIPOutputStream gos = new GZIPOutputStream(baos);
+        gos.write(bytes);
+        gos.close();
+        byte[] gzip = baos.toByteArray();
+        System.out.println("Bytes gzip: " + gzip.length);
+        
+        
     }
 
 }
