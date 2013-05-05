@@ -4,6 +4,7 @@
  */
 package com.edgytech.umongo;
 
+import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
@@ -118,16 +119,16 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         node = null;
     }
 
-    public void fsync() {
+    public void fsync(ButtonBase button) {
         DBObject cmd = new BasicDBObject("fsync", 1);
         if (false) {
             cmd.put("async", 1);
         }
         DB admin = getMongoNode().getMongo().getDB("admin");
-        new DocView(null, "Fsync", admin, cmd).addToTabbedDiv();
+        new DbJobCmd(admin, cmd).addJob();
     }
 
-    public void fsyncAndLock() {
+    public void fsyncAndLock(ButtonBase button) {
         new DbJob() {
 
             @Override
@@ -164,7 +165,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void options() {
+    public void options(ButtonBase button) {
         Mongo mongo = getMongoNode().getMongo();
         OptionDialog od = UMongo.instance.getGlobalStore().getOptionDialog();
         od.update(mongo.getOptions(), mongo.getWriteConcern(), mongo.getReadPreference());
@@ -177,14 +178,14 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         refresh();
     }
 
-    public void createDB() {
+    public void createDB(ButtonBase button) {
         final String name = getStringFieldValue(Item.createDbName);
         final Mongo mongo = getMongoNode().getMongo();
         mongo.getDB(name);
         getMongoNode().structureComponent();
     }
 
-    public void authenticate() {
+    public void authenticate(final ButtonBase button) {
         final Mongo mongo = getMongoNode().getMongo();
         final String user = getStringFieldValue(Item.authUser);
         final String passwd = getStringFieldValue(Item.authPassword);
@@ -215,27 +216,32 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
                     refresh();
                 }
             }
+
+            @Override
+            public ButtonBase getButton() {
+                return button;
+            }
         }.addJob();
 
     }
 
-    public void serverStatus() {
-        new DocView(null, "Server Status", getMongoNode().getMongo().getDB("admin"), "serverStatus").addToTabbedDiv();
+    public void serverStatus(ButtonBase button) {
+        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), "serverStatus").addJob();
     }
 
-    public void logRotate() {
-        new DocView(null, "Log Rotate", getMongoNode().getMongo().getDB("admin"), "logRotate").addToTabbedDiv();
+    public void logRotate(ButtonBase button) {
+        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), "logRotate").addJob();
     }
 
-    public void showLog() {
-        new DocView(null, "Show Log", getMongoNode().getMongo().getDB("admin"), new BasicDBObject("getLog", "global")).addToTabbedDiv();
+    public void showLog(ButtonBase button) {
+        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), new BasicDBObject("getLog", "global")).addJob();
     }
 
-    public void shutdown() {
-        new DocView(null, "Shutdown", getMongoNode().getMongo().getDB("admin"), "shutdown").addToTabbedDiv();
+    public void shutdown(ButtonBase button) {
+        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), "shutdown").addJob();
     }
 
-    public void cloneDB() {
+    public void cloneDB(ButtonBase button) {
         final Mongo mongo = getMongoNode().getMongo();
         final String host = getStringFieldValue(Item.cloneDBHost);
         final String from = getStringFieldValue(Item.cloneDBFrom);
@@ -251,24 +257,24 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
             cmd.put("slaveOk", slaveOk);
         }
 
-        new DocView(null, "Clone DB", mongo.getDB("admin"), cmd, null, this, null).addToTabbedDiv();
+        new DbJobCmd(mongo.getDB("admin"), cmd, this, null).addJob();
     }
 
-    public void currentOps() {
+    public void currentOps(ButtonBase button) {
         final Mongo mongo = getMongoNode().getMongo();
         final DBObject query = ((DocBuilderField) getBoundUnit(Item.currentOpsQuery)).getDBObject();
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.inprog"), query);
     }
 
-    public void killOp() {
+    public void killOp(ButtonBase button) {
         final Mongo mongo = getMongoNode().getMongo();
         final int opid = getIntFieldValue(Item.killOpId);
         final DBObject query = new BasicDBObject("op", opid);
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query);
     }
 
-    public void isMaster() {
-        new DocView(null, "Is Master", getMongoNode().getMongo().getDB("admin"), "isMaster").addToTabbedDiv();
+    public void isMaster(ButtonBase button) {
+        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), "isMaster").addJob();
     }
 
 }

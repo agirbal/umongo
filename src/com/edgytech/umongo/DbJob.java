@@ -4,17 +4,17 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.Div;
-import com.edgytech.swingfast.EnumListener;
-import com.edgytech.swingfast.ProgressBar;
-import com.edgytech.swingfast.ProgressBarWorker;
-import com.edgytech.swingfast.XmlComponentUnit;
+import com.edgytech.swingfast.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import java.util.Iterator;
 import java.util.logging.Level;
 import com.edgytech.umongo.DbJob.Item;
+import com.mongodb.DB;
+import java.awt.Component;
+import javax.swing.AbstractButton;
+import javax.swing.JMenuItem;
 
 /**
  *
@@ -41,8 +41,6 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
             getLogger().log(Level.SEVERE, null, ex);
         }
         setEnumBinding(Item.values(), this);
-        setStringFieldValue(Item.jobName, getTitle());
-        this.node = node;
     }
 
     public void start() {
@@ -50,6 +48,14 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     }
 
     public void start(boolean determinate) {
+        setStringFieldValue(Item.jobName, getTitle());
+
+        // if dialog, save current state
+        ButtonBase button = getButton();
+        if (button != null) {
+            xmlSaveLocalCopy(button, null, null);
+        }
+        
         _progress = (ProgressBar) getBoundUnit(Item.progressBar);
         _progress.determinate = isDeterminate();
         _pbw = new ProgressBarWorker(_progress) {
@@ -97,6 +103,10 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
         return null;
     }
 
+    public ButtonBase getButton() {
+        return null;
+    }
+
     public boolean isCancelled() {
         if (_pbw != null) {
             return _pbw.isCancelled();
@@ -134,20 +144,20 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
         }
 
         if (res instanceof Iterator) {
-            new DocView(null, title, (Iterator) res, sroot).addToTabbedDiv();
+            new DocView(null, title, this, sroot, (Iterator) res).addToTabbedDiv();
         } else if (res instanceof DBObject) {
-            new DocView(null, title, (DBObject) res, sroot, this).addToTabbedDiv();
+            new DocView(null, title, this, sroot, (DBObject) res).addToTabbedDiv();
         } else if (res instanceof WriteResult) {
             WriteResult wres = (WriteResult) res;
             DBObject lasterr = wres.getCachedLastError();
             if (lasterr != null) {
-                new DocView(null, title, lasterr, sroot, this).addToTabbedDiv();
+                new DocView(null, title, this, sroot, lasterr).addToTabbedDiv();
             }
         } else if (res instanceof Exception) {
             UMongo.instance.showError(title, (Exception) res);
         } else {
             DBObject obj = new BasicDBObject("Result", res.toString());
-            new DocView(null, title, obj, sroot, this).addToTabbedDiv();
+            new DocView(null, title, this, sroot, obj).addToTabbedDiv();
         }
         _progress = null;
         _pbw = null;
@@ -182,4 +192,31 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     long getRunTime() {
         return endTime - startTime;
     }
+    
+    void spawnDialog() {
+        if (node == null)
+            return;
+        UMongo.instance.displayNode(node);
+        
+        ButtonBase button = getButton();
+        if (button == null)
+            return;
+        xmlLoadLocalCopy(button, null, null);
+        Component comp = ((ButtonBase) button).getComponent();
+        if (comp != null)
+            ((AbstractButton) comp).doClick();
+    }
+
+    DB getDB() {
+        return null;
+    }
+    
+    DBObject getCommand() {
+        return null;
+    }
+    
+    BasePanel getPanel() {
+        return null;
+    }
+
 }

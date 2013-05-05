@@ -4,6 +4,7 @@
  */
 package com.edgytech.umongo;
 
+import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.MenuItem;
 import com.edgytech.swingfast.TabInterface;
@@ -39,6 +40,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         tabClose,
         refresh,
         append,
+        spawn,
         export,
         cursor,
         getMore,
@@ -49,8 +51,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         expandAll,
         collapseAll
     }
-    DB db;
-    DBObject cmd;
+
     Iterator<DBObject> iterator;
     DBCursor dbcursor;
     boolean busy = false;
@@ -60,36 +61,55 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     int updateInterval;
     int updateCount;
     boolean running;
-    BasePanel panel;
+    DbJob job;
 
-    public DocView() {
+    public DocView(String id, String label, DbJob job, Object root) {
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.docView, null);
         } catch (Exception ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }
         setEnumBinding(Item.values(), this);
-    }
 
-    public DocView(String id, String label, DBObject doc, Object root, DbJob job) {
-        this();
         setId(id);
         setLabel(label);
-
+        this.job = job;
         setStringFieldValue(Item.tabTitle, label);
+
         getTree().label = root.toString();
+        
+        if (job != null && job.getButton() != null) {
+            getComponentBoundUnit(Item.spawn).enabled = true;
+        }
+    }
+
+    /**
+     * create a doc view with static document
+     * @param id
+     * @param label
+     * @param job
+     * @param root
+     * @param doc 
+     */
+    public DocView(String id, String label, DbJob job, Object root, DBObject doc) {
+        this(id, label, job, root);
+
         if (doc != null) {
             addDocument(doc, job, true);
         }
     }
 
-    public DocView(String id, String label, Iterator<DBObject> iterator, Object root) {
-        this();
-        setId(id);
-        setLabel(label);
+    /**
+     * create a doc view with an iterator or a cursor
+     * @param id
+     * @param label
+     * @param job
+     * @param root
+     * @param iterator 
+     */
+    public DocView(String id, String label, DbJob job, Object root, Iterator<DBObject> iterator) {
+        this(id, label, job, root);
 
-        setStringFieldValue(Item.tabTitle, label);
-        getTree().label = root.toString();
         if (iterator instanceof DBCursor) {
             this.dbcursor = (DBCursor) iterator;
             this.iterator = dbcursor;
@@ -98,34 +118,54 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         } else {
             this.iterator = iterator;
         }
-        getMore();
+        getMore(null);
     }
 
-    public DocView(String id, String label, DB db, String cmd) {
-        this(id, label, db, new BasicDBObject(cmd, 1));
-    }
-
-    public DocView(String id, String label, DBCollection col, String cmd) {
-        this(id, label, col.getDB(), new BasicDBObject(cmd, col.getName()));
-    }
-
-    public DocView(String id, String label, DB db, DBObject cmd) {
-        this(id, label, db, cmd, null, null, null);
-    }
-
-    public DocView(String id, String label, DB db, DBObject cmd, DBObject result, BasePanel panel, DbJob job) {
-        this(id, label, result, db.getName() + ": " + cmd, job);
-        this.db = db;
-        this.cmd = cmd;
-        this.panel = panel;
-        ((MenuItem) getBoundUnit(Item.startAutoUpdate)).enabled = true;
-        ((MenuItem) getBoundUnit(Item.refresh)).enabled = true;
-        ((MenuItem) getBoundUnit(Item.append)).enabled = true;
-        if (result == null) {
-            refresh();
-        }
-    }
-
+//    /**
+//     * create a doc view from a reusable command with existing result
+//     * @param id
+//     * @param label
+//     * @param job
+//     * @param db
+//     * @param cmd
+//     * @param result 
+//     */
+//    public DocView(String id, String label, DbJob job, DB db, DBObject cmd, DBObject result) {
+//        this(id, label, job, db.getName() + ": " + cmd, result);
+//        this.db = db;
+//        this.cmd = cmd;
+//
+//        ((MenuItem) getBoundUnit(Item.startAutoUpdate)).enabled = true;
+//        ((MenuItem) getBoundUnit(Item.refresh)).enabled = true;
+//        ((MenuItem) getBoundUnit(Item.append)).enabled = true;
+//        if (result == null) {
+//            refresh();
+//        }
+//    }
+//    
+//    /**
+//     * create a doc view to run a simple command against a database
+//     * @param id
+//     * @param label
+//     * @param col
+//     * @param panel 
+//     * @param cmdStr 
+//     */
+//    public DocView(String id, String label, DB db, String cmdStr) {
+//        this(id, label, null, db, new BasicDBObject(cmdStr, 1), null);
+//    }
+//    
+//    /**
+//     * create a doc view to run a simple command against a collection
+//     * @param id
+//     * @param label
+//     * @param col
+//     * @param cmdStr 
+//     */
+//    public DocView(String id, String label, DBCollection col, String cmdStr) {
+//        this(id, label, null, col.getDB(), new BasicDBObject(cmdStr, col.getName()), null);
+//    }
+    
     Tree getTree() {
         return (Tree) getBoundUnit(Item.docTree);
     }
@@ -152,7 +192,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     public void actionPerformed(Enum enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void export() throws IOException {
+    public void export(ButtonBase button) throws IOException {
         // export should be run in thread, to prevent concurrent mods
         ExportDialog dia = UMongo.instance.getGlobalStore().getExportDialog();
         if (!dia.show()) {
@@ -185,14 +225,14 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         return getComponentBoundUnit("tabDiv").getComponent();
     }
 
-    public void startAutoUpdate() {
+    public void startAutoUpdate(ButtonBase button) {
         AutoUpdateDialog dia = UMongo.instance.getGlobalStore().getAutoUpdateDialog();
         if (!dia.show()) {
             return;
         }
 
         if (updateThread != null) {
-            stopAutoUpdate();
+            stopAutoUpdate(null);
         }
 
         updateThread = new Thread(this);
@@ -206,7 +246,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         getComponentBoundUnit(Item.stopAutoUpdate).updateComponent();
     }
 
-    public void stopAutoUpdate() {
+    public void stopAutoUpdate(ButtonBase button) {
         running = false;
         try {
             updateThread.interrupt();
@@ -224,9 +264,9 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         while (running) {
             try {
                 if ("Refresh".equals(updateType) || dbcursor != null) {
-                    refresh();
+                    refresh(null);
                 } else if ("Append".equals(updateType)) {
-                    append();
+                    append(null);
                 }
 
                 if (updateCount > 0 && ++i >= updateCount) {
@@ -240,22 +280,26 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         getLogger().log(Level.INFO, "Ran " + i + " updates");
     }
 
-    public void refresh() {
+    public void refresh(ButtonBase button) {
         if (dbcursor != null) {
             updateCursor();
-        } else if (cmd != null) {
+        } else {
             refreshCmd(false);
         }
     }
 
-    public void append() {
-        if (cmd != null) {
-            refreshCmd(true);
+    public void append(ButtonBase button) {
+        refreshCmd(true);
+    }
+
+    public void spawn(ButtonBase button) {
+        if (job != null) {
+            job.spawnDialog();
         }
     }
 
     public void refreshCmd(final boolean append) {
-        if (db == null || cmd == null) {
+        if (job == null || job.getDB() == null || job.getCommand() == null) {
             return;
         }
         if (busy) {
@@ -268,7 +312,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
             @Override
             public Object doRun() {
-                CommandResult res = db.command(cmd);
+                CommandResult res = job.getDB().command(job.getCommand());
                 res.throwOnError();
                 result = res;
                 return null;
@@ -276,7 +320,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
             @Override
             public String getNS() {
-                return db.getName();
+                return job.getDB().getName();
             }
 
             @Override
@@ -298,8 +342,8 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                     getTree().expandAll();
 
                     // panel info may need to be refreshed
-                    if (panel != null)
-                        panel.refresh();
+                    if (job.getPanel() != null)
+                        job.getPanel().refresh();
                 }
             }
         }.addJob();
@@ -356,11 +400,11 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         }.addJob();
     }
 
-    public void getMore() {
+    public void getMore(ButtonBase button) {
         getMore(UMongo.instance.getPreferences().getGetMoreSize());
     }
 
-    public void getAll() {
+    public void getAll(ButtonBase button) {
         getMore(0);
     }
 
@@ -436,7 +480,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                 if (res == null) {
                     iterator = dbcursor;
                     getTree().removeAllChildren();
-                    getMore();
+                    getMore(null);
                 }
             }
         }.addJob();
@@ -454,6 +498,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         getComponentBoundUnit(Item.getMore).updateComponent();
         getComponentBoundUnit(Item.getAll).enabled = canGetMore;
         getComponentBoundUnit(Item.getAll).updateComponent();
+        
     }
 
     public void addDocument(DBObject doc, DbJob job) {
@@ -473,13 +518,13 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 //        getTree().addChild(node);
 //    }
     
-    public void collapseAll() {
+    public void collapseAll(ButtonBase button) {
         getTree().collapseAll();
         // need to reexpand root
         getTree().expandNode(getTree().getTreeNode());
     }
 
-    public void expandAll() {
+    public void expandAll(ButtonBase button) {
         getTree().expandAll();
     }
 }

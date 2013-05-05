@@ -4,12 +4,7 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.ConfirmDialog;
-import com.edgytech.swingfast.EnumListener;
-import com.edgytech.swingfast.MenuBar;
-import com.edgytech.swingfast.MenuItem;
-import com.edgytech.swingfast.TabbedDiv;
-import com.edgytech.swingfast.XmlComponentUnit;
+import com.edgytech.swingfast.*;
 import com.mongodb.Mongo;
 import com.mongodb.MongoURI;
 import com.mongodb.ServerAddress;
@@ -47,7 +42,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     public void start() {
     }
 
-    public void importFile() throws IOException {
+    public void importFile(ButtonBase button) throws IOException {
         ImportDialog dia = UMongo.instance.getGlobalStore().getImportDialog();
         if (!dia.show()) {
             return;
@@ -75,7 +70,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void connect() {
+    public void connect(ButtonBase button) {
         try {
             ConnectDialog dialog = (ConnectDialog) ((MenuItem) getBoundUnit(Item.connect)).getDialog();
             Mongo mongo = null;
@@ -124,7 +119,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         }
     }
 
-    public void exit() {
+    public void exit(ButtonBase button) {
         UMongo.instance.windowClosing(null);
     }
 }

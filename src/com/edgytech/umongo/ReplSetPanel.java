@@ -82,27 +82,27 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void rsConfig() {
+    public void rsConfig(ButtonBase button) {
         final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
         CollectionPanel.doFind(col, null);
     }
     
-    public void rsStatus() {
-        new DocView(null, "RS Status", getReplSetNode().getMongo().getDB("admin"), "replSetGetStatus").addToTabbedDiv();
+    public void rsStatus(ButtonBase button) {
+        new DbJobCmd(getReplSetNode().getMongo().getDB("admin"), "replSetGetStatus").addJob();
     }
     
-    public void rsOplogInfo() {
-        new DocView(null, "Oplog Info", MongoUtils.getReplicaSetInfo(getReplSetNode().getMongo()),  "Oplog of " + getReplSetNode().getMongo().toString(), null).addToTabbedDiv();
+    public void rsOplogInfo(ButtonBase button) {
+        new DocView(null, "Oplog Info", null, "Oplog of " + getReplSetNode().getMongo().toString(), MongoUtils.getReplicaSetInfo(getReplSetNode().getMongo())).addToTabbedDiv();
     }
     
-    public void initiate() {
+    public void initiate(ButtonBase button) {
         DBObject config = ((DocBuilderField)getBoundUnit(Item.initConfig)).getDBObject();
         DBObject cmd = new BasicDBObject("replSetInitiate", config);
         DB admin = getReplSetNode().getMongo().getDB("admin");
-        new DocView(null, "RS Initiate", admin, cmd).addToTabbedDiv();
+        new DbJobCmd(admin, cmd, this, null).addJob();
     }
     
-    public void reconfigure() {
+    public void reconfigure(ButtonBase button) {
         final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
         DBObject oldConf = col.findOne();
         if (oldConf == null) {
@@ -172,7 +172,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void addReplica() {
+    public void addReplica(ButtonBase button) {
         final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
         DBObject config = col.findOne();
         if (config == null) {
@@ -208,7 +208,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         reconfigure(config);
     }
     
-    public void removeReplica() {
+    public void removeReplica(ButtonBase button) {
         final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
         DBObject config = col.findOne();
         if (config == null) {
@@ -246,7 +246,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         reconfigure(config);
     }
 
-    public void compareReplicas() {
+    public void compareReplicas(ButtonBase button) {
         final String stat = getStringFieldValue(Item.crStat);
         new DbJob() {
 

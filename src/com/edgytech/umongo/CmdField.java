@@ -31,7 +31,7 @@ public class CmdField extends DocField {
 
     @Override
     public void addView() {
-        new DocView(null, getLabelToDisplay(), theDb, theCmd, getDoc(), null, null).addToTabbedDiv();
+        new DbJobCmd(theDb, theCmd).addJob();
     }
 
     void updateFromCmd(DB db) {

@@ -94,7 +94,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void addShard() {
+    public void addShard(ButtonBase button) {
         final RouterNode router = getRouterNode();
         final String host = getStringFieldValue(Item.asHost);
         final String shardName = getStringFieldValue(Item.asShardName);
@@ -110,10 +110,10 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         if (maxsize > 0)
             cmd.put("maxSize", maxsize);
         final DB db = router.getMongo().getDB("admin");
-        new DocView(null, "Add Shard", db, cmd, null, this, null).addToTabbedDiv();
+        new DbJobCmd(db, cmd, this, null).addJob();
     }
 
-    public void removeShard() {
+    public void removeShard(ButtonBase button) {
         FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.removeShard)).getDialog();
         ComboBox combo = (ComboBox) getBoundUnit(Item.rsShard);
         combo.value = 0;
@@ -125,18 +125,18 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         
         final BasicDBObject cmd = new BasicDBObject("removeshard", getStringFieldValue(Item.rsShard));
         final DB db = getRouterNode().getMongo().getDB("admin");
-        new DocView(null, "Remove Shard", db, cmd, null, this, null).addToTabbedDiv();
+        new DbJobCmd(db, cmd, this, null).addJob();
     }
 
-    public void listShards() {
-        new DocView(null, "List Shards", getRouterNode().getMongo().getDB("admin"), "listShards").addToTabbedDiv();
+    public void listShards(ButtonBase button) {
+        new DbJobCmd(getRouterNode().getMongo().getDB("admin"), "listShards").addJob();
     }
 
-    public void flushConfiguration() {
-        new DocView(null, "Flush Config", getRouterNode().getMongo().getDB("admin"), "flushRouterConfig").addToTabbedDiv();
+    public void flushConfiguration(ButtonBase button) {
+        new DbJobCmd(getRouterNode().getMongo().getDB("admin"), "flushRouterConfig").addJob();
     }
 
-    public void autoBalance() {
+    public void autoBalance(ButtonBase button) {
         final Mongo mongo = getRouterNode().getMongo();
         final DB config = mongo.getDB("config");
         final DBCollection settings = config.getCollection("settings");
@@ -170,7 +170,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void regenConfigDB() throws UnknownHostException {
+    public void regenConfigDB(ButtonBase button) throws UnknownHostException {
         Mongo cmongo = getRouterNode().getMongo();
         String servers = getStringFieldValue(Item.regenServers);
         final String db = getStringFieldValue(Item.regenDB);

@@ -128,7 +128,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void command() {
+    public void command(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final String scmd = getStringFieldValue(Item.commandStr);
         final DBObject cmd = !scmd.isEmpty() ? new BasicDBObject(scmd, 1)
@@ -136,21 +136,22 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         boolean help = getBooleanFieldValue(Item.commandHelp);
         if (help)
             cmd.put("help", true);
-        new DocView(null, "Command", db, cmd).addToTabbedDiv();
+
+        new DbJobCmd(db, cmd).addJob();
     }
 
-    public void listCommands() {
-        new DocView(null, "List Cmd", getDbNode().getDb(), "listCommands").addToTabbedDiv();
+    public void listCommands(ButtonBase button) {
+        new DbJobCmd(getDbNode().getDb(), "listCommands").addJob();
     }
     
-    public void eval() {
+    public void eval(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final String sfunc = getStringFieldValue(Item.evalCode);
         final boolean noLock = getBooleanFieldValue(Item.evalNoLock);
         BasicDBObject cmd = new BasicDBObject("$eval", sfunc);
         if (noLock)
             cmd.put("nolock", true);
-        new DocView(null, "Eval", db, cmd).addToTabbedDiv();
+        new DbJobCmd(db, cmd).addJob();
 
 //        new DbJob() {
 //
@@ -176,7 +177,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
 //        }.addJob();
     }
 
-    public void uploadFile() {
+    public void uploadFile(final ButtonBase button) {
         final DbNode dbNode = getDbNode();
         final DB db = dbNode.getDb();
 
@@ -228,10 +229,15 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
                 // may have new collections
                 dbNode.structureComponent();
             }
+
+            @Override
+            public ButtonBase getButton() {
+                return button;
+            }
         }.addJob();
     }
 
-    public void downloadFile() {
+    public void downloadFile(final ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBObject query = ((DocBuilderField)getBoundUnit(Item.downloadQuery)).getDBObject();
         final String fname = getStringFieldValue(Item.downloadFileName);
@@ -271,10 +277,15 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             public Object getRoot(Object result) {
                 return "filename=" + fname + ", query=" + query + ", path=" + dpath;
             }
+
+            @Override
+            public ButtonBase getButton() {
+                return button;
+            }
         }.addJob();
     }
 
-    public void listFiles() {
+    public void listFiles(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBCollection col = db.getCollection("fs.files");
         
@@ -298,7 +309,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void deleteFile() {
+    public void deleteFile(final ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBObject query = ((DocBuilderField)getBoundUnit(Item.downloadQuery)).getDBObject();
         final String fname = getStringFieldValue(Item.downloadFileName);
@@ -328,10 +339,15 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             public Object getRoot(Object result) {
                 return "filename=" + fname + ", query=" + query;
             }
+
+            @Override
+            public ButtonBase getButton() {
+                return button;
+            }
         }.addJob();
     }
 
-    public void dropDatabase() {
+    public void dropDatabase(ButtonBase button) {
         final DbNode node = getDbNode();
         final DB db = getDbNode().getDb();
         new DbJob() {
@@ -361,7 +377,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void options() {
+    public void options(ButtonBase button) {
         final DB db = getDbNode().getDb();
         OptionDialog od = UMongo.instance.getGlobalStore().getOptionDialog();
         od.update(db.getOptions(), db.getWriteConcern(), db.getReadPreference());
@@ -374,7 +390,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         refresh();
     }
 
-    public void authenticate() {
+    public void authenticate(final ButtonBase button) {
         final DbNode dbNode = getDbNode();
         final DB db = dbNode.getDb();
         final String user = getStringFieldValue(Item.authUser);
@@ -407,6 +423,11 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
                     dbNode.structureComponent();
                 }
             }
+
+            @Override
+            public ButtonBase getButton() {
+                return button;
+            }
         }.addJob();
     }
 
@@ -424,7 +445,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         list.structureComponent();
     }
     
-    public void manageUsers() {
+    public void manageUsers(ButtonBase button) {
         FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.manageUsers)).getDialog();
         refreshUserList();
 
@@ -432,7 +453,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             return;
     }
     
-    public void addUser() {
+    public void addUser(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBCollection col = db.getCollection("system.users");
 
@@ -468,7 +489,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();   
     }
 
-    public void removeUser() {
+    public void removeUser(ButtonBase button) {
         final DB db = getDbNode().getDb();
         
         final String user = getComponentStringFieldValue(Item.userList);        
@@ -503,7 +524,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();        
     }
 
-    public void editUser() {
+    public void editUser(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBCollection col = db.getCollection("system.users");
         
@@ -546,7 +567,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         
     }
     
-    public void createCollection() {
+    public void createCollection(final ButtonBase button) {
         final DbNode node = getDbNode();
         final DB db = getDbNode().getDb();
         final String name = getStringFieldValue(Item.createCollName);
@@ -589,22 +610,27 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
                 super.wrapUp(res);
                 node.structureComponent();
             }
+
+            @Override
+            public ButtonBase getButton() {
+                return button;
+            }
         }.addJob();
 
     }
 
-    public void stats() {
-        new DocView(null, "DB Stats", getDbNode().getDb(), "dbstats").addToTabbedDiv();
+    public void stats(ButtonBase button) {
+        new DbJobCmd(getDbNode().getDb(), "dbstats").addJob();
     }
 
-    public void enableSharding() {
+    public void enableSharding(ButtonBase button) {
         Mongo m = getDbNode().getMongoNode().getMongo();
         DB admin = m.getDB("admin");
         DBObject cmd = new BasicDBObject("enableSharding", getDbNode().getDb().getName());
-        new DocView(id, "Enable Sharding", admin, cmd, null, this, null).addToTabbedDiv();
+        new DbJobCmd(admin, cmd, this, null).addJob();
     }
 
-    public void profile() {
+    public void profile(ButtonBase button) {
         DB db = getDbNode().getDb();
         int level = getIntFieldValue(Item.profileLevel);
         final DBObject cmd = new BasicDBObject("profile", level);
@@ -613,25 +639,25 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             if (slow > 0)
                 cmd.put("slowms", slow);
         }
-        new DocView(null, "Profile", db, cmd).addToTabbedDiv();
+        new DbJobCmd(db, cmd).addJob();
     }
 
-    public void repair() {
+    public void repair(ButtonBase button) {
         DB db = getDbNode().getDb();
         final DBObject cmd = new BasicDBObject("repairDatabase", 1);
         if (!UMongo.instance.getGlobalStore().confirmLockingOperation())
             return;
-        new DocView(null, "Repair", db, cmd).addToTabbedDiv();
+        new DbJobCmd(db, cmd).addJob();
     }
 
-    public void shardingInfo() {
+    public void shardingInfo(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DB config = db.getSisterDB("config");
         final DBCollection col = config.getCollection("databases");
         CollectionPanel.doFind(col, new BasicDBObject("_id", db.getName()));
     }
     
-    public void movePrimary() {
+    public void movePrimary(ButtonBase button) {
         FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.movePrimary)).getDialog();
         ComboBox combo = (ComboBox) getBoundUnit(Item.mvpToShard);
         combo.value = 0;
@@ -646,10 +672,10 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         String shard = getStringFieldValue(Item.mvpToShard);
         DBObject cmd = new BasicDBObject("movePrimary", getDbNode().getDb().getName());
         cmd.put("to", shard);
-        new DocView(id, "Move Primary", admin, cmd, null, this, null).addToTabbedDiv();
+        new DbJobCmd(admin, cmd, this, null).addJob();
     }
 
-    public void findJSFunction() {
+    public void findJSFunction(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBCollection col = db.getCollection("system.js");
         final String name = getStringFieldValue(Item.findJSFunctionName);
@@ -659,7 +685,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         CollectionPanel.doFind(col, query);
     }
 
-    public void addJSFunction() {
+    public void addJSFunction(final ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBCollection col = db.getCollection("system.js");
         final String name = getStringFieldValue(Item.addJSFunctionName);
@@ -683,6 +709,11 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             @Override
             public String getShortName() {
                 return "Add JS Function";
+            }
+
+            @Override
+            public ButtonBase getButton() {
+                return null;
             }
         }.addJob();
     }

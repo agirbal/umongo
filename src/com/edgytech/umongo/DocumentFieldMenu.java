@@ -4,11 +4,8 @@
  */
 package com.edgytech.umongo;
 
+import com.edgytech.swingfast.*;
 import com.edgytech.umongo.DocumentFieldMenu.Item;
-import com.edgytech.swingfast.EnumListener;
-import com.edgytech.swingfast.InfoDialog;
-import com.edgytech.swingfast.PopUpMenu;
-import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -44,7 +41,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
     
-    public void set() {
+    public void set(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         TreeNodeDocumentField field = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
         DBObject doc = dv.getSelectedDocument();
@@ -99,7 +96,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         }.addJob();
     }
     
-    public void unset() {
+    public void unset(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         DBObject doc = dv.getSelectedDocument();
         String path = dv.getSelectedDocumentPath();
@@ -148,7 +145,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         }.addJob();
     }
     
-    public void copyField() {
+    public void copyField(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
         StringSelection data = new StringSelection(node.getKey().toString());
@@ -156,7 +153,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         clipboard.setContents(data, data);
     }
 
-    public void copyValue() {
+    public void copyValue(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
         StringSelection data = new StringSelection(node.getValue().toString());
@@ -164,7 +161,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         clipboard.setContents(data, data);
     }
 
-    public void compress() throws IOException {
+    public void compress(ButtonBase button) throws IOException {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
         String data = node.getValue().toString();

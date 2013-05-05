@@ -5,6 +5,7 @@
 
 package com.edgytech.umongo;
 
+import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.Text;
 import com.edgytech.swingfast.Zone;
 
@@ -24,6 +25,10 @@ public class BasePanel extends Zone {
     }
 
     public void refresh() {
+        refresh(null);
+    }
+    
+    public void refresh(ButtonBase button) {
         if (node == null)
             return;
         node.structureComponent();

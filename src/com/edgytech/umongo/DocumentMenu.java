@@ -34,7 +34,7 @@ public class DocumentMenu extends PopUpMenu implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
     
-    public void update() {
+    public void update(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         TreeNodeDocument node = (TreeNodeDocument) dv.getSelectedNode().getUserObject();
         final DBObject doc = node.getDBObject();
@@ -91,7 +91,7 @@ public class DocumentMenu extends PopUpMenu implements EnumListener<Item> {
         }.addJob();
     }
     
-    public void remove() {
+    public void remove(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         TreeNodeDocument node = (TreeNodeDocument) dv.getSelectedNode().getUserObject();
         final DBObject doc = node.getDBObject();
@@ -138,7 +138,7 @@ public class DocumentMenu extends PopUpMenu implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void copyValue() {
+    public void copyValue(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         TreeNodeDocument node = (TreeNodeDocument) dv.getSelectedNode().getUserObject();
         final DBObject doc = node.getDBObject();

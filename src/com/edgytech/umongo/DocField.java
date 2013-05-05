@@ -66,7 +66,7 @@ public class DocField extends Text implements MouseListener {
     }
 
     public void addView() {
-        new DocView(null, getLabelToDisplay(), _doc, getLabelToDisplay(), null).addToTabbedDiv();
+        new DocView(null, getLabelToDisplay(), null, getLabelToDisplay(), _doc).addToTabbedDiv();
     }
 
     public void mouseClicked(MouseEvent e) {

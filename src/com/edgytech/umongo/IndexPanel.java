@@ -4,6 +4,7 @@
  */
 package com.edgytech.umongo;
 
+import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.DBObject;
@@ -53,7 +54,7 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void drop() {
+    public void drop(ButtonBase button) {
         final IndexNode indexNode = getIndexNode();
         new DbJob() {
 
@@ -86,7 +87,7 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void stats() {
-        new DocView(null, "Collection Stats", getIndexNode().getStatsCollection(), "collstats").addToTabbedDiv();
+    public void stats(ButtonBase button) {
+        new DbJobCmd(getIndexNode().getStatsCollection(), "collstats").addJob();
     }
 }

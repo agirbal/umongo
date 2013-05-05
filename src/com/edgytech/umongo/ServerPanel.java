@@ -4,6 +4,7 @@
  */
 package com.edgytech.umongo;
 
+import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.Text;
 import com.edgytech.swingfast.XmlComponentUnit;
@@ -93,7 +94,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void rsStepDown() {        
+    public void rsStepDown(ButtonBase button) {        
         final DBObject cmd = new BasicDBObject("replSetStepDown", 1);
         final DB admin = getServerNode().getServerMongo().getDB("admin");
 
@@ -135,58 +136,58 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void rsFreeze() {
+    public void rsFreeze(ButtonBase button) {
         int sec = getIntFieldValue(Item.rsFreezeTime);
         DBObject cmd = new BasicDBObject("replSetFreeze", sec);
-        new DocView(null, "RS Freeze", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
+        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
     }
     
-    public void serverStatus() {
-        new DocView(null, "Server Status", getServerNode().getServerMongo().getDB("admin"), "serverStatus").addToTabbedDiv();
+    public void serverStatus(ButtonBase button) {
+        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "serverStatus").addJob();
+    }
+    
+    public void serverBuildInfo(ButtonBase button) {
+        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "buildinfo").addJob();
     }
 
-    public void serverBuildInfo() {
-        new DocView(null, "Server Build Info", getServerNode().getServerMongo().getDB("admin"), "buildinfo").addToTabbedDiv();
+    public void isMaster(ButtonBase button) {
+        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "isMaster").addJob();
     }
 
-    public void isMaster() {
-        new DocView(null, "Is Master", getServerNode().getServerMongo().getDB("admin"), "isMaster").addToTabbedDiv();
-    }
-
-    public void rsConfig() {
+    public void rsConfig(ButtonBase button) {
         final DBCollection col = getServerNode().getServerMongo().getDB("local").getCollection("system.replset");
         CollectionPanel.doFind(col, null);
     }
 
-    public void rsStatus() {
-        new DocView(null, "RS Status", getServerNode().getServerMongo().getDB("admin"), "replSetGetStatus").addToTabbedDiv();
+    public void rsStatus(ButtonBase button) {
+        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "replSetGetStatus").addJob();
     }
 
-    public void rsOplogInfo() {
-        new DocView(null, "Oplog Info", MongoUtils.getReplicaSetInfo(getServerNode().getServerMongo()), "Oplog of " + getServerNode().getServerAddress(), null).addToTabbedDiv();
+    public void rsOplogInfo(ButtonBase button) {
+        new DocView(null, "Oplog Info", null, "Oplog of " + getServerNode().getServerAddress(), MongoUtils.getReplicaSetInfo(getServerNode().getServerMongo())).addToTabbedDiv();
     }
 
-    public void setParameter() {
+    public void setParameter(ButtonBase button) {
         BasicDBObject cmd = new BasicDBObject("setParameter", 1);
         DBObject param = ((DocBuilderField)getBoundUnit(Item.setParameterValue)).getDBObject();
         cmd.putAll(param);
-        new DocView(null, "Set Param", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
+        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
     }
 
-    public void setLogLevel() {
+    public void setLogLevel(ButtonBase button) {
         BasicDBObject cmd = new BasicDBObject("setParameter", 1);
         int level = getIntFieldValue(Item.setLogLevelValue);
         cmd.put("logLevel", level);
-        new DocView(null, "Log Level", getServerNode().getServerMongo().getDB("admin"), cmd).addToTabbedDiv();
+        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
     }
 
-    public void currentOps() {
+    public void currentOps(ButtonBase button) {
         final Mongo mongo = getServerNode().getServerMongo();
         final DBObject query = ((DocBuilderField) getBoundUnit(Item.currentOpsQuery)).getDBObject();
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.inprog"), query);
     }
 
-    public void killOp() {
+    public void killOp(ButtonBase button) {
         final Mongo mongo = getServerNode().getServerMongo();
         final int opid = getIntFieldValue(Item.killOpId);
         final DBObject query = new BasicDBObject("op", opid);
