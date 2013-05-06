@@ -207,7 +207,8 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     void spawnDialog() {
         if (node == null)
             return;
-        UMongo.instance.displayNode(node);
+        UMongo.instance.getTree().selectNode(node);
+//        UMongo.instance.displayNode(node);
         
         ButtonBase button = getButton();
         if (button == null)
