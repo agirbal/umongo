@@ -58,6 +58,7 @@ public class DocBuilderField extends XmlUnitField<XmlUnit, BoxPanel> implements 
         columns = 20;
         rows = 3;
         nonEmpty = false;
+        value = "";
     }
 
     /**
