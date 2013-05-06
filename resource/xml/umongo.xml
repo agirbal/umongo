@@ -675,10 +675,19 @@
                             <ComboBox id="rsShard" label="Shard" items="None" toolTipText="Shard to remove"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuSeparator/>
+                    <MenuItem id="balancer" call="balancer" showDialog="false">
+                        <FormDialog>
+                            <ComboBox id="balStopped" label="Stopped" items="Default;True;False" value="0" toolTipText="If checked, the balancer will not run."/>
+                            <ComboBox id="balSecThrottle" label="Secondary Throttle" items="Default;True;False" value="0" toolTipText="If checked, migrations will use secondary throttle, which makes them slower but less impactful"/>
+                            <Div id="activeWindow" titled="true">
+                                <TextField id="balStartTime" label="Start Time" toolTipText="Start time for balancer, in HH:MM format local time"/>
+                                <TextField id="balStopTime" label="Stop Time" toolTipText="Stop time for balancer, in HH:MM format local time"/>
+                            </Div>
+                        </FormDialog>
+                    </MenuItem>
                 </Menu>
                 <Menu id="tools">
-                    <CheckBoxMenuItem id="autoBalance" call="autoBalance"/>
-                    <MenuSeparator/>
                     <MenuItem id="regenConfigDB" label="Regenerate Config DB" call="regenConfigDB">
                         <FormDialog okLabel="start">
 <!--                            <TextField id="regenServers" label="Servers" toolTipText="Comma-separated list of servers (host:port) containing the data. You must provide at least one available server per shard."/> -->

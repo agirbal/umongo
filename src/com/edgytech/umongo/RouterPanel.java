@@ -65,7 +65,11 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         asMaxSize,
         removeShard,
         rsShard,
-        autoBalance,
+        balancer,
+        balStopped,
+        balSecThrottle,
+        balStartTime,
+        balStopTime,
         regenConfigDB,
         regenServers,
         regenDB,
@@ -93,9 +97,6 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
             setStringFieldValue(Item.host, addr.getHost() + ":" + addr.getPort());
             setStringFieldValue(Item.address, addr.getSocketAddress().toString());
             ((DocField) getBoundUnit(Item.shards)).setDoc(((RouterNode)node).shards);
-
-            final Mongo mongo = getRouterNode().getMongo();
-            setBooleanFieldValue(Item.autoBalance, MongoUtils.isBalancerOn(mongo));
         } catch (Exception e) {
             UMongo.instance.showError(this.getClass().getSimpleName() + " update", e);
         }
@@ -147,20 +148,57 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         new DbJobCmd(getRouterNode().getMongo().getDB("admin"), "flushRouterConfig").addJob();
     }
 
-    public void autoBalance(ButtonBase button) {
+    public void balancer(ButtonBase button) {
         final Mongo mongo = getRouterNode().getMongo();
         final DB config = mongo.getDB("config");
         final DBCollection settings = config.getCollection("settings");
 
+        FormDialog diag = (FormDialog) ((MenuItem)getBoundUnit(Item.balancer)).getDialog();
+        diag.xmlLoadCheckpoint();
+        
+        final BasicDBObject query = new BasicDBObject("_id", "balancer");
+        BasicDBObject balDoc = (BasicDBObject) settings.findOne(query);
+        if (balDoc != null) {
+            if (balDoc.containsField("stopped"))
+                setIntFieldValue(Item.balStopped, balDoc.getBoolean("stopped") ? 1 : 2);
+            if (balDoc.containsField("_secondaryThrottle"))
+                setIntFieldValue(Item.balSecThrottle, balDoc.getBoolean("_secondaryThrottle") ? 1 : 2);
+            BasicDBObject window = (BasicDBObject) balDoc.get("activeWindow");
+            if (window != null) {
+                setStringFieldValue(Item.balStartTime, window.getString("start"));
+                setStringFieldValue(Item.balStopTime, window.getString("stop"));
+            }
+        }
+
+        if (!diag.show())
+            return;
+        
+        if (balDoc == null)
+            balDoc = new BasicDBObject("_id", "balancer");
+        int stopped = getIntFieldValue(Item.balStopped);
+        if (stopped > 0)
+            balDoc.put("stopped", stopped == 1 ? true : false);
+        else
+            balDoc.removeField("stopped");
+        int throttle = getIntFieldValue(Item.balSecThrottle);
+        if (throttle > 0)
+            balDoc.put("_secondaryThrottle", throttle == 1 ? true : false);
+        else
+            balDoc.removeField("_secondaryThrottle");
+
+        if (!getStringFieldValue(Item.balStartTime).trim().isEmpty()) {
+            BasicDBObject aw = new BasicDBObject();
+            aw.put("start", getStringFieldValue(Item.balStartTime).trim());
+            aw.put("stop", getStringFieldValue(Item.balStopTime).trim());
+            balDoc.put("activeWindow", aw);
+        }
+        final BasicDBObject newDoc = balDoc;
+        
         new DbJob() {
 
             @Override
             public Object doRun() throws IOException {
-                boolean on = MongoUtils.isBalancerOn(mongo);
-                BasicDBObject query = new BasicDBObject("_id", "balancer");
-                BasicDBObject update = new BasicDBObject("stopped", on);
-                update = new BasicDBObject("$set", update);
-                return settings.update(query, update, true, false);
+                return settings.update(query, newDoc, true, false);
             }
 
             @Override
@@ -170,7 +208,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public String getShortName() {
-                return "Enable Balancer";
+                return "Balancer";
             }
 
             @Override
