@@ -17,9 +17,7 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.FormDialog;
-import com.edgytech.swingfast.Scroller;
 import com.edgytech.swingfast.XmlComponentUnit;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 /**

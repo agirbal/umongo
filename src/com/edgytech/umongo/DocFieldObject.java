@@ -15,15 +15,10 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.BoxPanel;
-import com.edgytech.swingfast.Div;
-import com.edgytech.swingfast.InfoDialog;
-import com.edgytech.swingfast.Text;
-import com.edgytech.swingfast.XmlUnitField;
+import com.edgytech.swingfast.*;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import java.awt.Color;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.UUID;
@@ -31,7 +26,6 @@ import java.util.regex.Pattern;
 import org.bson.types.BSONTimestamp;
 import org.bson.types.Binary;
 import org.bson.types.Code;
-import org.bson.types.CodeWScope;
 import org.bson.types.MaxKey;
 import org.bson.types.MinKey;
 import org.bson.types.ObjectId;
@@ -176,7 +170,7 @@ public class DocFieldObject extends DocFieldText {
         structureComponent();
     }
 
-    public void addField() {
+    public void addField(ButtonBase button) {
         String key = getStringFieldValue(Item.addKey);
         String type = getStringFieldValue(Item.addType);
         DBObject doc = (DBObject) value;

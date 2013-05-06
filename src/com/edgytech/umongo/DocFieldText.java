@@ -15,6 +15,7 @@
  */
 package com.edgytech.umongo;
 
+import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.Div;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.XmlComponentUnit;
@@ -70,22 +71,22 @@ public class DocFieldText extends Div implements EnumListener<Item> {
             getJComponentBoundUnit(Item.edit).visible = false;
     }
 
-    public void edit() {
+    public void edit(ButtonBase button) {
         value = UMongo.instance.getGlobalStore().editValue(key, value);
         setStringFieldValue(Item.value, JSON.serialize(value));
         updateComponent();
         _object.commitComponent();
     }
 
-    public void remove() {
+    public void remove(ButtonBase button) {
         _object.remove(key);
     }
 
-    public void moveUp() {
+    public void moveUp(ButtonBase button) {
         _object.moveUp(key);
     }
 
-    public void moveDown() {
+    public void moveDown(ButtonBase button) {
         _object.moveDown(key);
     }
 

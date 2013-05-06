@@ -16,6 +16,7 @@
 
 package com.edgytech.umongo;
 
+import com.edgytech.swingfast.ButtonBase;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 
@@ -41,7 +42,7 @@ public class DocFieldArray extends DocFieldObject {
     }
 
     @Override
-    public void addField() {
+    public void addField(ButtonBase button) {
         String type = getStringFieldValue(Item.addType);
         addNewField(null, type);
     }

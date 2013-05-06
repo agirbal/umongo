@@ -749,10 +749,10 @@
         <com.edgytech.umongo.EditUuidDialog>
             <TextField id="value"/>
         </com.edgytech.umongo.EditUuidDialog>
-        <com.edgytech.umongo.DocBuilderDialog id="docBuilderDialog" buttons="OK_CANCEL">
-            <Scroller fixedSize="600;400">
+        <com.edgytech.umongo.DocBuilderDialog id="docBuilderDialog" buttons="OK_CANCEL" resizable="true">
+            <Scroller preferredSize="600;400">
                 <Zone>
-                    <Div id="div" zone="NORTH"/>
+                    <Div id="div" zone="CENTER"/>
                 </Zone>
             </Scroller>
         </com.edgytech.umongo.DocBuilderDialog>
