@@ -69,6 +69,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         countLimit,
         remove,
         removeQuery,
+        rmAllConfirm,
         mapReduce,
         mrMap,
         mrReduce,
@@ -710,8 +711,14 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
     public void remove(final ButtonBase button) {
         final DBCollection col = getCollectionNode().getCollection();
-        final DBObject tmp = ((DocBuilderField) getBoundUnit(Item.removeQuery)).getDBObject();
-        final DBObject doc = tmp != null ? tmp : new BasicDBObject();
+        final BasicDBObject tmp = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.removeQuery)).getDBObject();
+        final BasicDBObject doc = tmp != null ? tmp : new BasicDBObject();
+        
+        if (doc.isEmpty()) {
+            ConfirmDialog confirm = (ConfirmDialog) getBoundUnit(Item.rmAllConfirm);
+            if (!confirm.show())
+                return;
+        }
 
         new DbJob() {
 

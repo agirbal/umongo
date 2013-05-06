@@ -445,6 +445,7 @@
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="removeQuery" label="Query" toolTipText="Query to remove by, in JSON format"/>
                         </FormDialog>
+                        <ConfirmDialog id="rmAllConfirm" text="Are you sure you want to remove all documents?"/>
                     </MenuItem>
                     <MenuItem id="findAndModify" call="findAndModify">
                         <FormDialog>
