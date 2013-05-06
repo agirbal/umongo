@@ -185,7 +185,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         return dbcursor;
     }
     
-    public void close() {
+    public void close(ButtonBase button) {
         if (dbcursor != null) {
             dbcursor.close();
             dbcursor = null;
