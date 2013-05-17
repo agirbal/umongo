@@ -758,7 +758,7 @@
         <com.edgytech.umongo.EditUuidDialog>
             <TextField id="value"/>
         </com.edgytech.umongo.EditUuidDialog>
-        <com.edgytech.umongo.DocBuilderDialog id="docBuilderDialog" buttons="OK_CANCEL" resizable="true">
+        <com.edgytech.umongo.DocBuilderDialog id="docBuilderDialog" buttons="OK_CANCEL">
             <Scroller preferredSize="600;400">
                 <Zone>
                     <Div id="div" zone="CENTER"/>
@@ -789,6 +789,9 @@
                             <CheckBox id="safe" label="Safe Writes" value="true" toolTipText="Sets the global WriteConcern as SAFE, which means that writes are acknowledged by the server"/>
                         </Div>
                     </com.edgytech.umongo.ConnectDialog>
+                    <ProgressDialog id="connectProgressDialog" buttons="Cancel" text="Adding Mongo instance ...">
+			<ProgressBar id="progressBar" determinate="false"/>                        
+                    </ProgressDialog>
                 </MenuItem>
                 <MenuSeparator/>
                 <MenuItem id="exit" label="Quit" alt="q" key="q" keyMod="cmd" call="exit"/>

@@ -59,7 +59,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     }
 
     public void start(boolean determinate) {
-        setStringFieldValue(Item.jobName, getTitle());
+        setComponentStringFieldValue(Item.jobName, getTitle());
 
         // if dialog, save current state
         ButtonBase button = getButton();
@@ -73,7 +73,10 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
 
             @Override
             protected Object doInBackground() throws Exception {
+//                Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+                
                 startTime = System.currentTimeMillis();
+//                Thread.yield();
                 try {
                     Object res = doRun();
                     return res;

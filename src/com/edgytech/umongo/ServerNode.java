@@ -35,6 +35,7 @@ public class ServerNode extends BaseTreeNode {
 
     ServerAddress serverAddress;
     Mongo serverMongo;
+    BasicDBObject stats;
 
     public ServerNode(Mongo mongo) {
         serverMongo = mongo;
@@ -44,11 +45,11 @@ public class ServerNode extends BaseTreeNode {
         } catch (Exception ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }
-        label = serverAddress.toString();
+
         markStructured();
     }
     
-    public ServerNode(ServerAddress serverAddress, MongoOptions opts, String name) {
+    public ServerNode(ServerAddress serverAddress, MongoOptions opts) {
         this.serverAddress = serverAddress;
         serverMongo = new Mongo(serverAddress, opts);
         serverMongo.addOption( Bytes.QUERYOPTION_SLAVEOK );
@@ -58,7 +59,7 @@ public class ServerNode extends BaseTreeNode {
         } catch (Exception ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }
-        label = name != null ? name : serverAddress.toString();
+
         markStructured();
     }
 
@@ -79,17 +80,27 @@ public class ServerNode extends BaseTreeNode {
     }
 
     @Override
-    protected void updateNode(List<ImageIcon> overlays) {
-        CommandResult res = getServerMongo().getDB("local").command("isMaster");
-        if (res.getBoolean("ismaster")) {
-            overlays.add(SwingFast.createIcon("overlay/tick_circle.png", iconGroup));
-        } else if (!res.getBoolean("secondary")) {
-            overlays.add(SwingFast.createIcon("overlay/error.png", iconGroup));
-        }
-
-//        if (res.containsField("dur")) {
-//            overlays.add(SwingFast.createIcon("overlay/shield_blue.png", iconGroup));
-//        }        
+    protected void updateNode() {
+        label = "MongoD: " + serverMongo.getConnectPoint();
         
+        if (stats != null) {
+            if (stats.getBoolean("ismaster")) {
+                addOverlay("overlay/tick_circle.png");
+            } else if (!stats.getBoolean("secondary")) {
+                addOverlay("overlay/error.png");
+            }
+
+    //        if (res.containsField("dur")) {
+    //            overlays.add(SwingFast.createIcon("overlay/shield_blue.png", iconGroup));
+    //        }        
+        }
+        
+    }
+
+    @Override
+    protected void refreshNode() {
+        CommandResult res = getServerMongo().getDB("local").command("isMaster");
+        res.throwOnError();
+        stats = res;
     }
 }

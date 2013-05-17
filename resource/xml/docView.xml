@@ -33,7 +33,7 @@
             <MenuItem id="startAutoUpdate" call="startAutoUpdate" enabled="false"/>
             <MenuItem id="stopAutoUpdate" call="stopAutoUpdate" enabled="false"/>
         </Menu>
-        <Button id="spawn" icon="wand.png" iconGroup="icons" call="spawn" enabled="false"/>
+        <Button id="spawn" icon="wand.png" iconGroup="icons" call="spawn" toolTipText="Spawn the original form for this operation, which allows you to modify and relaunch" enabled="false"/>
     </MenuBar>
     <Scroller zone="CENTER" bgColor="255;255;255">
         <Zone>

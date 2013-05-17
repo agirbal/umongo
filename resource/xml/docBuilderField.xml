@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : runningCommand.xml
+    Created on : February 12, 2011, 6:27 PM
+    Author     : antoine
+    Description:
+        Purpose of the document follows.
+-->
+
+<Div axis="X" gap="true">
+    <TextArea id="jsonText" field="false" rows="3" columns="20"/>
+    <Button id="edit" icon="edit.png" iconGroup="icons" toolTipText="Edit the JSON" call="edit"/>
+    <ToggleButton id="validate" icon="overlay/check.png" iconGroup="icons" toolTipText="Turn on/off JSON validation"/>
+</Div>

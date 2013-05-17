@@ -16,10 +16,7 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.SwingFast;
-import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
+import com.mongodb.*;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.ImageIcon;
@@ -32,6 +29,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class DbNode extends BaseTreeNode {
 
     DB db;
+    BasicDBObject stats;
 
     public DbNode(DB db) {
         this.db = db;
@@ -64,16 +62,25 @@ public class DbNode extends BaseTreeNode {
     }
 
     @Override
-    protected void updateNode(List<ImageIcon> overlays) {
+    protected void updateNode() {
         label = db.getName();
-        // db.getStats is too slow.. just do a quick command
+        
+        if (stats != null) {
+            label += " (" + stats.getInt("objects") + "/" + stats.getInt("dataSize") + ")";        
+        }
+
+        if (db.isAuthenticated())
+            addOverlay("overlay/unlock.png");
+    }
+
+    @Override
+    protected void refreshNode() {
+        // db.getStats can be slow..
         CommandResult res = db.getStats();
 //        CommandResult res = db.command(new BasicDBObject("profile", -1));
         res.throwOnError();
-        label += " (" + res.getInt("objects") + "/" + res.getInt("dataSize") + ")";
-
-        if (db.isAuthenticated())
-            overlays.add(SwingFast.createIcon("overlay/unlock.png", iconGroup));
+        stats = res;
+//        db.getCollection("foo").save(new BasicDBObject("a", 1));
     }
 
 }

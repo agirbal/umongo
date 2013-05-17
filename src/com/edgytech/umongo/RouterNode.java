@@ -15,9 +15,7 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.XmlUnit;
 import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -78,7 +76,7 @@ public class RouterNode extends BaseTreeNode {
                 if (repl != null || addrs.size() > 1) {
                     addChild(new ReplSetNode(id + " (" + repl + ")", addrs, mongo.getMongoOptions()));
                 } else {
-                    addChild(new ServerNode(addrs.get(0), mongo.getMongoOptions(), id + " (" + addrs.get(0) + ")"));
+                    addChild(new ServerNode(addrs.get(0), mongo.getMongoOptions()));
                 }
             } catch (Exception e) {
                 getLogger().log(Level.WARNING, null, e);
@@ -95,8 +93,12 @@ public class RouterNode extends BaseTreeNode {
     }
 
     @Override
-    protected void updateNode(List<ImageIcon> overlays) {
-        label = getAddress().toString();
+    protected void updateNode() {
+        label = "MongoS: " + mongo.getConnectPoint();
+    }
+
+    @Override
+    protected void refreshNode() {
     }
     
     BasicDBList getShards() {

@@ -60,7 +60,7 @@ public class ReplSetNode extends BaseTreeNode {
 
         List<ServerAddress> addrs = mongo.getServerAddressList();
         for (ServerAddress addr : addrs) {
-            addChild(new ServerNode(addr, mongo.getMongoOptions(), null));
+            addChild(new ServerNode(addr, mongo.getMongoOptions()));
         }
     }
 
@@ -73,8 +73,12 @@ public class ReplSetNode extends BaseTreeNode {
     }
 
     @Override
-    protected void updateNode(List<ImageIcon> overlays) {
-        label = getName();
+    protected void updateNode() {
+        label = "ReplSet: " + getName();
+    }
+
+    @Override
+    protected void refreshNode() {
     }
 
     String[] getReplicaNames() {

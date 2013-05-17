@@ -16,14 +16,13 @@
 
 package com.edgytech.umongo;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.ImageIcon;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -33,6 +32,7 @@ public class IndexNode extends BaseTreeNode {
 
     DBCollection indexedCol;
     DBObject index;
+    BasicDBObject stats;
 
     public IndexNode(DBCollection indexedCol, DBObject index) {
         this.indexedCol = indexedCol;
@@ -70,10 +70,16 @@ public class IndexNode extends BaseTreeNode {
     }
 
     @Override
-    protected void updateNode(List<ImageIcon> overlays) {
+    protected void updateNode() {
         label = getName();
+        if (stats != null)
+            label += " (" + stats.getInt("count") + "/" + stats.getInt("size") + ")";
+    }
+
+    @Override
+    protected void refreshNode() {
         CommandResult res = getStatsCollection().getStats();
         res.throwOnError();
-        label += " (" + res.getInt("count") + "/" + res.getInt("size") + ")";
+        stats = res;
     }
 }

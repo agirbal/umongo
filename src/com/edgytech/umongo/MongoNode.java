@@ -32,11 +32,14 @@ import javax.swing.ImageIcon;
 public class MongoNode extends BaseTreeNode {
 
     Mongo mongo;
+    boolean specifiedDb;
     List<String> dbs;
 
     public MongoNode(Mongo mongo, List<String> dbs) {
         this.mongo = mongo;
         this.dbs = dbs;
+        this.specifiedDb = dbs != null;
+        
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.mongoNode, null);
         } catch (Exception ex) {
@@ -88,9 +91,11 @@ public class MongoNode extends BaseTreeNode {
             addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo));
         }
 
-        if (dbs != null) {
+        if (specifiedDb) {
             // user specified list of DB
             dbnames = dbs;
+        } else {
+            dbs = dbnames;
         }
 
         if (dbnames != null) {
@@ -107,10 +112,12 @@ public class MongoNode extends BaseTreeNode {
     }
 
     @Override
-    protected void updateNode(List<ImageIcon> overlays) {
-        label = "Mongo";
-        List list = mongo.getDatabaseNames();
-        label += " (" + list.size() + ")";
+    protected void updateNode() {
+        label = "Mongo: " + mongo.getConnectPoint();
+    }
+
+    @Override
+    protected void refreshNode() {
     }
 
     BasicDBList getShards() {

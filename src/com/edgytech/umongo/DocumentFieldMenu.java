@@ -178,21 +178,21 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         String data = node.getValue().toString();
         ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length());
         byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
-        System.out.println("Bytes before: " + bytes.length);
+//        System.out.println("Bytes before: " + bytes.length);
         
         baos.reset();
         DeflaterOutputStream dos = new DeflaterOutputStream(baos);
         dos.write(bytes);
         dos.close();
         byte[] deflate = baos.toByteArray();
-        System.out.println("Bytes deflate: " + deflate.length);
+//        System.out.println("Bytes deflate: " + deflate.length);
         
         baos.reset();
         GZIPOutputStream gos = new GZIPOutputStream(baos);
         gos.write(bytes);
         gos.close();
         byte[] gzip = baos.toByteArray();
-        System.out.println("Bytes gzip: " + gzip.length);
+//        System.out.println("Bytes gzip: " + gzip.length);
         
         
     }

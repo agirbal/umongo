@@ -9,7 +9,7 @@
 -->
 
 <Div axis="X" gap="true">
-    <Text id="jobName"/>
+    <Text id="jobName" value="job"/>
     <ProgressBar id="progressBar" determinate="false" fixedSize="60;30"/>
 <!--    <Button id="close" icon="dialog-close_16.png" iconGroup="icons" call="close" fixedSize="20;20"/> -->
 </Div>

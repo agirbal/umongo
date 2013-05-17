@@ -139,7 +139,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void command(ButtonBase button) {
+    public void command(final ButtonBase button) {
         final DB db = getDbNode().getDb();
         final String scmd = getStringFieldValue(Item.commandStr);
         final DBObject cmd = !scmd.isEmpty() ? new BasicDBObject(scmd, 1)
@@ -148,44 +148,77 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         if (help)
             cmd.put("help", true);
 
-        new DbJobCmd(db, cmd).addJob();
+//        new DbJobCmd(db, cmd).addJob();
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                return db.command(cmd);
+            }
+
+            @Override
+            public String getNS() {
+                return db.getName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Command";
+            }
+
+            @Override
+            public Object getRoot(Object result) {
+                return cmd;
+            }
+
+            @Override
+            public ButtonBase getButton() {
+                return button;
+            }
+        }.addJob();
     }
 
     public void listCommands(ButtonBase button) {
         new DbJobCmd(getDbNode().getDb(), "listCommands").addJob();
     }
     
-    public void eval(ButtonBase button) {
+    public void eval(final ButtonBase button) {
         final DB db = getDbNode().getDb();
         final String sfunc = getStringFieldValue(Item.evalCode);
         final boolean noLock = getBooleanFieldValue(Item.evalNoLock);
-        BasicDBObject cmd = new BasicDBObject("$eval", sfunc);
+        final BasicDBObject cmd = new BasicDBObject("$eval", sfunc);
         if (noLock)
             cmd.put("nolock", true);
-        new DbJobCmd(db, cmd).addJob();
+//        new DbJobCmd(db, cmd).addJob();
 
-//        new DbJob() {
-//
-//            @Override
-//            public Object doRun() {
-//                return db.eval(sfunc);
-//            }
-//
-//            @Override
-//            public String getNS() {
-//                return db.getName();
-//            }
-//
-//            @Override
-//            public String getShortName() {
-//                return "Eval";
-//            }
-//
-//            @Override
-//            public Object getRoot(Object result) {
-//                return sfunc;
-//            }
-//        }.addJob();
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                return db.command(cmd);
+            }
+
+            @Override
+            public String getNS() {
+                return db.getName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Eval";
+            }
+
+            @Override
+            public Object getRoot(Object result) {
+                return cmd;
+            }
+
+            @Override
+            public ButtonBase getButton() {
+                return button;
+            }
+        }.addJob();
     }
 
     public void uploadFile(final ButtonBase button) {

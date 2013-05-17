@@ -30,7 +30,9 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import javax.swing.SwingUtilities;
 import org.xml.sax.SAXException;
 
@@ -140,6 +142,8 @@ public class UMongo extends Application implements Runnable {
     }
 
     public static void main(String[] args) {
+//        LogManager.getLogManager().getLogger("").setLevel(Level.FINE);
+        
         instance.launch();
     }
 
@@ -228,6 +232,13 @@ public class UMongo extends Application implements Runnable {
 
     long _nextTreeUpdate = System.currentTimeMillis();
 
+    ConcurrentLinkedQueue<BaseTreeNode> nodesToRefresh = new ConcurrentLinkedQueue<BaseTreeNode>();
+
+    void addNodeToRefresh(BaseTreeNode node) {
+        nodesToRefresh.add(node);
+    }
+
+    
     public void run() {
         while (!stopped) {
             try {
@@ -238,17 +249,30 @@ public class UMongo extends Application implements Runnable {
                     SwingUtilities.invokeAndWait(new Runnable() {
                         public void run() {
                             long start = System.currentTimeMillis();
-                            getTree().updateComponent();
+                            // need structure here, to trigger refresh()
+                            getTree().structureComponent();
                             getLogger().log(Level.FINE, "Tree update took " + (System.currentTimeMillis() - start));
 //                           getTree().structureComponent();
                         }
                     });
                 }
+                
+                BaseTreeNode node = null;
+                while ((node = nodesToRefresh.poll()) != null) {
+                    node.refresh();
+                    final BaseTreeNode fnode = node;
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        public void run() {
+                            fnode.updateComponent(false);
+                        }
+                    });
+                }
+                
             } catch (Exception ex) {
                 getLogger().log(Level.SEVERE, null, ex);
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
                 getLogger().log(Level.SEVERE, null, ex);
             }

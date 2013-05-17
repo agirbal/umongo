@@ -33,6 +33,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     public enum Item {
 
         connect,
+        connectProgressDialog,
         exit,
         preferences,
         prefDialog,
@@ -84,6 +85,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     public void connect(ButtonBase button) {
         try {
             ConnectDialog dialog = (ConnectDialog) ((MenuItem) getBoundUnit(Item.connect)).getDialog();
+            ProgressDialog progress = (ProgressDialog) getBoundUnit(Item.connectProgressDialog);
             Mongo mongo = null;
             List<String> dbs = new ArrayList<String>();
             String uri = dialog.getStringFieldValue(ConnectDialog.Item.uri);
@@ -124,7 +126,23 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
             if (dbs.size() == 0) {
                 dbs = null;
             }
-            UMongo.instance.addMongo(mongo, dbs);
+            
+            final Mongo fmongo = mongo;
+            final List<String> fdbs = dbs;
+            // doing in background can mean concurrent modification, but dialog is modal so unlikely
+            progress.show(new ProgressDialogWorker(progress) {
+
+                @Override
+                protected void finished() {
+                }
+
+                @Override
+                protected Object doInBackground() throws Exception {
+                    UMongo.instance.addMongo(fmongo, fdbs);
+                    return null;
+                }
+            });
+
         } catch (Exception ex) {
             UMongo.instance.showError(id, ex);
         }

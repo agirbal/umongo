@@ -16,6 +16,7 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.SwingFast;
+import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -33,6 +34,7 @@ import org.xml.sax.SAXException;
 public class CollectionNode extends BaseTreeNode {
 
     DBCollection collection;
+    BasicDBObject stats;
 
     public CollectionNode(DBCollection collection) throws IOException, SAXException {
         this.collection = collection;
@@ -56,13 +58,20 @@ public class CollectionNode extends BaseTreeNode {
     }
 
     @Override
-    protected void updateNode(List<ImageIcon> overlays) {
+    protected void updateNode() {
         label = collection.getName();
+        if (stats != null) {
+            label += " (" + stats.getLong("count") + "/" + stats.getLong("size") + ")";
+            if (stats.getBoolean("sharded"))
+                addOverlay("overlay/superman.png");
+        }
+    }
+
+    @Override
+    protected void refreshNode() {
         CommandResult res = collection.getStats();
         res.throwOnError();
-        label += " (" + res.getLong("count") + "/" + res.getLong("size") + ")";
-        if (res.getBoolean("sharded"))
-            overlays.add(SwingFast.createIcon("overlay/superman.png", iconGroup));
+        stats = res;
     }
 
 }
