@@ -3,7 +3,7 @@
 All binaries are available from:
 - http://www.edgytech.com/umongo
 
-** Install **
+** Install and Run **
 
 Windows:
 
@@ -33,6 +33,21 @@ Run "diskutil list /" from the command line and see if it says case-sensitive.
 
 One workaround is to right-click on the file, select Show Package Contents, then go to Contents -> Resources -> Java.
 Then, just open using jar. You can make an alias to this for easy access if you want.
+
+** Using a Proxy **
+
+Often times your client machine cannot directly connect to the MongoDB hosts.
+One easy trick is to use an SSH tunnel to connect you client (A) to the mongo server (B):
+$ ssh -L portOnA:localhost:portOnB -i key.pem hostB -N
+
+For Example:
+$ ssh -L 37017:localhost:27017 -i key.pem mongohost.example.com -N
+Then you would point the GUI to "localhost:37017".
+
+This also works to go through an intermediate host (B) to the mongo server (C):
+$ ssh -L portOnA:hostC:portOnC -i key.pem hostB -N
+
+Note that in this case only the connection to the primary mongod / mongoS will be supported.
 
 ** Compile **
 
