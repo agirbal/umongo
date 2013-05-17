@@ -1,5 +1,40 @@
-All binaries are from:
+** Download **
+
+All binaries are available from:
 - http://www.edgytech.com/umongo
+
+** Install **
+
+Windows:
+
+- place archive file where is preferred (for example, in your downloads folder)
+- extract the archive (right-click “Extract All”)
+- open the extracted folder and double-click umongo (type Application)
+
+Linux:
+
+- place archive file where is preferred (for example, in your downloads folder)
+- extract the archive (right-click “Extract Here”)
+- open the extracted folder and double-click launch-umongo.sh, or execute launch-umongo.sh in a terminal
+
+Mac OSX:
+
+- place archive file where is preferred and extract it (for example, in your downloads folder)
+- extract the archive (double-click the file)
+- open the extracted folder and double-click umongo.app
+
+If you Mac tells you that the application is damaged, you can try a few things:
+
+- go to "system preferences / security and privacy / General"
+Make sure that "allow applications downloaded from" is set to "anywhere".
+
+- It could also be that you have a case-sensitive file system.
+Run "diskutil list /" from the command line and see if it says case-sensitive.
+
+One workaround is to right-click on the file, select Show Package Contents, then go to Contents -> Resources -> Java.
+Then, just open using jar. You can make an alias to this for easy access if you want.
+
+** Compile **
 
 Right now, you can only compile the app using the netbeans project, which should be improved soon.
 
