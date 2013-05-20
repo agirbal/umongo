@@ -162,15 +162,19 @@ public class UMongo extends Application implements Runnable {
 
     void disconnect(MongoNode node) {
         mongos.remove(node);
+        
+        node.removeNode();
+        Mongo mongo = ((MongoNode) node).getMongo();
+        mongo.close();
+
         if (mongos.size() > 0) {
-            displayNode(mongos.get(0));
+            MongoNode other = mongos.get(0);
+            getTree().expandNode(other);
+            getTree().selectNode(other);
         } else {
             displayElement(null);
         }
 
-        node.removeNode();
-        Mongo mongo = ((MongoNode) node).getMongo();
-        mongo.close();
     }
 
     public ArrayList<MongoNode> getMongos() {
