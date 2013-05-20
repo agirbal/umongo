@@ -788,9 +788,16 @@
                             <CheckBox id="autoConnectRetry" value="false" toolTipText="If true, then driver will keep retrying to connect to the server in case of connection failure"/>
                             <CheckBox id="safe" label="Safe Writes" value="true" toolTipText="Sets the global WriteConcern as SAFE, which means that writes are acknowledged by the server"/>
                         </Div>
+                        <Div id="proxy" titled="true">
+                            <ComboBox id="proxyType" value="0" items="None;SOCKS" toolTipText="Type of proxy"/>
+                            <TextField id="proxyHost" toolTipText="The proxy host"/>
+                            <IntSpinner id="proxyPort" minValue="0" value="9000" toolTipText="The proxy port"/>
+<!--                            <TextField id="proxyUser" toolTipText="The proxy username"/>
+                            <PasswordField id="proxyPassword" toolTipText="The proxy password"/>-->
+                        </Div>
                     </com.edgytech.umongo.ConnectDialog>
                     <ProgressDialog id="connectProgressDialog" buttons="Cancel" text="Adding Mongo instance ...">
-			<ProgressBar id="progressBar" determinate="false"/>                        
+                        <ProgressBar id="progressBar" determinate="false"/>                        
                     </ProgressDialog>
                 </MenuItem>
                 <MenuSeparator/>

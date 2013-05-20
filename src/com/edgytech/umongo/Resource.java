@@ -39,6 +39,7 @@ public class Resource {
         routerNode,
         replSetNode,
         docBuilderDialog,
+        docBuilderField,
         docFieldText
     }
     ///////////////////////////////////////

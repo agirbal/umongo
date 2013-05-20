@@ -17,8 +17,8 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.FormDialog;
+import com.edgytech.umongo.DocumentDeserializer.Format;
 import java.io.File;
-import com.edgytech.umongo.ExportFile.Format;
 
 /**
  *
@@ -40,10 +40,10 @@ public class ImportDialog extends FormDialog {
         setEnumBinding(Item.values(), null);
     }
 
-    public ExportFile getExportFile() {
-        ExportFile ef = new ExportFile(new File(getStringFieldValue(Item.inputFile)),
-                Format.values()[getIntFieldValue(Item.format)]);
-        return ef;
+    public DocumentDeserializer getDocumentDeserializer() {
+        DocumentDeserializer dd = new DocumentDeserializer(Format.values()[getIntFieldValue(Item.format)], null);
+        dd.setFile(new File(getStringFieldValue(Item.inputFile)));
+        return dd;
     }
-
+    
 }

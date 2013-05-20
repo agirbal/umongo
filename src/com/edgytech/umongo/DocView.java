@@ -15,15 +15,7 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.ButtonBase;
-import com.edgytech.swingfast.EnumListener;
-import com.edgytech.swingfast.MenuItem;
-import com.edgytech.swingfast.TabInterface;
-import com.edgytech.swingfast.TabbedDiv;
-import com.edgytech.swingfast.Tree;
-import com.edgytech.swingfast.TreeNodeLabel;
-import com.edgytech.swingfast.XmlComponentUnit;
-import com.edgytech.swingfast.Zone;
+import com.edgytech.swingfast.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
@@ -31,6 +23,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import java.awt.Component;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -51,6 +44,8 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         tabClose,
         refresh,
         append,
+        expandText,
+        expandTextArea,
         spawn,
         export,
         cursor,
@@ -209,7 +204,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         if (!dia.show()) {
             return;
         }
-        final ExportFile.ExportFileOutputStream os = dia.getOutputStream();
+        final DocumentSerializer ds = dia.getDocumentSerializer();
         try {
             DefaultMutableTreeNode root = getTree().getTreeNode();
             for (int i = 0; i < root.getChildCount(); ++i) {
@@ -224,11 +219,11 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                     doc = ((TreeNodeDocument) obj).getDBObject();
                 }
                 if (doc != null) {
-                    os.writeObject(doc);
+                    ds.writeObject(doc);
                 }
             }
         } finally {
-            os.close();
+            ds.close();
         }
     }
 
@@ -309,6 +304,38 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         }
     }
 
+    public void expandText(ButtonBase button) throws IOException {
+        FormDialog dia = (FormDialog) button.getDialog();
+        final DocumentSerializer ds = new DocumentSerializer(DocumentSerializer.Format.JSON, null);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        ds.setOutputStream(baos);
+        try {
+            DefaultMutableTreeNode root = getTree().getTreeNode();
+            for (int i = 0; i < root.getChildCount(); ++i) {
+                DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
+                Object obj = child.getUserObject();
+                DBObject doc = null;
+                if (obj instanceof DBObject) {
+                    doc = (DBObject) obj;
+                } else if (obj instanceof TreeNodeDocumentField) {
+                    doc = (DBObject) ((TreeNodeDocumentField) obj).getValue();
+                } else if (obj instanceof TreeNodeDocument) {
+                    doc = ((TreeNodeDocument) obj).getDBObject();
+                }
+                if (doc != null) {
+                    ds.writeObject(doc);
+                }
+            }
+        } finally {
+            ds.close();
+        }
+        
+        String txt = new String(baos.toByteArray());
+        setStringFieldValue(Item.expandTextArea, txt);
+        dia.label = this.label;
+        dia.show();
+    }
+    
     public void refreshCmd(final boolean append) {
         if (job == null || job.getDB() == null || job.getCommand() == null) {
             return;

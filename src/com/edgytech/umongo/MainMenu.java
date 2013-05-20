@@ -60,19 +60,18 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
             return;
         }
         final boolean continueOnError = dia.getBooleanFieldValue(ImportDialog.Item.continueOnError);
-        final ExportFile ef = dia.getExportFile();
-        final ExportFile.ExportFileInputStream os = ef.getInputStream();
+        final DocumentDeserializer dd = dia.getDocumentDeserializer();
 
         new DbJob() {
 
             @Override
             public Object doRun() throws Exception {
-                return os.iterator();
+                return dd.iterator();
             }
 
             @Override
             public String getNS() {
-                return ef.getFile().getName();
+                return dd.getFile().getName();
             }
 
             @Override

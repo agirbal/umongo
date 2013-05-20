@@ -460,7 +460,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public String getShortName() {
-                return "M/R";
+                return "MR";
             }
 
             @Override
@@ -527,7 +527,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         if (!dia.show()) {
             return;
         }
-        final ExportFile.ExportFileOutputStream os = dia.getOutputStream();
+        final DocumentSerializer ds = dia.getDocumentSerializer();
         final boolean continueOnError = dia.getBooleanFieldValue(ExportDialog.Item.continueOnError);
         new DbJob() {
 
@@ -547,7 +547,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                             cur.limit(limit);
                         }
                         while (cur.hasNext() && !stopped) {
-                            os.writeObject(cur.next());
+                            ds.writeObject(cur.next());
                         }
                     } catch (Exception e) {
                         if (continueOnError) {
@@ -557,7 +557,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                         }
                     }
                 } finally {
-                    os.close();
+                    ds.close();
                 }
                 return null;
             }
@@ -963,8 +963,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 upsertFields[i] = upsertFields[i].trim();
             }
         }
-        final ExportFile ef = dia.getExportFile();
-        final ExportFile.ExportFileInputStream os = ef.getInputStream();
+        final DocumentDeserializer dd = dia.getDocumentDeserializer();
         final DBCollection col = getCollectionNode().getCollection();
 
         new DbJob() {
@@ -977,7 +976,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                     }
                     DBObject obj = null;
                     List<DBObject> batch = new ArrayList<DBObject>();
-                    while ((obj = os.readObject()) != null) {
+                    while ((obj = dd.readObject()) != null) {
                         try {
                             if (upsert) {
                                 if (upsertFields == null) {
@@ -1013,7 +1012,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                     }
 
                 } finally {
-                    os.close();
+                    dd.close();
                 }
                 return null;
             }

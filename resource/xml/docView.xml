@@ -33,6 +33,11 @@
             <MenuItem id="startAutoUpdate" call="startAutoUpdate" enabled="false"/>
             <MenuItem id="stopAutoUpdate" call="stopAutoUpdate" enabled="false"/>
         </Menu>
+        <Button id="expandText" icon="text_icon.png" iconGroup="icons" call="expandText" showDialog="false" toolTipText="Expand the results into a text-based window">
+            <FormDialog buttons="OK" preferredSize="640;480">
+                <TextArea id="expandTextArea" field="false"/>
+            </FormDialog>
+        </Button>
         <Button id="spawn" icon="wand.png" iconGroup="icons" call="spawn" toolTipText="Spawn the original form for this operation, which allows you to modify and relaunch" enabled="false"/>
     </MenuBar>
     <Scroller zone="CENTER" bgColor="255;255;255">

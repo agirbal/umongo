@@ -18,8 +18,8 @@ package com.edgytech.umongo;
 import com.edgytech.swingfast.FieldChecker;
 import com.edgytech.swingfast.FormDialog;
 import com.edgytech.swingfast.TextField;
+import com.edgytech.umongo.DocumentSerializer.Format;
 import java.io.File;
-import com.edgytech.umongo.ExportFile.Format;
 
 /**
  *
@@ -47,10 +47,10 @@ public class ExportDialog extends FormDialog {
         return super.checkComponent(checker);
     }
 
-    public ExportFile.ExportFileOutputStream getOutputStream() {
-        ExportFile ef = new ExportFile(new File(getStringFieldValue(Item.outputFile)),
-                Format.values()[getIntFieldValue(Item.format)]);
-        return ef.getOutputStream(getStringFieldValue(Item.fields));
+    public DocumentSerializer getDocumentSerializer() {
+        DocumentSerializer ds = new DocumentSerializer(Format.values()[getIntFieldValue(Item.format)], getStringFieldValue(Item.fields));
+        ds.setFile(new File(getStringFieldValue(Item.outputFile)));
+        return ds;
     }
 
 
