@@ -17,6 +17,10 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.*;
 import com.edgytech.umongo.DocBuilderField.Item;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import java.awt.event.FocusEvent;
@@ -37,7 +41,9 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
         edit,
         validate,
         expandText,
-        expandTextArea
+        expandTextArea,
+        convertFromJS,
+        indent
     }
     @Serial
     public String dialogId;
@@ -92,6 +98,24 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
         if (dia.show()) {
             setComponentStringFieldValue(Item.jsonText, getStringFieldValue(Item.expandTextArea));
         }
+    }
+
+    public void convertFromJS(ButtonBase button) {
+        String txt = getComponentStringFieldValue(Item.expandTextArea);
+        txt = txt.replaceAll("ISODate\\(([^\\)]*)\\)", "{ \"\\$date\": $1 }");
+        txt = txt.replaceAll("ObjectId\\(([^\\)]*)\\)", "{ \"\\$oid\": $1 }");
+        txt = txt.replaceAll("NumberLong\\(([^\\)]*)\\)", "$1");
+//        txt = txt.replaceAll("ISODate", "\\$date");
+        setComponentStringFieldValue(Item.expandTextArea, txt);
+    }
+    
+    public void indent(ButtonBase button) {
+        String txt = getComponentStringFieldValue(Item.expandTextArea);
+        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        JsonParser jp = new JsonParser();
+        JsonElement je = jp.parse(txt);
+        String prettyJsonString = gson.toJson(je);
+        setComponentStringFieldValue(Item.expandTextArea, prettyJsonString);        
     }
     
     @Override

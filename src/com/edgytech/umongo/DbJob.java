@@ -144,7 +144,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
         UMongo.instance.removeJob(this);
         
         if (node != null)
-            node.updateComponent();
+            UMongo.instance.addNodeToRefresh(node);
         
         if (res == null) {
             return;

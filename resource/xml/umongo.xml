@@ -789,9 +789,9 @@
                             <CheckBox id="safe" label="Safe Writes" value="true" toolTipText="Sets the global WriteConcern as SAFE, which means that writes are acknowledged by the server"/>
                         </Div>
                         <Div id="proxy" titled="true">
-                            <ComboBox id="proxyType" value="0" items="None;SOCKS" toolTipText="Type of proxy"/>
-                            <TextField id="proxyHost" toolTipText="The proxy host"/>
-                            <IntSpinner id="proxyPort" minValue="0" value="9000" toolTipText="The proxy port"/>
+                            <ComboBox id="proxyType" label="Type" value="0" items="None;SOCKS" toolTipText="Type of proxy"/>
+                            <TextField id="proxyHost" label="Host" toolTipText="The proxy host"/>
+                            <IntSpinner id="proxyPort" label="Port" minValue="0" value="9000" toolTipText="The proxy port"/>
 <!--                            <TextField id="proxyUser" toolTipText="The proxy username"/>
                             <PasswordField id="proxyPassword" toolTipText="The proxy password"/>-->
                         </Div>
