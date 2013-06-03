@@ -59,9 +59,9 @@ public class MongoUtils {
     public static void addChildrenToTreeNode(DefaultMutableTreeNode node, DBObject obj) {
         for (String key : obj.keySet()) {
             Object val = obj.get(key);
-            if (val == null) {
-                continue;
-            }
+//            if (val == null) {
+//                continue;
+//            }
 
             DefaultMutableTreeNode child = new DefaultMutableTreeNode(new TreeNodeDocumentField(key, val));
             if (val instanceof DBObject) {
@@ -82,7 +82,7 @@ public class MongoUtils {
     }
 
     public static String getObjectString(Object obj, int limit) {
-        return limitString(obj.toString(), limit);
+        return limitString(obj != null ? obj.toString() : "null", limit);
     }
 
     public static String limitString(String str, int limit) {
