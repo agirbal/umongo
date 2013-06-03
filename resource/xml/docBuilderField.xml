@@ -22,6 +22,5 @@
         </FormDialog>
     </Button>
     <Button id="edit" icon="brick.png" iconGroup="icons" toolTipText="Edit the JSON" call="edit"/>
-    <Button id="edit" icon="brick.png" iconGroup="icons" toolTipText="Edit the JSON" call="edit"/>
     <ToggleButton id="validate" value="true" icon="overlay/check.png" iconGroup="icons" toolTipText="Turn on/off JSON validation"/>
 </Div>

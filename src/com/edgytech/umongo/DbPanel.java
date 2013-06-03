@@ -74,6 +74,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         eval,
         evalCode,
         evalNoLock,
+        dbHash,
         options,
         authenticate,
         authUser,
@@ -665,6 +666,10 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
 
     public void stats(ButtonBase button) {
         new DbJobCmd(getDbNode().getDb(), "dbstats").addJob();
+    }
+
+    public void dbHash(ButtonBase button) {
+        new DbJobCmd(getDbNode().getDb(), "dbHash").addJob();
     }
 
     public void enableSharding(ButtonBase button) {

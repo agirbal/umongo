@@ -1,21 +1,25 @@
 /**
- *      Copyright (C) 2010 EdgyTech Inc.
+ * Copyright (C) 2010 EdgyTech Inc.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
@@ -46,6 +50,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         append,
         expandText,
         expandTextArea,
+        indent,
         spawn,
         export,
         cursor,
@@ -57,7 +62,6 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         expandAll,
         collapseAll
     }
-
     Iterator<DBObject> iterator;
     DBCursor dbcursor;
     boolean busy = false;
@@ -83,7 +87,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         setStringFieldValue(Item.tabTitle, label);
 
         getTree().label = root.toString();
-        
+
         if (job != null && job.getButton() != null) {
             getComponentBoundUnit(Item.spawn).enabled = true;
         }
@@ -91,11 +95,12 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
     /**
      * create a doc view with static document
+     *
      * @param id
      * @param label
      * @param job
      * @param root
-     * @param doc 
+     * @param doc
      */
     public DocView(String id, String label, DbJob job, Object root, DBObject doc) {
         this(id, label, job, root);
@@ -107,11 +112,12 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
     /**
      * create a doc view with an iterator or a cursor
+     *
      * @param id
      * @param label
      * @param job
      * @param root
-     * @param iterator 
+     * @param iterator
      */
     public DocView(String id, String label, DbJob job, Object root, Iterator<DBObject> iterator) {
         this(id, label, job, root);
@@ -171,7 +177,6 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 //    public DocView(String id, String label, DBCollection col, String cmdStr) {
 //        this(id, label, null, col.getDB(), new BasicDBObject(cmdStr, col.getName()), null);
 //    }
-    
     Tree getTree() {
         return (Tree) getBoundUnit(Item.docTree);
     }
@@ -179,7 +184,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     public DBCursor getDBCursor() {
         return dbcursor;
     }
-    
+
     public void close(ButtonBase button) {
         if (dbcursor != null) {
             dbcursor.close();
@@ -190,7 +195,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
     void addToTabbedDiv() {
         tabbedDiv = UMongo.instance.getTabbedResult();
-        tabbedDiv.addTab(this, true);        
+        tabbedDiv.addTab(this, true);
 
         getTree().expandNode(getTree().getTreeNode());
     }
@@ -306,36 +311,79 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
     public void expandText(ButtonBase button) throws IOException {
         FormDialog dia = (FormDialog) button.getDialog();
+
+        DefaultMutableTreeNode root = getTree().getTreeNode();
+        DefaultMutableTreeNode select = getTree().getSelectionNode();
+        String txt = "";
+        if (select == null || select == root) {
+            txt = getTextAllNodes(false);
+        } else {
+            txt = getTextForNode(select.getUserObject(), false);
+        }
+        setStringFieldValue(Item.expandTextArea, txt);
+        dia.label = this.label;
+        
+        dia.show();
+    }
+
+    String getTextAllNodes(boolean indent) throws IOException {
+        StringBuilder b = new StringBuilder();
+        DefaultMutableTreeNode root = getTree().getTreeNode();
+        for (int i = 0; i < root.getChildCount(); ++i) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
+            Object obj = child.getUserObject();
+            b.append(getTextForNode(obj, indent));
+        }
+        return b.toString();
+    }
+
+    String getTextForNode(Object obj, boolean indent) throws IOException {
+        DBObject doc = null;
+        if (obj instanceof DBObject) {
+            doc = (DBObject) obj;
+        } else if (obj instanceof TreeNodeDocumentField) {
+            doc = (DBObject) ((TreeNodeDocumentField) obj).getValue();
+        } else if (obj instanceof TreeNodeDocument) {
+            doc = ((TreeNodeDocument) obj).getDBObject();
+        }
+        if (doc == null) {
+            return "";
+        }
+
         final DocumentSerializer ds = new DocumentSerializer(DocumentSerializer.Format.JSON, null);
         ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
         ds.setOutputStream(baos);
         try {
-            DefaultMutableTreeNode root = getTree().getTreeNode();
-            for (int i = 0; i < root.getChildCount(); ++i) {
-                DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
-                Object obj = child.getUserObject();
-                DBObject doc = null;
-                if (obj instanceof DBObject) {
-                    doc = (DBObject) obj;
-                } else if (obj instanceof TreeNodeDocumentField) {
-                    doc = (DBObject) ((TreeNodeDocumentField) obj).getValue();
-                } else if (obj instanceof TreeNodeDocument) {
-                    doc = ((TreeNodeDocument) obj).getDBObject();
-                }
-                if (doc != null) {
-                    ds.writeObject(doc);
-                }
-            }
+            ds.writeObject(doc);
         } finally {
             ds.close();
         }
-        
+
         String txt = new String(baos.toByteArray());
-        setStringFieldValue(Item.expandTextArea, txt);
-        dia.label = this.label;
-        dia.show();
+
+        if (indent) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+            JsonParser jp = new JsonParser();
+            JsonElement je = jp.parse(txt);
+            txt = gson.toJson(je);
+            // add newline in case there are following docs
+            txt += "\n";
+        }
+        return txt;
     }
-    
+
+    public void indent(ButtonBase button) throws IOException {
+        DefaultMutableTreeNode root = getTree().getTreeNode();
+        DefaultMutableTreeNode select = getTree().getSelectionNode();
+        String txt = "";
+        if (select == null || select == root) {
+            txt = getTextAllNodes(true);
+        } else {
+            txt = getTextForNode(select.getUserObject(), true);
+        }
+        setComponentStringFieldValue(Item.expandTextArea, txt);
+    }
+
     public void refreshCmd(final boolean append) {
         if (job == null || job.getDB() == null || job.getCommand() == null) {
             return;
@@ -380,8 +428,9 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                     getTree().expandAll();
 
                     // panel info may need to be refreshed
-                    if (job.getPanel() != null)
+                    if (job.getPanel() != null) {
                         job.getPanel().refresh();
+                    }
                 }
             }
         }.addJob();
@@ -399,8 +448,9 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                 int i = 0;
                 while (iterator.hasNext() && (i++ < max || max <= 0)) {
                     DBObject obj = iterator.next();
-                    if (obj == null)
+                    if (obj == null) {
                         break;
+                    }
                     addDocument(obj, null);
                 }
                 return null;
@@ -470,12 +520,13 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         }
         return null;
     }
-    
+
     String getSelectedDocumentPath() {
         TreePath path = getTree().getSelectionPath();
         String pathStr = "";
-        if (path.getPathCount() < 2)
+        if (path.getPathCount() < 2) {
             return null;
+        }
         for (int i = 2; i < path.getPathCount(); ++i) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getPathComponent(i);
             String key = ((TreeNodeDocumentField) node.getUserObject()).getKey();
@@ -536,7 +587,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         getComponentBoundUnit(Item.getMore).updateComponent();
         getComponentBoundUnit(Item.getAll).enabled = canGetMore;
         getComponentBoundUnit(Item.getAll).updateComponent();
-        
+
     }
 
     public void addDocument(DBObject doc, DbJob job) {
@@ -546,8 +597,9 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     public void addDocument(DBObject doc, DbJob job, boolean expand) {
         TreeNodeLabel node = new TreeNodeDocument(doc, job);
         getTree().addChild(node);
-        if (expand)
+        if (expand) {
             getTree().expandNode(node);
+        }
     }
 
 //    protected void appendDoc(DBObject doc) {
@@ -555,7 +607,6 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 //        node.forceTreeNode(MongoUtils.dbObjectToTreeNode(doc));
 //        getTree().addChild(node);
 //    }
-    
     public void collapseAll(ButtonBase button) {
         getTree().collapseAll();
         // need to reexpand root

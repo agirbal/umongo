@@ -47,6 +47,7 @@ public class DocumentDeserializer {
     DBCallback callback;
     BSONDecoder decoder;
     Iterator iterator;
+    BasicDBObject template;
 
     public DocumentDeserializer(Format format, String fields) {
         this.format = format;
@@ -66,6 +67,10 @@ public class DocumentDeserializer {
 
     public String getFields() {
         return fields;
+    }
+
+    void setTemplate(BasicDBObject template) {
+        this.template = template;
     }
 
     public void setInputStream(InputStream is) {
@@ -151,10 +156,15 @@ public class DocumentDeserializer {
 
             if (format == Format.CSV) {
                 String[] values = line.split(",");
-                obj = new BasicDBObject();
-                for (int i = 0; i < filter.length; ++i) {
-                    String val = values[i];
-                    obj.put(filter[i], JSON.parse(val));
+                if (template == null) {
+                    obj = new BasicDBObject();
+                    for (int i = 0; i < filter.length; ++i) {
+                        String val = values[i];
+                        obj.put(filter[i], JSON.parse(val));
+                    }
+                } else {
+                    obj = (BasicDBObject) template.copy();
+                    fillInTemplate(obj, values);
                 }
             } else if (format == Format.JSON_ARRAY) {
                 if (iterator.hasNext()) {
@@ -210,4 +220,45 @@ public class DocumentDeserializer {
         }
 
     }
+
+    private void fillInTemplate(DBObject obj, String[] values) {
+        for (String field : obj.keySet()) {
+            Object val = obj.get(field);
+            if (val instanceof BasicDBObject) {
+                fillInTemplate((BasicDBObject)val, values);
+            } else if (val instanceof BasicDBList) {
+                fillInTemplate((BasicDBList)val, values);
+            } else if (val instanceof String) {
+                String str = (String) val;
+                if (str.startsWith("$")) {
+                    str = str.substring(1);
+                    int slash = str.indexOf("/");
+                    String ref = str;
+                    String type = null;
+                    if (slash > 0) {
+                        ref = str.substring(0, slash);
+                        type = str.substring(slash + 1);
+                    }
+                    
+                    // find field index
+                    int index = 0;
+                    while (index < filter.length && !filter[index].equals(ref)) { ++index; }
+                    if (index >= filter.length)
+                        continue;
+                    String value = values[index];
+                    
+                    if (type == null || "String".equals(type)) {
+                        obj.put(field, value);
+                    } else if ("Integer".equals(type)) {
+                        obj.put(field, Integer.valueOf(value));
+                    } else if ("Long".equals(type)) {
+                        obj.put(field, Long.valueOf(value));
+                    } else if ("Double".equals(type)) {
+                        obj.put(field, Double.valueOf(value));
+                    }
+                }
+            }
+        }
+    }
+
 }

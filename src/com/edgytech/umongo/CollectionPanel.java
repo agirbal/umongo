@@ -137,6 +137,9 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         findChunks,
         validate,
         validateFull,
+        touch,
+        touchData,
+        touchIndex,
         compact,
         compactForce,
         reIndex,
@@ -1067,6 +1070,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         if (getBooleanFieldValue(Item.validateFull)) {
             cmd.put("full", true);
         }
+        new DbJobCmd(getCollectionNode().getDbNode().getDb(), cmd, null, button).addJob();
+    }
+
+    public void touch(ButtonBase button) {
+        BasicDBObject cmd = new BasicDBObject("touch", getCollectionNode().getCollection().getName());
+        cmd.put("data", getBooleanFieldValue(Item.touchData));
+        cmd.put("index", getBooleanFieldValue(Item.touchIndex));
         new DbJobCmd(getCollectionNode().getDbNode().getDb(), cmd, null, button).addJob();
     }
 

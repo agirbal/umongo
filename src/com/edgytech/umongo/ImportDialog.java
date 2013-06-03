@@ -18,6 +18,7 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.FormDialog;
 import com.edgytech.umongo.DocumentDeserializer.Format;
+import com.mongodb.BasicDBObject;
 import java.io.File;
 
 /**
@@ -33,7 +34,8 @@ public class ImportDialog extends FormDialog {
         continueOnError,
         upsert,
         upsertFields,
-        bulk
+        bulk,
+        template
     }
 
     public ImportDialog() {
@@ -43,6 +45,7 @@ public class ImportDialog extends FormDialog {
     public DocumentDeserializer getDocumentDeserializer() {
         DocumentDeserializer dd = new DocumentDeserializer(Format.values()[getIntFieldValue(Item.format)], null);
         dd.setFile(new File(getStringFieldValue(Item.inputFile)));
+        dd.setTemplate((BasicDBObject)((DocBuilderField)getBoundUnit(Item.template)).getDBObject());
         return dd;
     }
     

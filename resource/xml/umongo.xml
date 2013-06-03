@@ -87,6 +87,7 @@
             <CheckBox id="upsert" toolTipText="Upsert values instead of insert"/>
             <TextField id="upsertFields" toolTipText="Comma-separated list of fields to upsert by. If not specified, save() will be used."/>
             <CheckBox id="bulk" value="false" toolTipText="If turned on, the bulk insert function of the driver will be used. It may be faster but more client memory will be used, and error reporting is not accurate."/>
+            <com.edgytech.umongo.DocBuilderField id="template" toolTipText="Optional, a template for the document when importing from CSV. CSV fields are refered as '$csv_field_name/type'"/>
         </com.edgytech.umongo.ImportDialog>
         <ConfirmDialog id="lockingOperationDialog" text="Are you sure you want to run this command? It can potentially lock the db for a long time."/>
         <com.edgytech.umongo.MongoPanel id="mongoPanel">
@@ -192,14 +193,16 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="listCommands" call="listCommands"/>
-                    <MenuItem id="eval" call="eval">
+                    <MenuSeparator/>
+                    <MenuItem id="statsCmd" label="Stats" call="stats"/>
+                    <MenuSeparator/>
+                    <MenuItem id="eval" label="Eval JS" call="eval" toolTipText="Evaluate Javascript code on the database side">
                         <FormDialog>
                             <TextArea id="evalCode" label="JS Code" toolTipText="JavaScript code to evaluate on the server" nonEmpty="true"/>
                             <CheckBox id="evalNoLock" label="No Lock" toolTipText="Run the eval without the taking the global write lock"/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuSeparator/>
-                    <MenuItem id="statsCmd" label="Stats" call="stats"/>
+                    <MenuItem id="dbHash" label="Generate Hash" call="dbHash"/>
                 </Menu>
                 <Menu id="user">
                     <MenuItem id="authenticate" call="authenticate">
@@ -284,14 +287,13 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="tools">
-                    <MenuItem id="repair" call="repair"/>
-                    <MenuSeparator/>
                     <MenuItem id="profile" call="profile">
                         <FormDialog>
                             <ComboBox id="profileLevel" label="Level" items="0 - None;1 - Slow Queries;2 - All Queries" value="0" toolTipText="Profiling level for the database."/>
                             <IntField id="profileSlowMS" label="Slow MS" value="0" toolTipText="Time in millisecond over which a query is considered slow. 0 means use default."/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="repair" call="repair" toolTipText="Repair the database, which is a long operation involving re-saving all documents"/>
                     <MenuSeparator/>
                     <MenuItem id="addJSFunction" call="addJSFunction" label="Add JS Function">
                         <FormDialog id="addJSFunctionDialog" label="Add JS Function">
@@ -492,18 +494,25 @@
                             <CheckBox id="validateFull" label="Full" toolTipText="Turns on full validation, which is slower"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="touch" call="touch" label="Bring To Memory">
+                        <FormDialog>
+                            <CheckBox id="touchData" label="Data" value="false" toolTipText="Touch the data"/>
+                            <CheckBox id="touchIndex" label="Index" value="true" toolTipText="Touch the indexes"/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuSeparator/>
                     <MenuItem id="compact" call="compact">
                         <FormDialog>
                             <CheckBox id="compactForce" label="Force" toolTipText="Force compaction even if ran on the primary server"/>
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="reIndex" call="reIndex"/>
-                    <MenuItem id="fixCollection" call="fixCollection" showDialog="false">
+<!--                    <MenuItem id="fixCollection" call="fixCollection" showDialog="false">
                         <FormDialog id="fcDialog">
                             <ComboBox id="fcSrcMongo" label="Source Mongo" toolTipText="Pick one of the other Mongo instances as source"/>
                             <CheckBox id="fcUpsert" label="Upsert" toolTipText="If checked, operation will be upsert instead of insert"/>
                         </FormDialog>
-                    </MenuItem>
+                    </MenuItem>-->
                     <MenuSeparator/>
                     <MenuItem id="options" call="options"/>
                     <CheckBoxMenuItem id="lazyDecoding" value="false"/>
@@ -794,6 +803,7 @@
                             <IntSpinner id="proxyPort" label="Port" minValue="0" value="9000" toolTipText="The proxy port"/>
 <!--                            <TextField id="proxyUser" toolTipText="The proxy username"/>
                             <PasswordField id="proxyPassword" toolTipText="The proxy password"/>-->
+                            <Text field="false" value="Easily create a SOCKS proxy with 'ssh -D 9000 hostInDbNetwork -N'"/>
                         </Div>
                     </com.edgytech.umongo.ConnectDialog>
                     <ProgressDialog id="connectProgressDialog" buttons="Cancel" text="Adding Mongo instance ...">
