@@ -1,0 +1,24 @@
+{
+    aggregate: "system.profile",
+    pipeline: [
+    {
+        "$group" : {
+            "_id" :"$op",
+            "count":{
+                "$sum":1
+            },
+            "maxResponseTime":{
+                "$max":"$millis"
+            }, 
+            "avgResponseTime":{
+                "$avg":"$millis"
+            }
+        }
+    },
+    {
+        "$sort": {
+            "maxResponseTime":-1
+        }
+    }
+]
+}

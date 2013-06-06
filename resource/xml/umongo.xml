@@ -293,6 +293,8 @@
                             <IntField id="profileSlowMS" label="Slow MS" value="0" toolTipText="Time in millisecond over which a query is considered slow. 0 means use default."/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="analyzeProfilingData" call="analyzeProfilingData" toolTipText="Analyze the profiling data"/>
+                    <MenuSeparator/>                    
                     <MenuItem id="repair" call="repair" toolTipText="Repair the database, which is a long operation involving re-saving all documents"/>
                     <MenuSeparator/>
                     <MenuItem id="addJSFunction" call="addJSFunction" label="Add JS Function">

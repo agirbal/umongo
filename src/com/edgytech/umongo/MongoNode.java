@@ -101,13 +101,8 @@ public class MongoNode extends BaseTreeNode {
         if (dbnames != null) {
             // get all DBs to populate map
             for (String dbname : dbnames) {
-                mongo.getDB(dbname);
+                addChild(new DbNode(mongo.getDB(dbname)));
             }
-        }
-
-        // get local and remote dbs
-        for (DB db : mongo.getUsedDatabases()) {
-            addChild(new DbNode(db));
         }
     }
 

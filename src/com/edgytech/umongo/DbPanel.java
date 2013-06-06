@@ -1,21 +1,20 @@
 /**
- *      Copyright (C) 2010 EdgyTech Inc.
+ * Copyright (C) 2010 EdgyTech Inc.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -99,6 +98,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         profile,
         profileLevel,
         profileSlowMS,
+        analyzeProfilingData,
         repair,
         addJSFunction,
         addJSFunctionName,
@@ -146,8 +146,9 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final DBObject cmd = !scmd.isEmpty() ? new BasicDBObject(scmd, 1)
                 : ((DocBuilderField) getBoundUnit(Item.commandJson)).getDBObject();
         boolean help = getBooleanFieldValue(Item.commandHelp);
-        if (help)
+        if (help) {
             cmd.put("help", true);
+        }
 
 //        new DbJobCmd(db, cmd).addJob();
 
@@ -183,14 +184,15 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void listCommands(ButtonBase button) {
         new DbJobCmd(getDbNode().getDb(), "listCommands").addJob();
     }
-    
+
     public void eval(final ButtonBase button) {
         final DB db = getDbNode().getDb();
         final String sfunc = getStringFieldValue(Item.evalCode);
         final boolean noLock = getBooleanFieldValue(Item.evalNoLock);
         final BasicDBObject cmd = new BasicDBObject("$eval", sfunc);
-        if (noLock)
+        if (noLock) {
             cmd.put("nolock", true);
+        }
 //        new DbJobCmd(db, cmd).addJob();
 
         new DbJob() {
@@ -284,7 +286,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
 
     public void downloadFile(final ButtonBase button) {
         final DB db = getDbNode().getDb();
-        final DBObject query = ((DocBuilderField)getBoundUnit(Item.downloadQuery)).getDBObject();
+        final DBObject query = ((DocBuilderField) getBoundUnit(Item.downloadQuery)).getDBObject();
         final String fname = getStringFieldValue(Item.downloadFileName);
         final String dpath = getStringFieldValue(Item.downloadFilePath);
         if (dpath.isEmpty()) {
@@ -297,10 +299,11 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             @Override
             public Object doRun() throws IOException {
                 GridFSDBFile dbfile = null;
-                if (query != null)
+                if (query != null) {
                     dbfile = getGridFS().findOne(query);
-                else
+                } else {
                     dbfile = getGridFS().findOne(fname);
+                }
                 if (dbfile == null) {
                     throw new MongoException("GridFS cannot find file " + fname);
                 }
@@ -333,7 +336,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void listFiles(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBCollection col = db.getCollection("fs.files");
-        
+
         new DbJob() {
 
             @Override
@@ -350,23 +353,23 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             public String getShortName() {
                 return "List Files";
             }
-
         }.addJob();
     }
 
     public void deleteFile(final ButtonBase button) {
         final DB db = getDbNode().getDb();
-        final DBObject query = ((DocBuilderField)getBoundUnit(Item.downloadQuery)).getDBObject();
+        final DBObject query = ((DocBuilderField) getBoundUnit(Item.downloadQuery)).getDBObject();
         final String fname = getStringFieldValue(Item.downloadFileName);
 
         new DbJob() {
 
             @Override
             public Object doRun() throws IOException {
-                if (query != null)
+                if (query != null) {
                     getGridFS().remove(query);
-                else
+                } else {
                     getGridFS().remove(fname);
+                }
                 return true;
             }
 
@@ -477,7 +480,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     }
 
     void refreshUserList() {
-        List list = (List) getBoundUnit(Item.userList);        
+        List list = (List) getBoundUnit(Item.userList);
         final DB db = getDbNode().getDb();
         DBCursor cur = db.getCollection("system.users").find().sort(new BasicDBObject("user", 1));
         ArrayList users = new ArrayList();
@@ -485,30 +488,32 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             BasicDBObject user = (BasicDBObject) cur.next();
             users.add(user.getString("user"));
         }
-        
+
         list.items = (String[]) users.toArray(new String[users.size()]);
         list.structureComponent();
     }
-    
+
     public void manageUsers(ButtonBase button) {
         FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.manageUsers)).getDialog();
         refreshUserList();
 
-        if (!dialog.show())
+        if (!dialog.show()) {
             return;
+        }
     }
-    
+
     public void addUser(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBCollection col = db.getCollection("system.users");
 
         UserDialog ud = (UserDialog) getBoundUnit(Item.userDialog);
         ud.resetForNew();
-        if (!ud.show())
+        if (!ud.show()) {
             return;
-        
+        }
+
         final BasicDBObject newUser = ud.getUser(null);
-        
+
         new DbJob() {
 
             @Override
@@ -531,19 +536,20 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
                 super.wrapUp(res);
                 refreshUserList();
             }
-        }.addJob();   
+        }.addJob();
     }
 
     public void removeUser(ButtonBase button) {
         final DB db = getDbNode().getDb();
-        
-        final String user = getComponentStringFieldValue(Item.userList);        
+
+        final String user = getComponentStringFieldValue(Item.userList);
         if (user == null) {
             return;
         }
-        if (!((ConfirmDialog) getBoundUnit(Item.userChange)).show())
+        if (!((ConfirmDialog) getBoundUnit(Item.userChange)).show()) {
             return;
-        
+        }
+
         new DbJob() {
 
             @Override
@@ -566,24 +572,25 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
                 super.wrapUp(res);
                 refreshUserList();
             }
-        }.addJob();        
+        }.addJob();
     }
 
     public void editUser(ButtonBase button) {
         final DB db = getDbNode().getDb();
         final DBCollection col = db.getCollection("system.users");
-        
-        final String user = getComponentStringFieldValue(Item.userList);        
+
+        final String user = getComponentStringFieldValue(Item.userList);
         if (user == null) {
             return;
         }
-        
+
         final BasicDBObject userObj = (BasicDBObject) col.findOne(new BasicDBObject("user", user));
         UserDialog ud = (UserDialog) getBoundUnit(Item.userDialog);
         ud.resetForEdit(userObj);
-        if (!ud.show())
+        if (!ud.show()) {
             return;
-        
+        }
+
         final BasicDBObject newUser = ud.getUser(userObj);
 
         new DbJob() {
@@ -609,9 +616,9 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
                 refreshUserList();
             }
         }.addJob();
-        
+
     }
-    
+
     public void createCollection(final ButtonBase button) {
         final DbNode node = getDbNode();
         final DB db = getDbNode().getDb();
@@ -634,8 +641,9 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
                         opt.put("max", count);
                     }
                 }
-                if (!autoIndexId)
+                if (!autoIndexId) {
                     opt.put("autoIndexId", false);
+                }
                 db.createCollection(name, opt);
                 return null;
             }
@@ -685,17 +693,86 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final DBObject cmd = new BasicDBObject("profile", level);
         if (level == 1) {
             int slow = getIntFieldValue(Item.profileSlowMS);
-            if (slow > 0)
+            if (slow > 0) {
                 cmd.put("slowms", slow);
+            }
         }
         new DbJobCmd(db, cmd).addJob();
+    }
+
+    public void analyzeProfilingData(ButtonBase button) {
+        new DbJob() {
+
+            @Override
+            public Object doRun() throws Exception {
+                DBCollection prof = getDbNode().getDb().getCollection("system.profile");
+                BasicDBObject out = new BasicDBObject();
+                CommandResult res = null;
+                DocumentDeserializer dd = null;
+                BasicDBObject aggCmd = null;
+
+
+                // response time by operation type
+                dd = new DocumentDeserializer(DocumentDeserializer.Format.JSON_SINGLE_DOC, null);
+                dd.setInputStream(DbPanel.class.getResourceAsStream("/json/profOperationType.json"));
+                aggCmd = (BasicDBObject) dd.readObject();
+                res = getDbNode().getDb().command(aggCmd);
+                out.put("byOperationType", res.get("result"));
+                dd.close();
+
+                // slowest by namespace
+                dd = new DocumentDeserializer(DocumentDeserializer.Format.JSON_SINGLE_DOC, null);
+                dd.setInputStream(DbPanel.class.getResourceAsStream("/json/profNamespace.json"));
+                aggCmd = (BasicDBObject) dd.readObject();
+                res = getDbNode().getDb().command(aggCmd);
+                out.put("byNamespace", res.get("result"));
+                dd.close();
+
+                // slowest by client
+                dd = new DocumentDeserializer(DocumentDeserializer.Format.JSON_SINGLE_DOC, null);
+                dd.setInputStream(DbPanel.class.getResourceAsStream("/json/profClient.json"));
+                aggCmd = (BasicDBObject) dd.readObject();
+                res = getDbNode().getDb().command(aggCmd);
+                out.put("byClient", res.get("result"));
+                dd.close();
+
+                // summary moved vs non-moved
+                dd = new DocumentDeserializer(DocumentDeserializer.Format.JSON_SINGLE_DOC, null);
+                dd.setInputStream(DbPanel.class.getResourceAsStream("/json/profMoved.json"));
+                aggCmd = (BasicDBObject) dd.readObject();
+                res = getDbNode().getDb().command(aggCmd);
+                out.put("movedVsNonMoved", res.get("result"));
+                dd.close();
+
+                // response time analysis
+                dd = new DocumentDeserializer(DocumentDeserializer.Format.JSON_SINGLE_DOC, null);
+                dd.setInputStream(DbPanel.class.getResourceAsStream("/json/profResponseTimeAnalysis.json"));
+                aggCmd = (BasicDBObject) dd.readObject();
+                res = getDbNode().getDb().command(aggCmd);
+                out.put("responseTimeAnalysis", res.get("result"));
+                dd.close();
+
+                return out;
+            }
+
+            @Override
+            public String getNS() {
+                return getDbNode().getDb().getName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Analyze Profiling Data";
+            }
+        }.addJob();
     }
 
     public void repair(ButtonBase button) {
         DB db = getDbNode().getDb();
         final DBObject cmd = new BasicDBObject("repairDatabase", 1);
-        if (!UMongo.instance.getGlobalStore().confirmLockingOperation())
+        if (!UMongo.instance.getGlobalStore().confirmLockingOperation()) {
             return;
+        }
         new DbJobCmd(db, cmd).addJob();
     }
 
@@ -705,7 +782,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final DBCollection col = config.getCollection("databases");
         CollectionPanel.doFind(col, new BasicDBObject("_id", db.getName()));
     }
-    
+
     public void movePrimary(ButtonBase button) {
         FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.movePrimary)).getDialog();
         ComboBox combo = (ComboBox) getBoundUnit(Item.mvpToShard);
@@ -713,9 +790,10 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         combo.items = getDbNode().getMongoNode().getShardNames();
         combo.structureComponent();
 
-        if (!dialog.show())
+        if (!dialog.show()) {
             return;
-        
+        }
+
         Mongo m = getDbNode().getMongoNode().getMongo();
         DB admin = m.getDB("admin");
         String shard = getStringFieldValue(Item.mvpToShard);
@@ -729,8 +807,9 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final DBCollection col = db.getCollection("system.js");
         final String name = getStringFieldValue(Item.findJSFunctionName);
         DBObject query = new BasicDBObject();
-        if (name != null && !name.isEmpty())
+        if (name != null && !name.isEmpty()) {
             query.put("_id", name);
+        }
         CollectionPanel.doFind(col, query);
     }
 

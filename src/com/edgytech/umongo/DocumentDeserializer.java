@@ -34,6 +34,7 @@ public class DocumentDeserializer {
 
         JSON,
         JSON_ARRAY,
+        JSON_SINGLE_DOC,
         CSV,
         BSON
     }
@@ -77,7 +78,7 @@ public class DocumentDeserializer {
         this.is = is;
     }
 
-    public InputStream getOutputStream() {
+    public InputStream getInputStream() {
         return is;
     }
 
@@ -123,8 +124,12 @@ public class DocumentDeserializer {
     public DBObject readObject() throws IOException {
         if (first) {
             if (format != Format.BSON) {
-                FileReader fr = new FileReader(file);
-                br = new BufferedReader(fr);
+                if (is == null) {
+                    FileReader fr = new FileReader(file);
+                    br = new BufferedReader(fr);
+                } else {
+                    br = new BufferedReader(new InputStreamReader(is));
+                }
                 if (format == Format.CSV) {
                     fields = br.readLine();
                     if (fields != null) {
@@ -135,7 +140,8 @@ public class DocumentDeserializer {
                     }
                 }
             } else {
-                is = new FileInputStream(file);
+                if (is == null)
+                    is = new FileInputStream(file);
                 callback = new DefaultDBCallback(null);
                 decoder = new BasicBSONDecoder();
             }
@@ -145,10 +151,19 @@ public class DocumentDeserializer {
         DBObject obj = null;
         if (format != Format.BSON) {
             String line = br.readLine();
+                        
             if (line == null) {
                 return null;
             }
 
+            if (format == Format.JSON_SINGLE_DOC){
+                // keep reading all lines
+                String line2 = null;
+                while ((line2 = br.readLine()) != null) {
+                    line += line2;
+                }
+            }
+            
             if (format == Format.JSON_ARRAY && iterator == null) {
                 BasicDBList list = (BasicDBList) JSON.parse(line);
                 iterator = list.iterator();

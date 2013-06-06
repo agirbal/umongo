@@ -1,0 +1,19 @@
+{
+    aggregate: "system.profile",
+    pipeline: [
+    {
+        "$group" : {
+            "_id" :"$ns",
+            "count":{
+                "$sum":1
+            },
+            "maxResponseTime":{
+                "$max":"$millis"
+            }, 
+            "avgResponseTime":{
+                "$avg":"$millis"
+            }
+        }
+    }
+]
+}

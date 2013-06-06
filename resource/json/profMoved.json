@@ -1,0 +1,29 @@
+{
+    aggregate: "system.profile",
+    pipeline: [
+    {
+        "$match": {
+            "op": "update"
+        }
+    },
+{
+    "$group" : {
+        "_id" :"$moved",
+        "count":{
+            "$sum":1
+        },
+        "maxResponseTime":{
+            "$max":"$millis"
+        }, 
+        "avgResponseTime":{
+            "$avg":"$millis"
+        }
+    }
+},
+{
+    "$sort": {
+        "maxResponseTime":-1
+    }
+}
+]
+}

@@ -1,0 +1,75 @@
+{
+    aggregate: "system.profile",
+    pipeline: [
+        {
+            "$project": {
+                "op": "$op",
+                "millis": "$millis",
+                "timeAcquiringRead": {
+                    "$divide": [
+                        "$lockStats.timeAcquiringMicros.r",
+                        1000
+                    ]
+                },
+                "timeAcquiringWrite": {
+                    "$divide": [
+                        "$lockStats.timeAcquiringMicros.w",
+                        1000
+                    ]
+                },
+                "timeLockedRead": {
+                    "$divide": [
+                        "$lockStats.timeLockedMicros.r",
+                        1000
+                    ]
+                },
+                "timeLockedWrite": {
+                    "$divide": [
+                        "$lockStats.timeLockedMicros.w",
+                        1000
+                    ]
+                }
+            }
+        },
+        {
+            "$project": {
+                "op": "$op",
+                "millis": "$millis",
+                "totalTime": {
+                    "$add": [
+                        "$millis",
+                        "$timeAcquiringRead",
+                        "$timeAcquiringWrite"
+                    ]
+                },
+                "timeAcquiringRead": "$timeAcquiringRead",
+                "timeAcquiringWrite": "$timeAcquiringWrite",
+                "timeLockedRead": "$timeLockedRead",
+                "timeLockedWrite": "$timeLockedWrite"
+            }
+        },
+        {
+            "$group": {
+                "_id": "$op",
+                "avgResponseTime": {
+                    "$avg": "$millis"
+                },
+                "avgTotalTime": {
+                    "$avg": "$totalTime"
+                },
+                "avgAcquiringRead": {
+                    "$avg": "$timeAcquiringRead"
+                },
+                "avgAcquiringWrite": {
+                    "$avg": "$timeAcquiringWrite"
+                },
+                "avgLockedRead": {
+                    "$avg": "$timeLockedRead"
+                },
+                "avgLockedWrite": {
+                    "$avg": "$timeLockedWrite"
+                }
+            }
+        }
+    ]
+}

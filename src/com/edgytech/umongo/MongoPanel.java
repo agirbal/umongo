@@ -192,8 +192,34 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     public void createDB(ButtonBase button) {
         final String name = getStringFieldValue(Item.createDbName);
         final Mongo mongo = getMongoNode().getMongo();
-        mongo.getDB(name);
-        getMongoNode().structureComponent();
+        // need to do a command to actually create on server
+        final DB db = mongo.getDB(name);
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() throws IOException {
+                db.getStats();
+                return null;
+            }
+
+            @Override
+            public String getNS() {
+                return db.getName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Create DB";
+            }
+
+            @Override
+            public void wrapUp(Object res) {
+                super.wrapUp(res);
+                getMongoNode().structureComponent();
+            }
+
+        }.addJob();
     }
 
     public void authenticate(final ButtonBase button) {
