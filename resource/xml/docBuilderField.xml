@@ -10,12 +10,12 @@
 
 <Div axis="X" gap="true" field="true">
     <TextArea id="jsonText" field="false" rows="3" columns="20" lineWrap="true" wrapStyleWord="false"/>
-    <Button id="expandText" icon="text_icon.png" iconGroup="icons" call="expandText" showDialog="false" toolTipText="Expand the JSON into a text-based window">
+    <Button id="expandText" icon="text.png" iconGroup="icons" call="expandText" showDialog="false" toolTipText="Expand the JSON into a text-based window">
         <FormDialog buttons="OK_CANCEL" preferredSize="640;480">
             <Zone>
                 <TextArea id="expandTextArea" field="false" zone="CENTER"/>
                 <Div axis="Y" zone="EAST">
-                    <Button id="convertFromJS" icon="wand.png" iconGroup="icons" toolTipText="Convert from shell JSON to Java JSON" call="convertFromJS"/>
+                    <Button id="convertFromJS" icon="wand.png" iconGroup="icons" toolTipText="Convert from shell JSON to Java JSON e.g. ObjectId(), ISODate()" call="convertFromJS"/>
                     <Button id="indent" icon="indent.png" iconGroup="icons" toolTipText="Indent the JSON" call="indent"/>
                 </Div>
             </Zone>

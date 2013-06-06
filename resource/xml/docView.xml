@@ -33,7 +33,7 @@
             <MenuItem id="startAutoUpdate" call="startAutoUpdate" enabled="false"/>
             <MenuItem id="stopAutoUpdate" call="stopAutoUpdate" enabled="false"/>
         </Menu>
-        <Button id="expandText" icon="text_icon.png" iconGroup="icons" call="expandText" showDialog="false" toolTipText="Expand the results into a text-based window">
+        <Button id="expandText" icon="text.png" iconGroup="icons" call="expandText" showDialog="false" toolTipText="Expand the results into a text-based window">
             <FormDialog buttons="OK" preferredSize="640;480">
                 <Zone>
                     <TextArea id="expandTextArea" field="false" zone="CENTER" editable="false"/>
