@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import com.edgytech.umongo.DbJob.Item;
 import com.mongodb.DB;
 import java.awt.Component;
+import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractButton;
 import javax.swing.JMenuItem;
 
@@ -234,4 +235,8 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
         return null;
     }
 
+    void join() throws InterruptedException, ExecutionException {
+        if (_pbw != null)
+            _pbw.get();
+    }
 }

@@ -150,35 +150,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             cmd.put("help", true);
         }
 
-//        new DbJobCmd(db, cmd).addJob();
-
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                return db.command(cmd);
-            }
-
-            @Override
-            public String getNS() {
-                return db.getName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Command";
-            }
-
-            @Override
-            public Object getRoot(Object result) {
-                return cmd;
-            }
-
-            @Override
-            public ButtonBase getButton() {
-                return button;
-            }
-        }.addJob();
+        new DbJobCmd(db, cmd, null, button).addJob();
     }
 
     public void listCommands(ButtonBase button) {
@@ -193,35 +165,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         if (noLock) {
             cmd.put("nolock", true);
         }
-//        new DbJobCmd(db, cmd).addJob();
-
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                return db.command(cmd);
-            }
-
-            @Override
-            public String getNS() {
-                return db.getName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Eval";
-            }
-
-            @Override
-            public Object getRoot(Object result) {
-                return cmd;
-            }
-
-            @Override
-            public ButtonBase getButton() {
-                return button;
-            }
-        }.addJob();
+        new DbJobCmd(db, cmd, null, button).addJob();
     }
 
     public void uploadFile(final ButtonBase button) {

@@ -15,15 +15,11 @@
  */
 package com.edgytech.umongo;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.Bytes;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import java.util.Date;
+import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.bson.LazyDBList;
 import org.bson.types.BSONTimestamp;
 import org.bson.types.ObjectId;
 
@@ -162,4 +158,66 @@ public class MongoUtils {
         }
         return info;
     }
+    
+    public static DBObject checkObject( DBObject o , boolean canBeNull , boolean query ){
+        if ( o == null ){
+            if ( canBeNull )
+                return null;
+            throw new IllegalArgumentException( "can't be null" );
+        }
+
+        if ( o.isPartialObject() && ! query )
+            throw new IllegalArgumentException( "can't save partial objects" );
+
+        if ( ! query ){
+            checkKeys(o);
+        }
+        return o;
+    }
+
+    /**
+     * Checks key strings for invalid characters.
+     */
+    public static void checkKeys( DBObject o ) {
+        if ( o instanceof LazyDBObject || o instanceof LazyDBList )
+            return;
+
+        for ( String s : o.keySet() ){
+            validateKey ( s );
+            Object inner = o.get( s );
+            if ( inner instanceof DBObject ) {
+                checkKeys( (DBObject)inner );
+            } else if ( inner instanceof Map ) {
+                checkKeys( (Map<String, Object>)inner );
+            }
+        }
+    }
+
+    /**
+     * Checks key strings for invalid characters.
+     */
+    public static void checkKeys( Map<String, Object> o ) {
+        for ( String s : o.keySet() ){
+            validateKey ( s );
+            Object inner = o.get( s );
+            if ( inner instanceof DBObject ) {
+                checkKeys( (DBObject)inner );
+            } else if ( inner instanceof Map ) {
+                checkKeys( (Map<String, Object>)inner );
+            }
+        }
+    }
+
+    /**
+     * Check for invalid key names
+     * @param s the string field/key to check
+     * @exception IllegalArgumentException if the key is not valid.
+     */
+    public static void validateKey(String s ) {
+        if ( s.contains( "." ) )
+            throw new IllegalArgumentException( "fields stored in the db can't have . in them. (Bad Key: '" + s + "')" );
+        if ( s.startsWith( "$" ) )
+            throw new IllegalArgumentException( "fields stored in the db can't start with '$' (Bad Key: '" + s + "')" );
+    }
+
 }

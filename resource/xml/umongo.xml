@@ -196,13 +196,15 @@
                     <MenuSeparator/>
                     <MenuItem id="statsCmd" label="Stats" call="stats"/>
                     <MenuSeparator/>
-                    <MenuItem id="eval" label="Eval JS" call="eval" toolTipText="Evaluate Javascript code on the database side">
+                    <MenuItem id="eval" label="Execute JavaScript" call="eval" toolTipText="Evaluate Javascript code on the database side">
                         <FormDialog>
                             <TextArea id="evalCode" label="JS Code" toolTipText="JavaScript code to evaluate on the server" nonEmpty="true"/>
                             <CheckBox id="evalNoLock" label="No Lock" toolTipText="Run the eval without the taking the global write lock"/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuItem id="dbHash" label="Generate Hash" call="dbHash"/>
+                    <MenuItem id="dbHash" label="Generate Hash" call="dbHash">
+                        <ConfirmDialog text="This command triggers a full data scan and requires a long time to run. Do you wish to proceed?"/>
+                    </MenuItem>
                 </Menu>
                 <Menu id="user">
                     <MenuItem id="authenticate" call="authenticate">

@@ -350,33 +350,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final GroupCommand cmd = new GroupCommand(col, keys, query, initial, reduce, finalize);
 //        new DocView(null, "Group", col.getDB(), cmd.toDBObject()).addToTabbedDiv();
 
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                return col.group(cmd);
-            }
-
-            @Override
-            public String getNS() {
-                return col.getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Group";
-            }
-
-            @Override
-            public Object getRoot(Object result) {
-                return cmd.toDBObject();
-            }
-
-            @Override
-            public ButtonBase getButton() {
-                return button;
-            }
-        }.addJob();
+        new DbJobCmd(col.getDB(), cmd.toDBObject(), null, button).addJob();
     }
 
     public void mapReduce(final ButtonBase button) {
@@ -849,29 +823,16 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final DBObject query = ((DocBuilderField) getBoundUnit(Item.countQuery)).getDBObject();
         final int skip = getIntFieldValue(Item.countSkip);
         final int limit = getIntFieldValue(Item.countLimit);
+        
+        BasicDBObject cmd = new BasicDBObject();
+        cmd.put("count", col.getName());
+        cmd.put("query", query);
 
-        new DbJob() {
-
-            @Override
-            public Object doRun() throws IOException {
-                return col.getCount(query, null, limit, skip);
-            }
-
-            @Override
-            public String getNS() {
-                return col.getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Count";
-            }
-
-            @Override
-            public ButtonBase getButton() {
-                return button;
-            }
-        }.addJob();
+        if ( limit > 0 )
+            cmd.put( "limit" , limit );
+        if ( skip > 0 )
+            cmd.put( "skip" , skip );
+        new DbJobCmd(col.getDB(), cmd, null, button).addJob();
     }
 
     public void findAndModify(final ButtonBase button) {
@@ -883,42 +844,32 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final boolean remove = getBooleanFieldValue(Item.famRemove);
         final boolean returnNew = getBooleanFieldValue(Item.famReturnNew);
         final boolean upsert = getBooleanFieldValue(Item.famUpsert);
+        
+        BasicDBObject cmd = new BasicDBObject( "findandmodify", col.getName());
+        if (query != null && !query.keySet().isEmpty())
+            cmd.append( "query", query );
+        if (fields != null && !fields.keySet().isEmpty())
+            cmd.append( "fields", fields );
+        if (sort != null && !sort.keySet().isEmpty())
+            cmd.append( "sort", sort );
 
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                return col.findAndModify(query, fields, sort, remove, (DBObject) update.copy(), returnNew, upsert);
+        if (remove)
+            cmd.append( "remove", remove );
+        else {
+            if (update != null && !update.keySet().isEmpty()) {
+                // if 1st key doesn't start with $, then object will be inserted as is, need to check it
+                String key = update.keySet().iterator().next();
+                if (key.charAt(0) != '$')
+                    MongoUtils.checkObject(update, false, false);
+                cmd.append( "update", (DBObject) update.copy() );
             }
+            if (returnNew)
+                cmd.append( "new", returnNew );
+            if (upsert)
+                cmd.append( "upsert", upsert );
+        }
 
-            @Override
-            public String getNS() {
-                return col.getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "FindAndMod";
-            }
-
-            @Override
-            public Object getRoot(Object result) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("query=").append(query);
-                sb.append(", fields=").append(fields);
-                sb.append(", sort=").append(sort);
-                sb.append(", update=").append(update);
-                sb.append(", remove=").append(remove);
-                sb.append(", returnNew=").append(returnNew);
-                sb.append(", upsert=").append(upsert);
-                return sb.toString();
-            }
-
-            @Override
-            public ButtonBase getButton() {
-                return button;
-            }
-        }.addJob();
+        new DbJobCmd(col.getDB(), cmd, null, button).addJob();
     }
 
     public void update(final ButtonBase button) {

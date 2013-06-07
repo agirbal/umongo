@@ -30,7 +30,9 @@ import java.awt.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -64,7 +66,6 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     }
     Iterator<DBObject> iterator;
     DBCursor dbcursor;
-    boolean busy = false;
     TabbedDiv tabbedDiv;
     Thread updateThread;
     String updateType;
@@ -283,9 +284,9 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         while (running) {
             try {
                 if ("Refresh".equals(updateType) || dbcursor != null) {
-                    refresh(null);
+                    refresh(true);
                 } else if ("Append".equals(updateType)) {
-                    append(null);
+                    append(true);
                 }
 
                 if (updateCount > 0 && ++i >= updateCount) {
@@ -300,15 +301,27 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     }
 
     public void refresh(ButtonBase button) {
+        refresh(false);
+    }
+    
+    public void refresh() {
+        refresh(false);
+    }
+    
+    public void refresh(boolean join) {
         if (dbcursor != null) {
-            updateCursor();
+            updateCursor(join);
         } else {
-            refreshCmd(false);
+            refreshCmd(false, join);
         }
     }
 
     public void append(ButtonBase button) {
-        refreshCmd(true);
+        append(false);
+    }
+    
+    public void append(boolean join) {
+        refreshCmd(true, join);
     }
 
     public void spawn(ButtonBase button) {
@@ -392,15 +405,12 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         setComponentStringFieldValue(Item.expandTextArea, txt);
     }
 
-    public void refreshCmd(final boolean append) {
+    public void refreshCmd(final boolean append, boolean join) {
         if (job == null || job.getDB() == null || job.getCommand() == null) {
             return;
         }
-        if (busy) {
-            return;
-        }
-        busy = true;
-        new DbJob() {
+
+        DbJob newJob = new DbJob() {
 
             CommandResult result;
 
@@ -424,7 +434,6 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
             @Override
             public void wrapUp(Object res) {
-                busy = false;
                 super.wrapUp(res);
                 if (res == null && result != null) {
                     if (!append) {
@@ -441,14 +450,21 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                     }
                 }
             }
-        }.addJob();
+        };
+        newJob.addJob();
+        
+        if (join) {
+            try {
+                newJob.join();
+            } catch (InterruptedException ex) {
+                getLogger().log(Level.WARNING, null, ex);
+            } catch (ExecutionException ex) {
+                getLogger().log(Level.WARNING, null, ex);
+            }
+        }
     }
 
     public void getMore(final int max) {
-        if (busy) {
-            return;
-        }
-        busy = true;
         new DbJob() {
 
             @Override
@@ -479,7 +495,6 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
             @Override
             public void wrapUp(Object res) {
-                busy = false;
                 super.wrapUp(res);
                 if (res == null) {
                     // res should be null
@@ -543,16 +558,12 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         return pathStr.substring(1);
     }
 
-    public void updateCursor() {
+    public void updateCursor(boolean join) {
         if (dbcursor == null) {
             return;
         }
-        if (busy) {
-            return;
-        }
-        busy = true;
 //        final int count = getTree().getChildren().size();
-        new DbJob() {
+        DbJob newJob = new DbJob() {
 
             @Override
             public Object doRun() throws IOException {
@@ -572,7 +583,6 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
             @Override
             public void wrapUp(Object res) {
-                busy = false;
                 super.wrapUp(res);
                 if (res == null) {
                     iterator = dbcursor;
@@ -580,7 +590,18 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                     getMore(null);
                 }
             }
-        }.addJob();
+        };
+        newJob.addJob();
+        
+        if (join) {
+            try {
+                newJob.join();
+            } catch (InterruptedException ex) {
+                getLogger().log(Level.WARNING, null, ex);
+            } catch (ExecutionException ex) {
+                getLogger().log(Level.WARNING, null, ex);
+            }
+        }        
     }
 
     private void updateButtons() {
