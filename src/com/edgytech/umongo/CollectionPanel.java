@@ -476,6 +476,17 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             public ButtonBase getButton() {
                 return button;
             }
+
+            @Override
+            DBObject getCommand() {
+                return cmdobj;
+            }
+
+            @Override
+            DB getDB() {
+                return col.getDB();
+            }
+            
         }.addJob();
     }
 

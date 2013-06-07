@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import com.edgytech.umongo.MainMenu.Item;
+import com.mongodb.MongoClient;
 
 /**
  *
@@ -114,6 +115,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
                     }
                 }
                 mongo = new Mongo(addrs, dialog.getMongoOptions());
+//                mongo = new MongoClient(addrs, dialog.getMongoOptions());
                 String sdbs = dialog.getStringFieldValue(ConnectDialog.Item.databases);
                 if (!sdbs.trim().isEmpty()) {
                     for (String db : sdbs.split(",")) {

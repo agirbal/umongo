@@ -79,7 +79,7 @@ public class DbJobCmd extends DbJob {
 
     @Override
     DB getDB() {
-        return super.getDB();
+        return db;
     }
 
     @Override

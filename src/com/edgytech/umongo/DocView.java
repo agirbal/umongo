@@ -88,8 +88,16 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
         getTree().label = root.toString();
 
-        if (job != null && job.getButton() != null) {
+        if (job != null) {
+            if (job.getButton() != null) {
             getComponentBoundUnit(Item.spawn).enabled = true;
+            }
+        }
+
+        if (job.getCommand() != null) {
+            ((MenuItem) getBoundUnit(Item.refresh)).enabled = true;
+            ((MenuItem) getBoundUnit(Item.append)).enabled = true;
+            ((MenuItem) getBoundUnit(Item.startAutoUpdate)).enabled = true;
         }
     }
 
