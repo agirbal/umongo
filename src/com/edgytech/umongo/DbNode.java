@@ -76,7 +76,8 @@ public class DbNode extends BaseTreeNode {
     @Override
     protected void refreshNode() {
         // db.getStats can be slow..
-        CommandResult res = db.getStats();
+        // can't use driver's because doesnt use slaveOk
+        CommandResult res = db.command(new BasicDBObject("dbstats", 1), db.getMongo().getOptions());
 //        CommandResult res = db.command(new BasicDBObject("profile", -1));
         res.throwOnError();
         stats = res;

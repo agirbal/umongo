@@ -42,8 +42,8 @@ public class ConnectDialog extends FormDialog {
         socketType,
         connectTimeout,
         socketTimeout,
-        autoConnectRetry,
-        safe,
+        safeWrites,
+        secondaryReads,
         proxyType,
         proxyHost,
         proxyPort,
@@ -71,8 +71,9 @@ public class ConnectDialog extends FormDialog {
         moptions.maxWaitTime = getIntFieldValue(Item.maxWaitTime);
         moptions.connectTimeout = getIntFieldValue(Item.connectTimeout);
         moptions.socketTimeout = getIntFieldValue(Item.socketTimeout);
-        moptions.autoConnectRetry = getBooleanFieldValue(Item.autoConnectRetry);
-        moptions.safe = getBooleanFieldValue(Item.safe);
+//        moptions.autoConnectRetry = getBooleanFieldValue(Item.autoConnectRetry);
+        moptions.safe = getBooleanFieldValue(Item.safeWrites);
+        moptions.slaveOk = getBooleanFieldValue(Item.secondaryReads);
 
         int stype = getIntFieldValue(Item.socketType);
 

@@ -7,7 +7,7 @@ cd $pkgdir
 version=`cat version`
 vdash=`echo $version | sed -e s/'\.'/-/g`
 
-cp ../dist/lib/{SwingFast,mongo}.jar ../lib/
+cp ../dist/lib/*.jar ../lib/
 
 function package_build {
 	os=$1

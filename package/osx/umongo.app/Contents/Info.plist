@@ -38,6 +38,7 @@
                 <string>$JAVAROOT/SwingFast.jar</string>
                 <string>$JAVAROOT/mongo.jar</string>
                 <string>$JAVAROOT/bson.jar</string>
+                <string>$JAVAROOT/gson-2.2.4.jar</string>
             </array>
             <key>Properties</key>
             <dict>

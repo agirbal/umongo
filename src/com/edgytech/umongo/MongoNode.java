@@ -16,11 +16,7 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.XmlUnit;
-import com.mongodb.BasicDBList;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
-import com.mongodb.Mongo;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.ImageIcon;
@@ -59,6 +55,7 @@ public class MongoNode extends BaseTreeNode {
         try {
             dbnames = mongo.getDatabaseNames();
         } catch (Exception e) {
+            getLogger().log(Level.INFO, e.getMessage(), e);
         }
 
         List<ServerAddress> addrs = mongo.getServerAddressList();
@@ -74,16 +71,20 @@ public class MongoNode extends BaseTreeNode {
                     addChild(new RouterNode(addr, mongo));
                     added = true;
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                getLogger().log(Level.INFO, e.getMessage(), e);
+            }
 
             // could be replset of 1, check
             try {
-                CommandResult res = node.getServerDB().command("isMaster");
+                CommandResult res = node.getServerDB().command(new BasicDBObject("isMaster", 1), mongo.getOptions());
                 if (res.containsField("setName")) {
                     addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo));
                     added = true;
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                getLogger().log(Level.INFO, e.getMessage(), e);
+            }
             
             if (!added)
                 addChild(node);

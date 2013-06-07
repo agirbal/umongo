@@ -796,8 +796,9 @@
                             <ComboBox id="socketType" value="0" items="Plain;SSL;SSL no validation" toolTipText="Type of socket to use."/>
                             <IntSpinner id="connectTimeout" minValue="0" value="2000" toolTipText="Timeout for the socket connect operation"/>
                             <IntSpinner id="socketTimeout" minValue="0" value="0" toolTipText="Timeout for the socket read/write operations"/>
-                            <CheckBox id="autoConnectRetry" value="false" toolTipText="If true, then driver will keep retrying to connect to the server in case of connection failure"/>
-                            <CheckBox id="safe" label="Safe Writes" value="true" toolTipText="Sets the global WriteConcern as SAFE, which means that writes are acknowledged by the server"/>
+<!--                            <CheckBox id="autoConnectRetry" value="false" toolTipText="If true, then driver will keep retrying to connect to the server in case of connection failure"/>-->
+                            <CheckBox id="safeWrites" value="true" toolTipText="Sets the global WriteConcern as SAFE, which means that writes are acknowledged by the server"/>
+                            <CheckBox id="secondaryReads" value="false" toolTipText="Allows the read operations to go to secondary servers"/>
                         </Div>
                         <Div id="proxy" titled="true">
                             <ComboBox id="proxyType" label="Type" value="0" items="None;SOCKS" toolTipText="Type of proxy"/>
