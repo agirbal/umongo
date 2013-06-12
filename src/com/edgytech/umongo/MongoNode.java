@@ -97,6 +97,19 @@ public class MongoNode extends BaseTreeNode {
             dbnames = dbs;
         } else {
             dbs = dbnames;
+            
+            // check that the admin db is present
+            if (!dbnames.contains("admin")) {
+                dbnames.add("admin");
+            }
+            // check that the local db is present
+            if (!dbnames.contains("local")) {
+                dbnames.add("local");
+            }
+            // at least have test db
+            if (dbnames.size() <= 2) {
+                dbnames.add("test");
+            }
         }
 
         if (dbnames != null) {
