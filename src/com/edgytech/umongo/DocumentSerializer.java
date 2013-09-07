@@ -42,6 +42,8 @@ public class DocumentSerializer {
     String fields;
     String[] filter;
     File file;
+    String delimiter = ",";
+    String header;
 
     public DocumentSerializer(Format format, String fields) {
         this.format = format;
@@ -78,7 +80,24 @@ public class DocumentSerializer {
     public File getFile() {
         return file;
     }
-    
+
+    private Object getFieldValueRecursive(DBObject obj, String field) {
+        if (field.indexOf(".") < 0)
+            return obj.get(field);
+        
+        String[] tokens = field.split("\\.");
+        for (int i = 0; i < tokens.length - 1; ++i) {
+            String f = tokens[i];
+            if (!obj.containsField(f))
+                return null;
+            Object o = obj.get(f);
+            if (! DBObject.class.isInstance(o))
+                return null;
+            obj = (DBObject) o;
+        }
+        return obj.get(tokens[tokens.length - 1]);
+    }
+
     public void writeObject(DBObject obj) throws IOException {
         if (os == null) {
             os = new FileOutputStream(file);
@@ -87,7 +106,10 @@ public class DocumentSerializer {
         if (first) {
             first = false;
             if (format == Format.CSV) {
-                os.write(fields.getBytes());
+                if (header != null && !header.isEmpty())
+                    os.write(header.getBytes());
+                else
+                    os.write(fields.getBytes());
                 os.write('\n');
             } else if (format == Format.JSON_ARRAY) {
                 os.write('[');
@@ -101,12 +123,10 @@ public class DocumentSerializer {
         if (format == Format.CSV) {
             for (int i = 0; i < filter.length; ++i) {
                 if (i != 0) {
-                    os.write(',');
+                    os.write(delimiter.getBytes());
                 }
                 String field = filter[i];
-                if (obj.containsField(field)) {
-                    os.write(JSON.serialize(obj.get(field)).getBytes());
-                }
+                os.write(JSON.serialize(getFieldValueRecursive(obj, field)).getBytes());
             }
         } else if (format == Format.BSON) {
             os.write(BSON.encode(obj));
@@ -125,4 +145,15 @@ public class DocumentSerializer {
         }
         os.close();
     }
+
+    void setDelimiter(String delimiter) {
+        if (!delimiter.trim().isEmpty())
+            this.delimiter = delimiter.substring(0, 1);
+    }
+    
+    void setHeader(String header) {
+        if (!header.trim().isEmpty())
+            this.header = header;
+    }
+    
 }

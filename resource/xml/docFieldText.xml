@@ -19,7 +19,7 @@
         <FormDialog>
             <Div axis="X" gap="true">
                 <TextField id="addKey" label="Key" columns="10"/>
-                <ComboBox id="addType" label="Type" items="String;Long/Integer;Double/Float;Boolean;Date;Pattern;Object;Array;ObjectId/DBRef;Binary;Code;Timestamp;UUID;Null;MinKey;MaxKey"/>
+                <ComboBox id="addType" label="Type" items="String;Long/Integer;Double/Float;Boolean;Date;Pattern;Document;List;ObjectId/DBRef;Binary;Code;Timestamp;UUID;Null;MinKey;MaxKey"/>
             </Div>
         </FormDialog>
     </Button>

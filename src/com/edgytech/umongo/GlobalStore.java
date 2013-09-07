@@ -46,7 +46,8 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
         docBuilderDialog,
         lockingOperationDialog,
         documentMenu,
-        documentFieldMenu
+        documentFieldMenu,
+        jsonTextDialog
     }
 
     public GlobalStore() {
@@ -107,6 +108,10 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
 
     ConfirmDialog getLockingOperationDialog() {
         return (ConfirmDialog) getBoundUnit(Item.lockingOperationDialog);
+    }
+
+    JSONTextDialog getJSONTextDialog() {
+        return (JSONTextDialog) getBoundUnit(Item.jsonTextDialog);
     }
 
     boolean confirmLockingOperation() {

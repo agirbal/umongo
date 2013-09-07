@@ -31,7 +31,9 @@ public class ExportDialog extends FormDialog {
         outputFile,
         format,
         fields,
-        continueOnError
+        continueOnError,
+        delimiter,
+        header
     }
 
     public ExportDialog() {
@@ -50,6 +52,8 @@ public class ExportDialog extends FormDialog {
     public DocumentSerializer getDocumentSerializer() {
         DocumentSerializer ds = new DocumentSerializer(Format.values()[getIntFieldValue(Item.format)], getStringFieldValue(Item.fields));
         ds.setFile(new File(getStringFieldValue(Item.outputFile)));
+        ds.setDelimiter(getStringFieldValue(Item.delimiter));
+        ds.setHeader(getStringFieldValue(Item.header));
         return ds;
     }
 

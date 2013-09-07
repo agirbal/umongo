@@ -55,7 +55,7 @@ public class DocFieldObject extends DocFieldText {
         fields.removeAllChildren();
         DBObject doc = (DBObject) value;
         if (doc == null || doc.keySet().isEmpty()) {
-            fields.addChild(new Text(null, "Empty"));
+            fields.addChild(new Text(null, null, "Empty"));
         } else {
             for (String key : doc.keySet()) {
                 Object val = doc.get(key);
@@ -149,9 +149,9 @@ public class DocFieldObject extends DocFieldText {
             val = Pattern.compile("");
         } else if (type.equals("Timestamp")) {
             val = new BSONTimestamp((int) (System.currentTimeMillis() / 1000), 0);
-        } else if (type.equals("Object")) {
+        } else if (type.equals("Document")) {
             val = new BasicDBObject();
-        } else if (type.equals("Array")) {
+        } else if (type.equals("List")) {
             val = new BasicDBList();
         } else if (type.equals("Null")) {
             val = null;

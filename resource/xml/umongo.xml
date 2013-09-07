@@ -10,7 +10,6 @@
 
 <com.edgytech.umongo.UMongo id="umongo" start="start" stop="stop">
     <IconGroup id="icons" folder="img" resource="true"/>
-    <IconGroup id="etIcons" folder="com/edgytech/swingfast/img" resource="true"/>
     <com.edgytech.umongo.GlobalStore id="globalStore">
         <com.edgytech.umongo.DocumentMenu id="documentMenu">
             <MenuItem id="update" call="update" showDialog="false">
@@ -66,28 +65,36 @@
         </com.edgytech.umongo.ErrorDialog>
         <com.edgytech.umongo.AutoUpdateDialog id="autoUpdateDialog">
             <ComboBox id="autoType" lable="Update Type" items="Refresh;Append"/>
-            <IntSpinner id="autoInterval" label="Interval" minValue="0" value="5000" toolTipText="Interval between each update, in milliseconds"/>
+            <IntSpinner id="autoInterval" label="Interval" minValue="0" value="5" toolTipText="Interval between each update, in seconds"/>
             <IntSpinner id="autoCount" label="Count" minValue="0" value="100" toolTipText="Number of times to update, 0 means forever"/>
         </com.edgytech.umongo.AutoUpdateDialog>
-        <com.edgytech.umongo.ExportDialog id="exportDialog">
+        <com.edgytech.umongo.ExportDialog id="exportDialog" helpFile="/html/importHelp.html">
             <FileSelectorField id="outputFile">
                 <FileSelectorDialog type="SAVE" mode="FILES_ONLY"/>
             </FileSelectorField>
-            <ComboBox id="format" items="JSON;JSON Array;CSV;BSON" toolTipText="Format to use for the export"/>
+            <ComboBox id="format" items="JSON;JSON Array;CSV;BSON" toolTipText="the file format"/>
             <TextField id="fields" toolTipText="Comma-separated list of fields to export, mandatory for CSV format"/>
             <CheckBox id="continueOnError" toolTipText="Continue after an error occurs"/>
+            <Div id="csvOptions" label="CSV Options" titled="true">
+                <TextField id="header" toolTipText="Optional, the CSV header line"/>
+                <TextField id="delimiter" toolTipText="Optional, the character for delimiting values"/>
+            </Div>
         </com.edgytech.umongo.ExportDialog>
-        <com.edgytech.umongo.ImportDialog id="importDialog">
+        <com.edgytech.umongo.ImportDialog id="importDialog" helpFile="/html/importHelp.html">
             <FileSelectorField id="inputFile">
                 <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
             </FileSelectorField>
-            <ComboBox id="format" items="JSON;JSON Array;CSV;BSON" toolTipText="Format to use for the export"/>
-            <CheckBox id="continueOnError" toolTipText="Continue after an error occurs"/>
-            <CheckBox id="dropCollection" toolTipText="Drop collection before import"/>
+            <ComboBox id="format" items="JSON;JSON Array;Multi-line JSON;CSV;BSON" toolTipText="the file format"/>
+            <CheckBox id="continueOnError" toolTipText="whether to continue importing after an error occurs"/>
+            <CheckBox id="dropCollection" toolTipText="Drop the collection before importing"/>
             <CheckBox id="upsert" toolTipText="Upsert values instead of insert"/>
             <TextField id="upsertFields" toolTipText="Comma-separated list of fields to upsert by. If not specified, save() will be used."/>
             <CheckBox id="bulk" value="false" toolTipText="If turned on, the bulk insert function of the driver will be used. It may be faster but more client memory will be used, and error reporting is not accurate."/>
-            <com.edgytech.umongo.DocBuilderField id="template" toolTipText="Optional, a template for the document when importing from CSV. CSV fields are refered as '$csv_field_name/type'"/>
+            <Div id="csvOptions" label="CSV Options" titled="true">
+                <TextField id="delimiter" toolTipText="Optional, the character for delimiting values"/>
+                <TextField id="quote" toolTipText="Optional, the character for quoting strings"/>
+                <com.edgytech.umongo.DocBuilderField id="template" toolTipText="Optional, the document template"/>
+            </Div>
         </com.edgytech.umongo.ImportDialog>
         <ConfirmDialog id="lockingOperationDialog" text="Are you sure you want to run this command? It can potentially lock the db for a long time."/>
         <com.edgytech.umongo.MongoPanel id="mongoPanel">
@@ -582,9 +589,15 @@
                             <com.edgytech.umongo.DocBuilderField id="setParameterValue" label="Parameter" nonEmpty="true" toolTipText="Modify a parameter without restarting the server, for example {logLevel: 4}"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuSeparator/>
                     <MenuItem id="setLogLevel" call="setLogLevel">
                         <FormDialog>
                             <IntSpinner id="setLogLevelValue" label="Level" value="0" toolTipText="Set the log level, 0 is default"/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuItem id="getLog" call="getLog">
+                        <FormDialog>
+                            <ComboBox id="getLogType" label="Log Type" value="0" items="global;startupWarnings;rs" toolTipText="The log type, 'global' means all."/>
                         </FormDialog>
                     </MenuItem>
                 </Menu>
@@ -778,6 +791,15 @@
                 </Zone>
             </Scroller>
         </com.edgytech.umongo.DocBuilderDialog>
+        <com.edgytech.umongo.JSONTextDialog id="jsonTextDialog" buttons="OK_CANCEL" preferredSize="640;480" helpFile="/html/jsonFormatHelp.html">
+            <Zone>
+                <TextArea id="expandTextArea" field="false" zone="CENTER"/>
+                <Div axis="Y" zone="EAST">
+                    <Button id="convertFromJS" icon="wand.png" iconGroup="icons" toolTipText="Convert from shell JSON to Java JSON e.g. ObjectId(), ISODate()" call="convertFromJS"/>
+                    <Button id="indent" icon="indent.png" iconGroup="icons" toolTipText="Indent the JSON" call="indent"/>
+                </Div>
+            </Zone>
+        </com.edgytech.umongo.JSONTextDialog>
     </com.edgytech.umongo.GlobalStore>
     <Frame id="frame" title="UMongo" masterFrame="true" menuId="mainmenu" icon="mongo_leaf_32.png" iconGroup="icons" contexts="default;Connect" preferredSize="1100;700" bgColor="255;255;255">
         <com.edgytech.umongo.MainMenu id="mainMenu" start="start">
@@ -804,7 +826,7 @@
                         </Div>
                         <Div id="proxy" titled="true">
                             <ComboBox id="proxyType" label="Type" value="0" items="None;SOCKS" toolTipText="Type of proxy"/>
-                            <TextField id="proxyHost" label="Host" toolTipText="The proxy host"/>
+                            <TextField id="proxyHost" label="Host" value="localhost" toolTipText="The proxy host"/>
                             <IntSpinner id="proxyPort" label="Port" minValue="0" value="9000" toolTipText="The proxy port"/>
 <!--                            <TextField id="proxyUser" toolTipText="The proxy username"/>
                             <PasswordField id="proxyPassword" toolTipText="The proxy password"/>-->
@@ -845,7 +867,7 @@
             </Menu>
             <Menu id="help" alt="h">
                 <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="etIcons" signBorderColor="128;128;128" text="&lt;html&gt;UMongo&lt;br&gt;By Edgytech / Antoine Girbal"/>
+                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="etIcons" signBorderColor="128;128;128" file="/html/about.html"/>
                 </MenuItem>
             </Menu>
         </com.edgytech.umongo.MainMenu>

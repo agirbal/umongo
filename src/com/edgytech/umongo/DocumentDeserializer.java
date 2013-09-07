@@ -18,9 +18,14 @@ package com.edgytech.umongo;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.bson.BSONDecoder;
 import org.bson.BasicBSONDecoder;
 
@@ -49,12 +54,16 @@ public class DocumentDeserializer {
     BSONDecoder decoder;
     Iterator iterator;
     BasicDBObject template;
+    String delimiter = ",";
+    String quote = "\"";
+    Pattern pattern;
 
     public DocumentDeserializer(Format format, String fields) {
         this.format = format;
 
         this.fields = fields;
         if (fields != null) {
+            // this is from the form, always comma separated
             filter = fields.split(",");
             for (int i = 0; i < filter.length; ++i) {
                 filter[i] = filter[i].trim();
@@ -121,6 +130,33 @@ public class DocumentDeserializer {
         return new DocumentIterator();
     }
 
+    private List<String> splitByCommasNotInQuotes(String s) {
+        List<String> list = new ArrayList<String>();
+        if (pattern == null) {
+            pattern = Pattern.compile("[" + quote + delimiter + "]");
+        }
+        Matcher m = pattern.matcher(s);
+        int pos = 0;
+        boolean quoteMode = false;
+        while (m.find()) {
+            String sep = m.group();
+            if (quote.equals(sep)) {
+                int qpos = m.start();
+                // only turn on quote mode if previous char was the delimiter
+                if (qpos == pos)
+                    quoteMode = !quoteMode;
+            } else if (!quoteMode && delimiter.equals(sep)) {
+                int toPos = m.start();
+                list.add(s.substring(pos, toPos));
+                pos = m.end();
+            }
+        }
+        if (pos < s.length()) {
+            list.add(s.substring(pos));
+        }
+        return list;
+    }
+
     public DBObject readObject() throws IOException {
         if (first) {
             if (format != Format.BSON) {
@@ -133,15 +169,17 @@ public class DocumentDeserializer {
                 if (format == Format.CSV) {
                     fields = br.readLine();
                     if (fields != null) {
-                        filter = fields.split(",");
+                        filter = fields.split(delimiter);
+                        // field names are never quoted
                         for (int i = 0; i < filter.length; ++i) {
                             filter[i] = filter[i].trim();
                         }
                     }
                 }
             } else {
-                if (is == null)
+                if (is == null) {
                     is = new FileInputStream(file);
+                }
                 callback = new DefaultDBCallback(null);
                 decoder = new BasicBSONDecoder();
             }
@@ -151,30 +189,32 @@ public class DocumentDeserializer {
         DBObject obj = null;
         if (format != Format.BSON) {
             String line = br.readLine();
-                        
+
             if (line == null) {
                 return null;
             }
 
-            if (format == Format.JSON_SINGLE_DOC){
+            if (format == Format.JSON_SINGLE_DOC) {
                 // keep reading all lines
                 String line2 = null;
                 while ((line2 = br.readLine()) != null) {
                     line += line2;
                 }
             }
-            
+
             if (format == Format.JSON_ARRAY && iterator == null) {
                 BasicDBList list = (BasicDBList) JSON.parse(line);
                 iterator = list.iterator();
             }
 
             if (format == Format.CSV) {
-                String[] values = line.split(",");
+                List<String> values = splitByCommasNotInQuotes(line);
                 if (template == null) {
                     obj = new BasicDBObject();
+                    // set each field defined
                     for (int i = 0; i < filter.length; ++i) {
-                        String val = values[i];
+                        String val = values.get(i);
+                        // string values are always quoted
                         obj.put(filter[i], JSON.parse(val));
                     }
                 } else {
@@ -236,13 +276,13 @@ public class DocumentDeserializer {
 
     }
 
-    private void fillInTemplate(DBObject obj, String[] values) {
+    private void fillInTemplate(DBObject obj, List<String> values) {
         for (String field : obj.keySet()) {
             Object val = obj.get(field);
             if (val instanceof BasicDBObject) {
-                fillInTemplate((BasicDBObject)val, values);
+                fillInTemplate((BasicDBObject) val, values);
             } else if (val instanceof BasicDBList) {
-                fillInTemplate((BasicDBList)val, values);
+                fillInTemplate((BasicDBList) val, values);
             } else if (val instanceof String) {
                 String str = (String) val;
                 if (str.startsWith("$")) {
@@ -254,16 +294,27 @@ public class DocumentDeserializer {
                         ref = str.substring(0, slash);
                         type = str.substring(slash + 1);
                     }
-                    
+
                     // find field index
                     int index = 0;
-                    while (index < filter.length && !filter[index].equals(ref)) { ++index; }
-                    if (index >= filter.length)
+                    while (index < filter.length && !filter[index].equals(ref)) {
+                        ++index;
+                    }
+                    if (index >= filter.length) {
                         continue;
-                    String value = values[index];
-                    
-                    if (type == null || "String".equals(type)) {
+                    }
+                    String value = values.get(index);
+
+                    if (type == null || "JSON".equals(type)) {
+                        // this is typically used for quoted Strings
+                        obj.put(field, JSON.parse(value));
+                    } else if ("String".equals(type)) {
                         obj.put(field, value);
+                    } else if ("Date".equals(type)) {
+                        Long time = Long.valueOf(value);
+                        obj.put(field, new Date(time));
+                    } else if ("Boolean".equals(type)) {
+                        obj.put(field, Boolean.valueOf(value));
                     } else if ("Integer".equals(type)) {
                         obj.put(field, Integer.valueOf(value));
                     } else if ("Long".equals(type)) {
@@ -271,9 +322,24 @@ public class DocumentDeserializer {
                     } else if ("Double".equals(type)) {
                         obj.put(field, Double.valueOf(value));
                     }
+                } else {
+                    // this is a static value
+                    obj.put(field, val);
                 }
-            }
+            } else {
+                    // this is a static value
+                    obj.put(field, val);
+                }
         }
     }
 
+    void setDelimiter(String delimiter) {
+        if (!delimiter.trim().isEmpty())
+            this.delimiter = delimiter.substring(0, 1);
+    }
+
+    void setQuote(String quote) {
+        if (!quote.trim().isEmpty())
+            this.quote = quote.substring(0, 1);
+    }
 }

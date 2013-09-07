@@ -102,7 +102,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
             @Override
             public void wrapUp(Object res) {
                 super.wrapUp(res);
-                dv.refresh();
+                dv.refresh(null);
             }
         }.addJob();
     }
@@ -151,7 +151,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
             @Override
             public void wrapUp(Object res) {
                 super.wrapUp(res);
-                dv.refresh();
+                dv.refresh(null);
             }
         }.addJob();
     }

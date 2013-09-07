@@ -36,14 +36,10 @@ import javax.swing.JToggleButton;
 public class DocBuilderField extends Div implements EnumListener, FocusListener {
 
     enum Item {
-
+        expandText,
         jsonText,
         edit,
         validate,
-        expandText,
-        expandTextArea,
-        convertFromJS,
-        indent
     }
     @Serial
     public String dialogId;
@@ -93,29 +89,12 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
 
     public void expandText(ButtonBase button) {
         String txt = getComponentStringFieldValue(Item.jsonText);
-        FormDialog dia = (FormDialog) button.getDialog();
-        setStringFieldValue(Item.expandTextArea, txt);
+        JSONTextDialog dia = UMongo.instance.getGlobalStore().getJSONTextDialog();
+        dia.setText(txt);
+        
         if (dia.show()) {
-            setComponentStringFieldValue(Item.jsonText, getStringFieldValue(Item.expandTextArea));
+            setComponentStringFieldValue(Item.jsonText, dia.getText());
         }
-    }
-
-    public void convertFromJS(ButtonBase button) {
-        String txt = getComponentStringFieldValue(Item.expandTextArea);
-        txt = txt.replaceAll("ISODate\\(([^\\)]*)\\)", "{ \"\\$date\": $1 }");
-        txt = txt.replaceAll("ObjectId\\(([^\\)]*)\\)", "{ \"\\$oid\": $1 }");
-        txt = txt.replaceAll("NumberLong\\(([^\\)]*)\\)", "$1");
-//        txt = txt.replaceAll("ISODate", "\\$date");
-        setComponentStringFieldValue(Item.expandTextArea, txt);
-    }
-    
-    public void indent(ButtonBase button) {
-        String txt = getComponentStringFieldValue(Item.expandTextArea);
-        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-        JsonParser jp = new JsonParser();
-        JsonElement je = jp.parse(txt);
-        String prettyJsonString = gson.toJson(je);
-        setComponentStringFieldValue(Item.expandTextArea, prettyJsonString);        
     }
     
     @Override

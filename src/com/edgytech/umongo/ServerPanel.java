@@ -1,17 +1,17 @@
 /**
- *      Copyright (C) 2010 EdgyTech Inc.
+ * Copyright (C) 2010 EdgyTech Inc.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.edgytech.umongo;
 
@@ -62,7 +62,9 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         setParameter,
         setParameterValue,
         setLogLevel,
-        setLogLevelValue
+        setLogLevelValue,
+        getLog,
+        getLogType
     }
 
     public ServerPanel() {
@@ -74,7 +76,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     }
 
     @Override
-    protected void updateComponentCustom(JPanel comp) {        
+    protected void updateComponentCustom(JPanel comp) {
         try {
             Mongo svrMongo = getServerNode().getServerMongo();
             ServerAddress addr = getServerNode().getServerAddress();
@@ -87,7 +89,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
                     "secondary", res.getBoolean("secondary"),
                     "passive", res.getBoolean("passive"));
             setStringFieldValue(Item.replication, replication);
-            ((Text)getBoundUnit(Item.replication)).showIcon = master;
+            ((Text) getBoundUnit(Item.replication)).showIcon = master;
 
             setStringFieldValue(Item.maxObjectSize, String.valueOf(svrMongo.getMaxBsonObjectSize()));
 
@@ -105,7 +107,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
 
-    public void rsStepDown(ButtonBase button) {        
+    public void rsStepDown(ButtonBase button) {
         final DBObject cmd = new BasicDBObject("replSetStepDown", 1);
         final DB admin = getServerNode().getServerMongo().getDB("admin");
 
@@ -119,7 +121,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
                 } catch (MongoException.Network e) {
                     res = "Operation was likely successful, but connection error: " + e.toString();
                 }
-                
+
                 try {
                     // sleep a bit since it takes time for driver to see change
                     Thread.sleep(6000);
@@ -143,7 +145,6 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
             public Object getRoot(Object result) {
                 return cmd.toString();
             }
-
         }.addJob();
     }
 
@@ -152,11 +153,43 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         DBObject cmd = new BasicDBObject("replSetFreeze", sec);
         new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
     }
-    
+
+    public void getLog(ButtonBase button) {
+        final DB db = getServerNode().getServerMongo().getDB("admin");
+        final String type = getStringFieldValue(Item.getLogType);
+        final DBObject cmd = new BasicDBObject("getLog", type);
+        new DbJob() {
+
+            @Override
+            public Object doRun() throws Exception {
+                CommandResult res = db.command(cmd);
+                res.throwOnError();
+                StringBuilder sb = new StringBuilder();
+                BasicDBList list = (BasicDBList) res.get("log");
+                for (Object str : list){
+                    sb.append(str);
+                    sb.append("\n");
+                }
+                return sb.toString();
+            }
+
+            @Override
+            public String getNS() {
+                return db.getName();
+            }
+
+            @Override
+            public String getShortName() {
+                return cmd.keySet().iterator().next();
+            }
+
+        }.addJob();
+    }
+
     public void serverStatus(ButtonBase button) {
         new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "serverStatus").addJob();
     }
-    
+
     public void serverBuildInfo(ButtonBase button) {
         new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "buildinfo").addJob();
     }
@@ -180,7 +213,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
 
     public void setParameter(ButtonBase button) {
         BasicDBObject cmd = new BasicDBObject("setParameter", 1);
-        DBObject param = ((DocBuilderField)getBoundUnit(Item.setParameterValue)).getDBObject();
+        DBObject param = ((DocBuilderField) getBoundUnit(Item.setParameterValue)).getDBObject();
         cmd.putAll(param);
         new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
     }
@@ -204,5 +237,4 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         final DBObject query = new BasicDBObject("op", opid);
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query);
     }
-
 }

@@ -28,6 +28,7 @@ public class Resource {
 
         umongo,
         docView,
+        textView,
         cmdView,
         queryResultView,
         dbJob,

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : docView.xml
+    Created on : February 6, 2011, 2:10 PM
+    Author     : antoine
+    Description:
+        Purpose of the document follows.
+-->
+
+<Zone>
+    <XmlUnit>
+        <Div id="tabDiv" axis="X">
+            <Text id="tabTitle" value="title"/>
+            <Text label="  "/>
+            <Button id="tabClose" icon="dialog-close_16.png" iconGroup="icons" call="close" fixedSize="20;20"/>
+        </Div>
+    </XmlUnit>
+    <MenuBar zone="NORTH" id="menuBar">
+        <Text id="icon" icon="page_table.png" iconGroup="icons"/>
+        <Menu id="result">
+            <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" enabled="false"/>
+<!--            <MenuItem id="export" call="export"/>-->
+        </Menu>
+<!--        <Menu id="view">
+            <MenuItem id="expandAll" call="expandAll"/>
+            <MenuItem id="collapseAll" call="collapseAll"/>            
+        </Menu>-->
+        <Menu id="tools">
+            <MenuItem id="startAutoUpdate" call="startAutoUpdate" enabled="false"/>
+            <MenuItem id="stopAutoUpdate" call="stopAutoUpdate" enabled="false"/>
+        </Menu>
+    </MenuBar>
+    <Scroller zone="CENTER" bgColor="255;255;255">
+        <Zone>
+            <TextArea id="textArea" zone="CENTER"/>
+        </Zone>
+    </Scroller>
+</Zone>

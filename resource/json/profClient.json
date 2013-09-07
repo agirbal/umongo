@@ -1,6 +1,6 @@
 {
-    aggregate: "system.profile",
-    pipeline: [
+    "aggregate": "system.profile",
+    "pipeline": [
     {
         "$group" : {
             "_id" :"$client",

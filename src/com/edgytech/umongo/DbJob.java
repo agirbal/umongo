@@ -162,6 +162,8 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
             new DocView(null, title, this, sroot, (Iterator) res).addToTabbedDiv();
         } else if (res instanceof DBObject) {
             new DocView(null, title, this, sroot, (DBObject) res).addToTabbedDiv();
+        } else if (res instanceof String) {
+            new TextView(null, title, this, (String) res).addToTabbedDiv();
         } else if (res instanceof WriteResult) {
             WriteResult wres = (WriteResult) res;
             DBObject lasterr = wres.getCachedLastError();

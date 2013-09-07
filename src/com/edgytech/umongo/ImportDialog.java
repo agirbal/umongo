@@ -35,6 +35,8 @@ public class ImportDialog extends FormDialog {
         upsert,
         upsertFields,
         bulk,
+        delimiter,
+        quote,
         template
     }
 
@@ -43,8 +45,11 @@ public class ImportDialog extends FormDialog {
     }
 
     public DocumentDeserializer getDocumentDeserializer() {
+        System.out.println(getIntFieldValue(Item.format) + " " + getComponentIntFieldValue(Item.format));
         DocumentDeserializer dd = new DocumentDeserializer(Format.values()[getIntFieldValue(Item.format)], null);
         dd.setFile(new File(getStringFieldValue(Item.inputFile)));
+        dd.setDelimiter(getStringFieldValue(Item.delimiter));
+        dd.setQuote(getStringFieldValue(Item.quote));
         dd.setTemplate((BasicDBObject)((DocBuilderField)getBoundUnit(Item.template)).getDBObject());
         return dd;
     }
