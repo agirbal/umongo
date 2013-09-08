@@ -94,9 +94,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
             if (job.getButton() != null) {
                 getComponentBoundUnit(Item.spawn).enabled = true;
             }
-        }
 
-        if (job.getCommand() != null) {
             ((MenuItem) getBoundUnit(Item.refresh)).enabled = true;
             ((MenuItem) getBoundUnit(Item.append)).enabled = true;
             ((MenuItem) getBoundUnit(Item.startAutoUpdate)).enabled = true;
@@ -428,11 +426,11 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
         DbJob newJob = new DbJob() {
 
-            CommandResult result;
+            BasicDBObject result;
 
             @Override
             public Object doRun() throws Exception {
-                result = (CommandResult) job.doRun();
+                result = (BasicDBObject) job.doRun();
                 return null;
             }
 

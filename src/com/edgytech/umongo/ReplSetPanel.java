@@ -101,7 +101,23 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }
     
     public void rsOplogInfo(ButtonBase button) {
-        new DocView(null, "Oplog Info", null, "Oplog of " + getReplSetNode().getMongo().toString(), MongoUtils.getReplicaSetInfo(getReplSetNode().getMongo())).addToTabbedDiv();
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                return MongoUtils.getReplicaSetInfo(getReplSetNode().getMongo());
+            }
+
+            @Override
+            public String getNS() {
+                return null;
+            }
+
+            @Override
+            public String getShortName() {
+                return "Oplog Info";
+            }
+        }.addJob();
     }
     
     public void initiate(ButtonBase button) {
