@@ -8,7 +8,7 @@
         Purpose of the document follows.
 -->
 
-<TreeNodeLabel icon="mongo_leaf_32.png" iconGroup="icons" toolTipText="Mongo">
+<TreeNodeLabel icon="mongo_leaf_16.png" iconGroup="icons" toolTipText="Mongo">
     <PopUpMenu>
         <MenuItem id="refresh" bind="globalStore.mongoPanel.menu.refresh"/>
         <MenuItem id="close" bind="globalStore.mongoPanel.menu.close"/>

@@ -8,7 +8,7 @@
         Purpose of the document follows.
 -->
 
-<TreeNodeLabel icon="database_16.png" iconGroup="icons" toolTipText="Database">
+<TreeNodeLabel icon="database.png" iconGroup="icons" toolTipText="Database">
     <PopUpMenu>
         <MenuItem id="refresh" bind="globalStore.dbPanel.menu.refresh"/>
         <MenuItem id="dropDatabase" bind="globalStore.dbPanel.menu.dropDatabase"/>

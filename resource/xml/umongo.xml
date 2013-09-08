@@ -99,7 +99,7 @@
         <ConfirmDialog id="lockingOperationDialog" text="Are you sure you want to run this command? It can potentially lock the db for a long time."/>
         <com.edgytech.umongo.MongoPanel id="mongoPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
-                <Text id="icon" icon="mongo_leaf_32.png" iconGroup="icons" toolTipText="Mongo"/>
+                <Text id="icon" icon="mongo_leaf_16.png" iconGroup="icons" toolTipText="Mongo"/>
                 <Menu id="mongo">
                     <MenuItem id="createDB" label="Create DB" call="createDB">
                         <FormDialog>
@@ -172,7 +172,7 @@
         </com.edgytech.umongo.MongoPanel>
         <com.edgytech.umongo.DbPanel id="dbPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
-                <Text id="icon" icon="database_16.png" iconGroup="icons" toolTipText="Database"/>
+                <Text id="icon" icon="database.png" iconGroup="icons" toolTipText="Database"/>
                 <Menu id="database">
                     <MenuItem id="createCollection" call="createCollection">
                         <FormDialog>
@@ -333,9 +333,9 @@
         </com.edgytech.umongo.DbPanel>
         <com.edgytech.umongo.CollectionPanel id="collectionPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
-                <Text id="icon" icon="folder_16.png" iconGroup="icons" toolTipText="Collection"/>
+                <Text id="icon" icon="folder.png" iconGroup="icons" toolTipText="Collection"/>
                 <Menu id="collection">
-                    <MenuItem id="ensureIndex" call="ensureIndex">
+                    <MenuItem id="ensureIndex" label="Ensure Index" call="ensureIndex" icon="index.png" iconGroup="icons">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="eiKeys" label="Index Keys" toolTipText="keys to index by, in JSON format" nonEmpty="true"/>
                             <CheckBox id="eiUnique" label="Unique" toolTipText="If checked, index will be unique"/>
@@ -542,7 +542,7 @@
         </com.edgytech.umongo.CollectionPanel>
         <com.edgytech.umongo.IndexPanel id="indexPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
-                <Text id="icon" icon="tree_16.png" iconGroup="icons" toolTipText="Index"/>
+                <Text id="icon" icon="index.png" iconGroup="icons" toolTipText="Index"/>
                 <Menu id="index">
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                     <MenuItem id="drop" label="Drop" call="drop" icon="stock_delete.png" iconGroup="icons">

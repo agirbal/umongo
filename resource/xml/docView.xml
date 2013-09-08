@@ -17,7 +17,7 @@
         </Div>
     </XmlUnit>
     <MenuBar zone="NORTH" id="menuBar">
-        <Text id="icon" icon="page_table.png" iconGroup="icons"/>
+        <Text id="icon" icon="table.png" iconGroup="icons"/>
         <Menu id="result">
             <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" enabled="false"/>
             <MenuItem id="append" label="Append" call="append" icon="down.png" iconGroup="icons" enabled="false"/>

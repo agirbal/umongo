@@ -85,13 +85,13 @@ public class ServerNode extends BaseTreeNode {
         
         if (stats != null) {
             if (stats.getBoolean("ismaster")) {
-                addOverlay("overlay/tick_circle.png");
+                addOverlay("overlay/tick_circle_tiny.png");
             } else if (!stats.getBoolean("secondary")) {
                 addOverlay("overlay/error.png");
             }
 
     //        if (res.containsField("dur")) {
-    //            overlays.add(SwingFast.createIcon("overlay/shield_blue.png", iconGroup));
+    //            overlays.add(SwingFast.createIcon("overlay/shield_blue_tiny.png", iconGroup));
     //        }        
         }
         
