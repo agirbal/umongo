@@ -36,6 +36,8 @@ public class ConnectDialog extends FormDialog {
         uri,
         servers,
         databases,
+        user,
+        password,
         connectionsPerHost,
         blockingThreadMultiplier,
         maxWaitTime,
@@ -66,9 +68,9 @@ public class ConnectDialog extends FormDialog {
 //    }
     MongoOptions getMongoOptions() {
         MongoOptions moptions = new MongoOptions();
-        moptions.connectionsPerHost = getIntFieldValue(Item.connectionsPerHost);
-        moptions.threadsAllowedToBlockForConnectionMultiplier = getIntFieldValue(Item.blockingThreadMultiplier);
-        moptions.maxWaitTime = getIntFieldValue(Item.maxWaitTime);
+//        moptions.connectionsPerHost = getIntFieldValue(Item.connectionsPerHost);
+//        moptions.threadsAllowedToBlockForConnectionMultiplier = getIntFieldValue(Item.blockingThreadMultiplier);
+//        moptions.maxWaitTime = getIntFieldValue(Item.maxWaitTime);
         moptions.connectTimeout = getIntFieldValue(Item.connectTimeout);
         moptions.socketTimeout = getIntFieldValue(Item.socketTimeout);
 //        moptions.autoConnectRetry = getBooleanFieldValue(Item.autoConnectRetry);
@@ -76,7 +78,6 @@ public class ConnectDialog extends FormDialog {
         moptions.slaveOk = getBooleanFieldValue(Item.secondaryReads);
 
         int stype = getIntFieldValue(Item.socketType);
-
         int proxy = getIntFieldValue(Item.proxyType);
         if (proxy == 1) {
             // SOCKS proxy

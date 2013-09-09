@@ -805,17 +805,19 @@
         <com.edgytech.umongo.MainMenu id="mainMenu" start="start">
             <Menu id="file" alt="f">
                 <MenuItem id="connect" alt="c" key="k" keyMod="cmd" call="connect">
-                    <com.edgytech.umongo.ConnectDialog id="connectDialog">
+                    <com.edgytech.umongo.ConnectDialog id="connectDialog" helpFile="/html/connectHelp.html">
                         <Text value="Either provide a URI ..."/>
-                        <DynamicComboBox id="uri" label="URI" toolTipText="Enter URI of mongo dbs like 'mongodb://...'" items="" value="0" editable="true" recordItems="true"/>
+                        <DynamicComboBox id="uri" label="URI" toolTipText="the MongoDB URI like 'mongodb://...'" items="" value="0" editable="true" recordItems="true"/>
                         <Text value="Or the settings below"/>
                         <DynamicComboBox id="servers" toolTipText="Comma separated list of servers to connect to" items="localhost:27017" value="0" editable="true" recordItems="true"/>
-                        <TextField id="databases" toolTipText="Optional, a comma separated list of databases to connect to"/>
-                        <Div id="connectionPool" titled="true">
+                        <TextField id="databases" toolTipText="Optional, a comma separated list of databases to use"/>
+                        <TextField id="user" toolTipText="Optional, the user name for authentication"/>
+                        <PasswordField id="password" toolTipText="Optional, the password for authentication"/>
+                        <!--                        <Div id="connectionPool" titled="true">
                             <IntSpinner id="connectionsPerHost" minValue="1" value="10" toolTipText="Maximum number of concurrent connections for one server"/>
                             <IntSpinner id="blockingThreadMultiplier" minValue="0" value="5" toolTipText="This value multiplied by the maximum number of connections, gives how many threads are allowed to wait on a connection to be available."/>
                             <IntSpinner id="maxWaitTime" minValue="0" value="120000" toolTipText="Maximum time in milliseconds that a thread should wait for a connection to be available"/>
-                        </Div>
+                        </Div> -->
                         <Div id="connection" titled="true">
                             <ComboBox id="socketType" value="0" items="Plain;SSL;SSL no validation" toolTipText="Type of socket to use."/>
                             <IntSpinner id="connectTimeout" minValue="0" value="2000" toolTipText="Timeout for the socket connect operation"/>
@@ -830,7 +832,6 @@
                             <IntSpinner id="proxyPort" label="Port" minValue="0" value="9000" toolTipText="The proxy port"/>
 <!--                            <TextField id="proxyUser" toolTipText="The proxy username"/>
                             <PasswordField id="proxyPassword" toolTipText="The proxy password"/>-->
-                            <Text field="false" value="Easily create a SOCKS proxy with 'ssh -D 9000 hostInDbNetwork -N'"/>
                         </Div>
                     </com.edgytech.umongo.ConnectDialog>
                     <ProgressDialog id="connectProgressDialog" buttons="Cancel" text="Adding Mongo instance ...">

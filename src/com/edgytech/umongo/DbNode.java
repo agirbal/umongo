@@ -69,8 +69,8 @@ public class DbNode extends BaseTreeNode {
             label += " (" + stats.getInt("objects") + "/" + stats.getInt("dataSize") + ")";        
         }
 
-        if (db.isAuthenticated())
-            addOverlay("overlay/unlock.png");
+//        if (db.isAuthenticated())
+//            addOverlay("overlay/unlock.png");
     }
 
     @Override

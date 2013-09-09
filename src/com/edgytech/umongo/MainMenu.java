@@ -128,6 +128,19 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
                 dbs = null;
             }
             
+            String user = dialog.getStringFieldValue(ConnectDialog.Item.user).trim();
+            String password = dialog.getStringFieldValue(ConnectDialog.Item.password);
+            if (!user.isEmpty()) {
+                // authenticate against all dbs
+                if (dbs != null) {
+                    for (String db : dbs) {
+                        mongo.getDB(db).authenticate(user, password.toCharArray());
+                    }
+                } else {
+                    mongo.getDB("admin").authenticate(user, password.toCharArray());
+                }
+            }
+            
             final Mongo fmongo = mongo;
             final List<String> fdbs = dbs;
             // doing in background can mean concurrent modification, but dialog is modal so unlikely

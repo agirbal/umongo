@@ -49,8 +49,8 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
         try {
             XmlUnit parent = getParent();
             if (parent instanceof Tree || ((BaseTreeNode) parent).hasExpanded) {
-                populateChildren();
                 UMongo.instance.addNodeToRefresh(this);
+                populateChildren();
             }
         } catch (Exception e) {
             getLogger().log(Level.WARNING, e.getMessage(), e);
@@ -86,8 +86,9 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
         try {
             refreshNode();
         } catch (MongoException e) {
-            if (e.getCode() == 10057 || e.getMessage().startsWith("unauthorized")) {
-                addOverlay("overlay/lock.png");
+//            System.out.println(e.getMessage());
+            if (e.getCode() == 10057 || e.getMessage().contains("unauthorized") || e.getMessage().contains("not authorized")) {
+                addOverlay("overlay/lock_tiny.png");
             } else {
                 addOverlay("overlay/error.png");
             }
