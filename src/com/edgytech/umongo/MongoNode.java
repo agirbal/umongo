@@ -127,6 +127,8 @@ public class MongoNode extends BaseTreeNode {
 
     @Override
     protected void refreshNode() {
+        // do dummy command to pick up exception
+        mongo.getDatabaseNames();
     }
 
     BasicDBList getShards() {
