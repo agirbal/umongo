@@ -1,0 +1,111 @@
+<html>
+    <h1>Import / Export</h1>
+    <h2>File format</h2>
+    
+    The import / export process supports the following formats:
+    <ul>
+        <li>JSON: each line contains a JSON document
+        <li>JSON Array: single line containing a JSON list, which contains multiple JSON documents
+        <li>Multi-line JSON: multiple lines that make up a single JSON document
+        <li>CSV: each line contains a comma-separated list of fields. See more details on CSV below.
+        <li>BSON: BSON documents written back-to-back (similar to ".bson" file format).
+    </ul>
+    
+    For CSV, the following applies:<ul>
+        <li>the first line is a header containing a delimited list of field names. The field names are non-quoted strings. For example: FIRSTNAME,LASTNAME,AGE
+        <li>subsequent lines contains a delimited list of values, each representing a document.
+        <li>each value is serialized/deserialized using a JSON parser (unless a template is used). Consequently strings should be enclosed in quotes, and other JSON native types are recognized properly. For example: "John","Doe",22,false,"blue"
+    </ul>
+
+    <h2>Import options</h2>
+    
+    The following options are supported:<ul>
+        <li>inputFile: the input file</li>
+        <li>format: the file format</li>
+        <li>continueOnError: whether to continue importing after an error occurs</li>
+        <li>dropCollection: Drop the collection before importing</li>
+        <li>upsert: Upsert values instead of insert</li>
+        <li>upsertFields: Comma-separated list of fields to upsert by. If not specified, save() will be used</li>
+        <li>bulk: If turned on, the bulk insert function of the driver will be used. It may be faster but more client memory will be used, and error reporting is not accurate.</li>
+    </ul>
+    
+    Additionally the CSV format supports the following options:<ul>
+        <li>delimiter: Optional, the character for delimiting values</li>
+        <li>quote: Optional, the character for quoting strings
+        <li>template: Optional, the document template</li>
+    </ul>
+    
+    The template document can be used to model the document more precisely with nesting and advanced types. Each value in the document should contain either:<ul>
+        <li>a regular value. It will be passed as-is.
+        <li>a string of the form "$name/type". The "name" references the field in the CSV file. See below for a list of available types. If no type is specified, "JSON" is used.
+    </ul>
+
+    Following are the available types:<ul>
+        <li>JSON: any JSON native type, including quoted strings
+        <li>String: non-quoted strings
+        <li>Long, Double, Integer: a numeric representation
+        <li>Boolean: true or false
+        <li>Date: Number of milliseconds since Epoch
+    </ul>
+
+For example the following CSV lines can be imported with no options:
+<pre>
+Name,Address,City,State,Score
+"Jane Doe","123 Main St","Whereverville","CA",9.5
+"Jimmy Gil","555 Broadway Ave","New York","NY",3.4
+</pre>
+
+You can use a template to import the same lines but with non-quoted strings:
+    <pre>
+Name,Address,City,State,Score
+Jane Doe,123 Main St,Whereverville,CA,9.5
+Jimmy Gil,555 Broadway Ave,New York,NY,3.4
+    </pre>
+The template would be:
+    <pre>
+{ name: "$Name/String", addr: "$Address/String", city: "$City/String", state: "$State/String", score: "$Score" }
+    </pre>
+
+Here is a more complex example of CSV data:
+<pre>
+Number,Gender,GivenName,MiddleInitial,Surname,StreetAddress,City,State,ZipCode,Country,EmailAddress,Username,Password,TelephoneNumber,MothersMaiden,Birthday,CCType,CCNumber,CVV2,CCExpires,NationalID,UPS,Occupation,Company,Vehicle,Domain,BloodType,Pounds,Kilograms,FeetInches,Centimeters,GUID,Latitude,Longitude,LastUpdated
+1,male,Anthony,J,Dacosta,2600 Rafe Lane,Jackson,MS,39201,US,AnthonyJDacosta@pookmail.com,Thadern,Wuithaiph7,662-718-2255,Whalen,3/25/1970,Visa,4485519808748821,260,6/2014,587-03-9892,1Z 9A9 W98 38 3679 711 2,Economist,Parade of Shoes,2003 Mitsubishi Montero,SanFranciscoAgency.com,B+,214.5,97.5,5' 9",175,0bbc614d-c665-4b4c-b566-2b08e5ffa9c7,32.368619,-90.183518,1378503941138
+2,male,Jason,L,Saltsman,2729 Robinson Lane,Delaware,OH,43015,US,JasonLSaltsman@spambob.com,Witelf,phoo7kee0Yo,740-368-9998,Allen,8/6/1933,Visa,4716889560316146,737,1/2017,302-64-2796,1Z 765 372 96 5450 656 8,Technician,Druther's,1996 Toyota Cresta,ThousandPalm.com,O+,182.6,83.0,5' 6",167,8028febb-e027-4028-b27c-7e586279f7d8,40.294155,-83.002662,1378503962391
+</pre>
+For this data we can use the following template that uses advanced types:
+<pre>
+{
+    "firstName": "$GivenName/String",
+    "lastName": "$Surname/String",
+    "gender": "$Gender/String",
+    "address": {
+        "streetAddress": "$StreetAddress/String",
+        "city": "$City/String",
+        "state": "$State/String",
+        "zip": "$ZipCode/Integer",
+    },
+    "dateOfBirth": "$Birthday/String",
+    "location": [
+        "$Longitude/Double",
+        "$Latitude/Double"
+    ],
+    "lastUpdated": "$LastUpdated/Date",
+    "static": "UMongo rocks!",
+    "static2": 1234
+}
+</pre>
+
+    <h2>Export options</h2>
+    
+    The following options are supported:<ul>
+        <li>outputFile: the output file</li>
+        <li>format: the file format</li>
+        <li>fields: Comma-separated list of fields to export, mandatory for CSV format</li>
+        <li>continueOnError: whether to continue importing after an error occurs</li>
+    </ul>
+
+    Additionally the CSV format supports the following options:<ul>
+        <li>header: Optional, the CSV header line</li>
+        <li>delimiter: Optional, the character for delimiting values</li>
+    </ul>
+</html>

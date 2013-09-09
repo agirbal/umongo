@@ -63,7 +63,7 @@ public class CollectionNode extends BaseTreeNode {
         if (stats != null) {
             label += " (" + stats.getLong("count") + "/" + stats.getLong("size") + ")";
             if (stats.getBoolean("sharded"))
-                addOverlay("overlay/superman.png");
+                addOverlay("overlay/star_grey.png");
         }
     }
 

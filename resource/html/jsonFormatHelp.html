@@ -1,0 +1,22 @@
+<html>
+    <h1>JSON Editing</h1>
+    <h2>JSON Format</h2>
+    The JSON field requires a pure JSON syntax. Special BSON types get encoded the same way as the Java driver.
+    <br/>Following are special types and a sample JSON representation:
+    <ul>
+        <li>ObjectId: { "$oid": "51bb8d7c3004747a0b2e54d8" }</li>
+        <li>Date: { "$date": "2013-06-14T21:38:20.762Z" } or { "$date": 1371245976 }</li>
+        <li>Regular Expression: { "$regex": "^abc", "$options": "" }</li>
+        <li>Code: { "$code": "function() { ... }", "$scope": { ... } }</li>
+        <li>Timestamp: { "$ts": 1371245976, "$inc": 0 }</li>
+        <li>UUID: { "$uuid": "700287f2-572f-41a7-9bda-10a59410a9fc" }</li>
+        <li>DBRef: { "$ref": "test.collection", "$id": 123 }</li>
+        <li>Binary: { "$type": 0, "$binary": "base64string" }</li>
+        <li>MinKey: { "$minKey": 1 }</li>
+        <li>MaxKey: { "$maxKey": 1 }</li>
+    </ul>
+    <h2>Tools</h2>
+    The following tools are available:<ul>
+        <li>Convert from Shell JSON: converts from shell JSON to Java JSON. Types like ObjectId() get converted to the pure JSON syntax.</li>
+    </ul>
+</html>

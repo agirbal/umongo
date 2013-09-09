@@ -680,7 +680,7 @@
         </com.edgytech.umongo.ReplSetPanel>
         <com.edgytech.umongo.RouterPanel id="routerPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
-                <Text id="icon" icon="superman_icon.png" iconGroup="icons" toolTipText="MongoS router"/>
+                <Text id="icon" icon="s.png" iconGroup="icons" toolTipText="MongoS router"/>
                 <Menu id="router" label="MongoS">
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                 </Menu>

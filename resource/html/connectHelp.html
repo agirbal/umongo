@@ -1,0 +1,32 @@
+<html>
+    <h1>Connecting to MongoDB</h1>
+    <h2>Principle</h2>
+    The connect dialog can be used to create a MongoClient instance connected to a MongoDB single instance, replica set, or sharded cluster.
+    Several MongoClient instances can be connected and managed by UMongo.
+    <h2>Options</h2>
+    The following options are supported:<ul>
+        <li>URI: the MongoDB URI like 'mongodb://...'. See specifications at <a href="http://docs.mongodb.org/manual/reference/connection-string/">http://docs.mongodb.org/manual/reference/connection-string/</a></li>
+        <li>servers: Comma separated list of servers to connect to. Typically a single mongod or mongos server is required.</li>
+        <li>databases: Optional, a comma separated list of databases to use. If empty, all databases will be detected.</li>
+        <li>user: Optional, the user name for authentication. The authentication will be used for either the provided databases or 'admin'.</li>
+        <li>password: Optional, the password for authentication</li>
+    </ul>
+    <h2>Advanced options</h2>
+    The following options are supported:<ul>
+        <li>socketType: type of socket to use. Currently 'Plain', 'SSL' and 'SSL no validation' are supported</li>
+        <li>connectTimeout: Timeout for the socket connect operation</li>
+        <li>socketTimeout: Timeout for the socket read/write operations</li>
+        <li>safeWrites: Sets the global WriteConcern as SAFE, which means that writes are acknowledged by the server</li>
+        <li>secondaryReads: Allows the read operations to go to secondary servers</li>
+    </ul>
+    <h2>Proxy options</h2>    
+    The following options are supported:<ul>
+        <li>proxyType: Type of proxy. Currently 'None' and 'SOCKS' are supported</li>        
+        <li>proxyHost: The proxy host</li>        
+        <li>proxyPort: The proxy port</li>        
+    </ul>
+    If MongoDB is not accessible from your local machine, but you can SSH to a server that can connect, do the following:<ul>
+        <li>create a SOCKS proxy from your terminal by using 'ssh -D LocalPort hostWithDBAccess -N'. An example port is 9000</li>
+        <li>when connecting, set proxyType to 'SOCKS', proxyHost to 'localhost' and proxyPort to 9000.</li>
+    </ul>
+</html>
