@@ -27,5 +27,6 @@
         <MenuSeparator/>
         <MenuItem id="group" bind="globalStore.collectionPanel.menu.group"/>
         <MenuItem id="mapReduce" bind="globalStore.collectionPanel.menu.mapReduce"/>
+        <MenuItem id="fullTextSearch" bind="globalStore.collectionPanel.menu.fullTextSearch"/>
     </PopUpMenu>
 </TreeNodeLabel>

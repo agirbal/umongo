@@ -385,8 +385,8 @@
                             </Div>
                             <Div id="output" titled="true">
                                 <ComboBox id="mrType" label="Output Type" items="replace;merge;reduce;inline" toolTipText="How to process the output"/>
-                                <TextField id="mrOut" label="Output Collection" toolTipText="Name of the output collection" nonEmpty="true"/>
-                                <TextField id="mrOutDB" label="Output Database" toolTipText="Name of the output database, if different from the input database"/>
+                                <TextField id="mrOut" label="Output Collection" toolTipText="Name of the output collection"  value="" nonEmpty="true"/>
+                                <TextField id="mrOutDB" label="Output Database" toolTipText="Name of the output database, if different from the input database"  value=""/>
                                 <CheckBox id="mrOutSharded" label="Sharded Output" value="false" toolTipText="If true, the result collection will be sharded using the _id key."/>
                                 <CheckBox id="mrNonAtomic" label="Non Atomic" value="false" toolTipText="If true, the output will be applied without taking a lock, which means partial results can be seen." />
                             </Div>
@@ -404,6 +404,15 @@
                             <com.edgytech.umongo.DocBuilderField id="gnSearch" label="Search" toolTipText="Search criteria for geo haystack indexing, in JSON format"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="fullTextSearch" call="fullTextSearch">
+                        <FormDialog>
+                            <TextField id="ftsSearch" label="Search" toolTipText="The search string" value="" nonEmpty="true"/>
+                            <com.edgytech.umongo.DocBuilderField id="ftsFilter" label="Filter" toolTipText="Optional, a query document to further limit the results"/>
+                            <com.edgytech.umongo.DocBuilderField id="ftsProject" label="Project" toolTipText="Optional, limits the fields returned by the query to only those specified"/>
+                            <IntSpinner id="ftsLimit" label="Limit" toolTipText="Optional, the maximum number of documents to return. The default limit is 100." minValue="0" value="0"/>
+                            <TextField id="ftsLanguage" label="Language" toolTipText="Optional, the language to apply when searching. By default the language setting of the index is used." value=""/>
+                        </FormDialog>
+                    </MenuItem>                    
                 </Menu>
                 <Menu id="document">
                     <MenuItem id="find" call="find" key="f" keyMod="cmd+shift">

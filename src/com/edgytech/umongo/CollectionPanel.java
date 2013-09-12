@@ -161,7 +161,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         fixCollection,
         fcDialog,
         fcSrcMongo,
-        fcUpsert
+        fcUpsert,
+        fullTextSearch,
+        ftsSearch,
+        ftsFilter,
+        ftsProject,
+        ftsLimit,
+        ftsLanguage
     }
 
     public CollectionPanel() {
@@ -1284,5 +1290,22 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 return "Fix Collection";
             }
         }.addJob();
+    }
+    
+    public void fullTextSearch(final ButtonBase button) {
+        final String search = getStringFieldValue(Item.ftsSearch);
+        final DBObject filter = ((DocBuilderField) getBoundUnit(Item.ftsFilter)).getDBObject();
+        final DBObject project = ((DocBuilderField) getBoundUnit(Item.ftsProject)).getDBObject();
+        int limit = getIntFieldValue(Item.ftsLimit);
+        final String language = getStringFieldValue(Item.ftsLanguage);
+        
+        BasicDBObject cmd = new BasicDBObject("text", getCollectionNode().getCollection().getName());
+        cmd.put("search", search);
+        cmd.put("filter", filter);
+        cmd.put("project", project);
+        cmd.put("limit", limit);
+        cmd.put("language", language);
+
+        new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd, null, button).addJob();        
     }
 }
