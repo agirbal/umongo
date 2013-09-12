@@ -593,6 +593,11 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
+                    <MenuItem id="getParameter" call="getParameter">
+                        <FormDialog>
+                            <TextField id="getParameterValue" label="Parameter" nonEmpty="true" toolTipText="Get the parameter value. Use '*' to see all parameters"/>
+                        </FormDialog>
+                    </MenuItem>
                     <MenuItem id="setParameter" call="setParameter">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="setParameterValue" label="Parameter" nonEmpty="true" toolTipText="Modify a parameter without restarting the server, for example {logLevel: 4}"/>

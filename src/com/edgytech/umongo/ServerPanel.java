@@ -59,6 +59,8 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         currentOpsQuery,
         killOp,
         killOpId,
+        getParameter,
+        getParameterValue,
         setParameter,
         setParameterValue,
         setLogLevel,
@@ -215,6 +217,16 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         BasicDBObject cmd = new BasicDBObject("setParameter", 1);
         DBObject param = ((DocBuilderField) getBoundUnit(Item.setParameterValue)).getDBObject();
         cmd.putAll(param);
+        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
+    }
+
+    public void getParameter(ButtonBase button) {
+        BasicDBObject cmd = new BasicDBObject("getParameter", 1);
+        String param = getStringFieldValue(Item.getParameterValue);
+        if ("*".equals(param))
+            cmd.put("getParameter", "*");
+        else
+            cmd.put(param, 1);
         new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
     }
 
