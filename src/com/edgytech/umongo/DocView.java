@@ -503,7 +503,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                     // res should be null
                     // should have a cursor id now
                     if (dbcursor != null) {
-                        getTree().label = dbcursor.toString();
+                        getTree().label = DocView.this.job.getRoot(dbcursor).toString();
                     }
                     getTree().structureComponent();
                     getTree().expandNode(getTree().getTreeNode());

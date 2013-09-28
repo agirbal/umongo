@@ -23,10 +23,12 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import com.edgytech.umongo.DbJob.Item;
 import com.mongodb.DB;
+import com.mongodb.DBCursor;
 import java.awt.Component;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractButton;
 import javax.swing.JMenuItem;
+import org.bson.types.ObjectId;
 
 /**
  *
@@ -114,7 +116,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
 
     public abstract String getShortName();
 
-    public Object getRoot(Object result) {
+    public DBObject getRoot(Object result) {
         return null;
     }
 
@@ -152,30 +154,65 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
         }
 
         String title = getTitle();
-        Object root = getRoot(res);
-        String sroot = title;
-        if (root != null) {
-            sroot += ": " + root;
+        
+        boolean log = UMongo.instance.isLoggingOn();
+        boolean logRes = UMongo.instance.isLoggingFirstResultOn();
+
+        BasicDBObject sroot = new BasicDBObject();
+        sroot.put("ns", getNS());
+        sroot.put("name", getShortName());
+        sroot.put("details", getRoot(res));
+        
+        BasicDBObject logObj = null;
+        if (log) {
+            logObj = new BasicDBObject("_id", new ObjectId());
+            logObj.put("ns", getNS());
+            logObj.put("name", getShortName());
+            logObj.put("details", getRoot(res));
         }
 
         if (res instanceof Iterator) {
             new DocView(null, title, this, sroot, (Iterator) res).addToTabbedDiv();
+            if (logRes && res instanceof DBCursor) {
+                logObj.put("firstResult", ((DBCursor)res).curr());
+            }
         } else if (res instanceof DBObject) {
             new DocView(null, title, this, sroot, (DBObject) res).addToTabbedDiv();
+            if (logRes) {
+                logObj.put("firstResult", res);
+            }
         } else if (res instanceof String) {
             new TextView(null, title, this, (String) res).addToTabbedDiv();
+            // string may be large
+            if (logRes) {
+                logObj.put("firstResult", MongoUtils.limitString((String)res, 0));
+            }
         } else if (res instanceof WriteResult) {
             WriteResult wres = (WriteResult) res;
             DBObject lasterr = wres.getCachedLastError();
             if (lasterr != null) {
                 new DocView(null, title, this, sroot, lasterr).addToTabbedDiv();
             }
+            if (logRes) {
+                logObj.put("firstResult", res);
+            }
         } else if (res instanceof Exception) {
             UMongo.instance.showError(title, (Exception) res);
+            if (logRes) {
+                logObj.put("firstResult", res.toString());
+            }
         } else {
             DBObject obj = new BasicDBObject("Result", res.toString());
             new DocView(null, title, this, sroot, obj).addToTabbedDiv();
+            if (logRes) {
+                logObj.put("firstResult", res.toString());
+            }
         }
+        
+        if (log) {
+            UMongo.instance.logActivity(logObj);
+        }
+        
         _progress = null;
         _pbw = null;
     }

@@ -25,7 +25,7 @@
         <MenuItem id="remove" bind="globalStore.collectionPanel.menu.remove"/>
         <MenuItem id="findAndModify" bind="globalStore.collectionPanel.menu.findAndModify"/>
         <MenuSeparator/>
-        <MenuItem id="group" bind="globalStore.collectionPanel.menu.group"/>
+        <MenuItem id="aggregate" bind="globalStore.collectionPanel.menu.aggregate"/>
         <MenuItem id="mapReduce" bind="globalStore.collectionPanel.menu.mapReduce"/>
         <MenuItem id="fullTextSearch" bind="globalStore.collectionPanel.menu.fullTextSearch"/>
     </PopUpMenu>

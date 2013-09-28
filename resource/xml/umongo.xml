@@ -224,7 +224,7 @@
                         <FormDialog buttons="OK" okLabel="Done">
                             <Zone>
                                 <Scroller zone="CENTER" preferredSize="320;-1">
-                                    <List id="userList" items=""/>
+                                    <ListArea id="userList" items=""/>
                                 </Scroller>
                                 <Div axis="Y" zone="EAST">
                                     <Button id="editUser" icon="edit.png" iconGroup="icons" toolTipText="Edit the user" call="editUser"/>
@@ -364,6 +364,7 @@
                 </Menu>
                 <Menu id="command">
                     <MenuItem id="statsCmd" label="Stats" call="stats"/>
+                    <MenuSeparator/>
                     <MenuItem id="group" call="group">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="grpKeys" label="Keys" toolTipText="Keys to group by, in JSON format" nonEmpty="true"/>
@@ -372,6 +373,57 @@
                             <TextArea id="grpReduce" label="Reduce JS Function" toolTipText="reduce javascript function with signature 'void function(obj, out)' where obj is the object to process and out is the current result for that key" nonEmpty="true" value="function(obj,out){ out.count += 1; }"/>
                             <TextArea id="grpFinalize" label="Finalize JS Function" toolTipText="optional finalize javascript function with signature 'void function(out)' where out is the result for that key"/>
                         </FormDialog>
+                    </MenuItem>
+                    <MenuItem id="aggregate" call="aggregate" showDialog="false">
+                        <com.edgytech.umongo.AggregateDialog id="aggregateDialog">
+                            <Zone>
+                                <Scroller zone="CENTER" preferredSize="320;-1">
+                                    <ListArea id="operationList" items=""/>
+                                </Scroller>
+                                <Div axis="Y" zone="EAST">
+                                    <Button id="editOperation" icon="edit.png" iconGroup="icons" toolTipText="Edit the operation" call="editOperation"/>
+                                    <Button id="addOperation" icon="add.png" iconGroup="icons" toolTipText="Add a new operation" call="addOperation"/>
+                                    <Button id="removeOperation" icon="dialog-close_16.png" iconGroup="icons" toolTipText="Remove the operation" call="removeOperation"/>
+                                    <Button id="moveUpOperation" icon="up.png" iconGroup="icons" toolTipText="Move operation up" call="moveUpOperation"/>
+                                    <Button id="moveDownOperation" icon="down.png" iconGroup="icons" toolTipText="Move operation down" call="moveDownOperation"/>
+                                </Div>
+                            </Zone>
+                            <FormDialog id="addOperationDialog" buttons="OK_CANCEL">
+                                <ComboBox id="operation" items="project;limit;skip;match;sort;unwind;group;geoNear" value="0" toolTipText="the pipeline operation"/>
+                            </FormDialog>
+                            <com.edgytech.umongo.EditAggLimitDialog id="editAggLimitDialog" op="$limit">
+                                <IntSpinner id="limit" minValue= "0" value="100" toolTipText="limit the number of documents through the pipeline"/>
+                            </com.edgytech.umongo.EditAggLimitDialog>
+                            <com.edgytech.umongo.EditAggSkipDialog id="editAggSkipDialog" op="$skip">
+                                <IntSpinner id="skip" minValue="0" value="0" toolTipText="the number of documents to skip through the pipeline"/>
+                            </com.edgytech.umongo.EditAggSkipDialog>
+                            <com.edgytech.umongo.EditAggUnwindDialog id="editAggUnwindDialog" op="$unwind">
+                                <TextField id="unwind" value="" nonEmpty="true" toolTipText="the field name to unwind by, e.g. 'data.tags'"/>
+                            </com.edgytech.umongo.EditAggUnwindDialog>
+                            <com.edgytech.umongo.EditAggProjectDialog id="editAggProjectDialog" op="$project">
+                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{y: '$x'}" toolTipText="parameters in JSON format"/>
+                            </com.edgytech.umongo.EditAggProjectDialog>
+                            <com.edgytech.umongo.EditAggMatchDialog id="editAggMatchDialog" op="$match">
+                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{x: 'value'}" toolTipText="parameters in JSON format"/>
+                            </com.edgytech.umongo.EditAggMatchDialog>
+                            <com.edgytech.umongo.EditAggGroupDialog id="editAggGroupDialog" op="$group">
+                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{ _id : '$author', docsPerAuthor: { $sum : 1 }, viewsPerAuthor: { $sum : '$pageViews' }}" toolTipText="parameters in JSON format"/>
+                            </com.edgytech.umongo.EditAggGroupDialog>
+                            <com.edgytech.umongo.EditAggSortDialog id="editAggSortDialog" op="$sort">
+                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{x: 1, _id: 0}" toolTipText="parameters in JSON format"/>
+                            </com.edgytech.umongo.EditAggSortDialog>
+                            <com.edgytech.umongo.EditAggGeoNearDialog id="editAggGeoNearDialog" op="$geoNear">
+                                <com.edgytech.umongo.DocBuilderField id="near" value="[37.783333, -122.416667]" toolTipText="GeoJSON point or coordinate pair representing the point for which to find the closest documents"/>
+                                <TextField id="distanceField" value="" nonEmpty="true" toolTipText="The output field that contains the calculated distance"/>
+                                <IntSpinner id="limit" minValue="0" value="0" toolTipText="Optional, the maximum number of documents to return"/>
+                                <DoubleSpinner id="maxDistance" toolTipText="Maximum distance from the point of origin" minValue="0"/>
+                                <DoubleSpinner id="distanceMultiplier" toolTipText="Distance multiplier" minValue="0"/>
+                                <com.edgytech.umongo.DocBuilderField id="query" toolTipText="Query to filter the results by, in JSON format"/>
+                                <CheckBox id="spherical" value="false" toolTipText="Takes into account that earth is a sphere. Coordinates must be in decimal degrees and the distance must be in radians (divide by 6371 km or 3959 miles)."/>
+                                <TextField id="includeLocs" value="" toolTipText="Optional, this specifies the output field that identifies the location used to calculate the distance. This option is useful when a location field contains multiple locations"/>
+                                <CheckBox id="uniqueDocs" value="false" toolTipText="Optional. If this value is true, the query returns a matching document once, even if more than one of the document’s location fields match the query"/>
+                            </com.edgytech.umongo.EditAggGeoNearDialog>
+                        </com.edgytech.umongo.AggregateDialog>
                     </MenuItem>
                     <MenuItem id="mapReduce" call="mapReduce">
                         <FormDialog>
@@ -393,11 +445,12 @@
                             <CheckBox id="mrJSMode" value="false" label="JS Mode"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuSeparator/>
                     <MenuItem id="geoNear" call="geoNear">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="gnOrigin" label="Origin" toolTipText="Point of origin, in JSON format"/>
-                            <IntSpinner id="gnNum" label="Num" toolTipText="Maximum number of entries to return" minValue="0" value="100"/>
-                            <IntSpinner id="gnMaxDistance" label="Max Distance" toolTipText="Maximum distance from the point of origin" minValue="0"/>
+                            <IntSpinner id="gnNum" label="Limit" toolTipText="Maximum number of entries to return" minValue="0" value="100"/>
+                            <DoubleSpinner id="gnMaxDistance" label="Max Distance" toolTipText="Maximum distance from the point of origin" minValue="0"/>
                             <DoubleSpinner id="gnDistanceMultiplier" label="Distance Multiplier" toolTipText="Distance multiplier" minValue="0"/>
                             <com.edgytech.umongo.DocBuilderField id="gnQuery" label="Query" toolTipText="Query to filter the results by, in JSON format"/>
                             <CheckBox id="gnSpherical" label="Spherical" toolTipText="Takes into account that earth is a sphere. Coordinates must be in decimal degrees and the distance must be in radians (divide by 6371 km or 3959 miles)."/>
@@ -868,6 +921,13 @@
                                 </Div>
                                 <Div id="querying" gap="true" titled="true">
                                     <IntSpinner id="getMoreSize" minValue="1" value="50" toolTipText="Number of documents to fetch when getting more results from a cursor"/>
+                                </Div>
+                                <Div id="logging" gap="true" titled="true">
+                                    <CheckBox id="logActivity" value="false" toolTipText="Log application activity to a file"/>
+                                    <FileSelectorField id="logFile" path="./umongo.log">
+                                        <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
+                                    </FileSelectorField>
+                                    <CheckBox id="logFirstResult" label="Include first result" value="false" toolTipText="If true, the first result will be included in log"/>
                                 </Div>
                             </Div>
                             <Div id="advanced" gap="true">

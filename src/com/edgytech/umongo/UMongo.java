@@ -22,10 +22,13 @@ import com.edgytech.swingfast.Scroller;
 import com.edgytech.swingfast.TabbedDiv;
 import com.edgytech.swingfast.Tree;
 import com.edgytech.swingfast.XmlJComponentUnit;
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import com.mongodb.util.JSON;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import org.xml.sax.SAXException;
 
@@ -61,6 +65,9 @@ public class UMongo extends Application implements Runnable {
     private ArrayList<MongoNode> mongos = new ArrayList<MongoNode>();
     boolean stopped = false;
     BaseTreeNode node = null;
+    
+    FileWriter logWriter = null;
+    boolean logFirstResult = false;
 
     public UMongo() {
         super(true);
@@ -293,5 +300,49 @@ public class UMongo extends Application implements Runnable {
         }
         super.windowClosing(e);
     }
+
+    void updateLogging() {
+        synchronized (this) {
+            try {
+                String logFile = getPreferences().getLogFile();
+                if (logFile != null) {
+
+                    logWriter = new FileWriter(logFile, true);
+                    logFirstResult = getPreferences().getLogFirstResult();
+                } else {
+                    if (logWriter != null) {
+                        logWriter.close();
+                    }
+                    logWriter = null;
+                }
+            } catch (IOException ex) {
+                getLogger().log(Level.WARNING, null, ex);
+            }
+        }
+    }
     
+    boolean isLoggingOn() {
+        return logWriter != null;
+    }
+    
+    boolean isLoggingFirstResultOn() {
+        return logFirstResult;
+    }
+    
+    void logActivity(DBObject obj) {
+        synchronized (this) {
+            try {
+                if ("Auth".equals(obj.get("name"))) {
+                    // dont log auth
+                    return;
+                }
+                
+                logWriter.write(JSON.serialize(obj));
+                logWriter.write("\n");
+                logWriter.flush();
+            } catch (IOException ex) {
+                getLogger().log(Level.WARNING, null, ex);
+            }
+        }
+    }
 }

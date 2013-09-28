@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JPanel;
 import com.edgytech.umongo.CollectionPanel.Item;
+import com.mongodb.BasicDBObjectBuilder;
 
 /**
  *
@@ -167,7 +168,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         ftsFilter,
         ftsProject,
         ftsLimit,
-        ftsLanguage
+        ftsLanguage,
+        aggregate
     }
 
     public CollectionPanel() {
@@ -239,6 +241,9 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                     if (explain) {
                         return cur.explain();
                     }
+                    
+                    // force cursor to start
+                    cur.hasNext();
                     return cur;
                 }
 
@@ -253,11 +258,20 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 }
 
                 @Override
-                public Object getRoot(Object result) {
+                public DBObject getRoot(Object result) {
                     if (result == null || !(result instanceof DBCursor)) {
                         return null;
                     }
-                    return ((DBCursor) result).toString();
+                    DBCursor res = (DBCursor) result;
+                    BasicDBObject obj = new BasicDBObject("cursorId", res.getCursorId());
+                    obj.put("query", res.getQuery());
+                    obj.put("fields", res.getKeysWanted());
+                    obj.put("options", res.getOptions());
+                    obj.put("readPreference", res.getReadPreference().toDBObject());
+                    obj.put("numSeen", res.numSeen());
+                    obj.put("numGetMores", res.numGetMores());
+                    // want skip, limit, batchsize
+                    return obj;
                 }
 
                 @Override
@@ -292,8 +306,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                return "query=" + query + ", fields=" + fields;
+            public DBObject getRoot(Object result) {
+                DBObject root = new BasicDBObject("query", query);
+                root.put("fields", fields);
+                return root;
             }
 
             @Override
@@ -312,38 +328,12 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final String name = getStringFieldValue(Item.newName);
         final boolean dropTarget = getBooleanFieldValue(Item.dropTarget);
 
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                col.rename(name, dropTarget);
-                return null;
-            }
-
-            @Override
-            public String getNS() {
-                return col.getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Rename";
-            }
-
-            @Override
-            public Object getRoot(Object result) {
-                return col.getName() + " to " + name;
-            }
-
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                TreeNodeLabel node = colNode.getParentNode();
-                if (node != null) {
-                    node.structureComponent();
-                }
-            }
-        }.addJob();
+        DBObject cmd = BasicDBObjectBuilder.start()
+                      .add( "renameCollection" , col.getFullName() )
+                      .add( "to" , col.getDB().getName() + "." + name )
+                      .add( "dropTarget" , dropTarget )
+                      .get();
+        new DbJobCmd(col.getDB().getSisterDB("admin"), cmd, null, null).addJob();
     }
 
     public void group(final ButtonBase button) {
@@ -448,7 +438,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
+            public DBObject getRoot(Object result) {
                 return cmdobj;
             }
 
@@ -493,6 +483,9 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 if (explain) {
                     return cur.explain();
                 }
+
+                // force cursor to start
+                cur.hasNext();
                 return cur;
             }
 
@@ -507,11 +500,20 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
+            public DBObject getRoot(Object result) {
                 if (result == null || !(result instanceof DBCursor)) {
                     return null;
                 }
-                return ((DBCursor) result).toString();
+                DBCursor res = (DBCursor) result;
+                BasicDBObject obj = new BasicDBObject("cursorId", res.getCursorId());
+                obj.put("query", res.getQuery());
+                obj.put("fields", res.getKeysWanted());
+                obj.put("options", res.getOptions());
+                obj.put("readPreference", res.getReadPreference());
+                obj.put("numSeen", res.numSeen());
+                obj.put("numGetMores", res.numGetMores());
+                // want skip, limit, batchsize
+                return obj;
             }
         }.addJob();
     }
@@ -589,8 +591,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                return "query=" + query + ", fields=" + fields;
+            public DBObject getRoot(Object result) {
+                BasicDBObject obj = new BasicDBObject("query", query);
+                obj.put("fields", fields);
+                return obj;
             }
         }.addJob();
     }
@@ -678,8 +682,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                return doc.toString();
+            public DBObject getRoot(Object result) {
+                return doc;
             }
 
             @Override
@@ -711,8 +715,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                return doc.toString();
+            public DBObject getRoot(Object result) {
+                return doc;
             }
 
             @Override
@@ -752,8 +756,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                return doc.toString();
+            public DBObject getRoot(Object result) {
+                return new BasicDBObject("query", doc);
             }
 
             @Override
@@ -917,13 +921,12 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("query=").append(query);
-                sb.append(", update=").append(update);
-                sb.append(", upsert=").append(upsert);
-                sb.append(", multi=").append(multi);
-                return sb.toString();
+            public DBObject getRoot(Object result) {
+                BasicDBObject obj = new BasicDBObject("query", query);
+                obj.put("update", update);
+                obj.put("upsert", upsert);
+                obj.put("multi", multi);
+                return obj;
             }
 
             @Override
@@ -1193,7 +1196,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         DBObject cmd = new BasicDBObject("geoNear", getCollectionNode().getCollection().getName());
         DBObject origin = ((DocBuilderField) getBoundUnit(Item.gnOrigin)).getDBObject();
         cmd.put("near", origin);
-        int distance = getIntFieldValue(Item.gnMaxDistance);
+        double distance = getDoubleFieldValue(Item.gnMaxDistance);
         cmd.put("maxDistance", distance);
         double distanceMult = getDoubleFieldValue(Item.gnDistanceMultiplier);
         if (distanceMult > 0) {
@@ -1308,4 +1311,17 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
         new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd, null, button).addJob();        
     }
+
+    public void aggregate(ButtonBase button) {
+        AggregateDialog dialog = (AggregateDialog) ((MenuItem) getBoundUnit(Item.aggregate)).getDialog();
+        dialog.refreshAggList();
+
+        if (!dialog.show()) {
+            return;
+        }
+        
+        BasicDBObject cmd = dialog.getAggregateCommand(getCollectionNode().getCollection().getName());
+        new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd, null, button).addJob();
+    }
+
 }

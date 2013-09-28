@@ -210,8 +210,8 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                return " path=" + path;
+            public DBObject getRoot(Object result) {
+                return new BasicDBObject("path", path);
             }
 
             @Override
@@ -266,8 +266,11 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                return "filename=" + fname + ", query=" + query + ", path=" + dpath;
+            public DBObject getRoot(Object result) {
+                BasicDBObject obj = new BasicDBObject("filename", fname);
+                obj.put("query", query);
+                obj.put("path", dpath);
+                return obj;
             }
 
             @Override
@@ -328,8 +331,10 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                return "filename=" + fname + ", query=" + query;
+            public DBObject getRoot(Object result) {
+                BasicDBObject obj = new BasicDBObject("filename", fname);
+                obj.put("query", query);
+                return obj;
             }
 
             @Override
@@ -424,7 +429,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     }
 
     void refreshUserList() {
-        List list = (List) getBoundUnit(Item.userList);
+        ListArea list = (ListArea) getBoundUnit(Item.userList);
         final DB db = getDbNode().getDb();
         DBCursor cur = db.getCollection("system.users").find().sort(new BasicDBObject("user", 1));
         ArrayList users = new ArrayList();

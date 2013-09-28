@@ -59,7 +59,13 @@ public class DbJobCmd extends DbJob {
 
     @Override
     public String getNS() {
-        return db.getName();
+        String ns = db.getName();
+        Object value = cmd.get(cmd.keySet().iterator().next());
+        if (value instanceof String) {
+            // collection command
+            ns += "." + value;
+        }
+        return ns;
     }
 
     @Override
@@ -68,8 +74,8 @@ public class DbJobCmd extends DbJob {
     }
 
     @Override
-    public Object getRoot(Object result) {
-        return cmd.toString();
+    public DBObject getRoot(Object result) {
+        return cmd;
     }
     
     @Override

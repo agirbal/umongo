@@ -16,6 +16,7 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.CheckBox;
+import com.edgytech.swingfast.FileSelectorField;
 import com.edgytech.swingfast.FormDialog;
 import com.edgytech.swingfast.FormDialogListener;
 import com.edgytech.swingfast.IntFieldInterface;
@@ -31,10 +32,14 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
         inlineDocumentLength,
         useSystemLook,
         treeUpdateRate,
+        logActivity,
+        logFile,
+        logFirstResult
     }
 
     public AppPreferences() {
         setEnumBinding(Item.values(), null);
+        setFormDialogListener(this);
     }
 
     public void start() {
@@ -43,6 +48,7 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
     }
 
     public void formOkCbk() {
+        UMongo.instance.updateLogging();
     }
 
     public void formCancelCbk() {
@@ -65,5 +71,19 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
 
     public int getTreeUpdateRate() {
         return ((IntFieldInterface) getBoundUnit(Item.treeUpdateRate)).getIntValue();
+    }
+    
+    public String getLogFile() {
+        if (getBooleanFieldValue(Item.logActivity)) {
+            String path = getStringFieldValue(Item.logFile);
+            if (path != null && !path.trim().isEmpty()) {
+                return path;
+            }
+        }
+        return null;
+    }
+    
+    public boolean getLogFirstResult() {
+        return getBooleanFieldValue(Item.logFirstResult);
     }
 }

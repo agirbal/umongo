@@ -144,8 +144,8 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                return cmd.toString();
+            public DBObject getRoot(Object result) {
+                return cmd;
             }
         }.addJob();
     }

@@ -87,11 +87,10 @@ public class DocumentMenu extends PopUpMenu implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("query=").append(query);
-                sb.append(", update=").append(update);
-                return sb.toString();
+            public DBObject getRoot(Object result) {
+                BasicDBObject obj = new BasicDBObject("query", query);
+                obj.put("update", update);
+                return obj;
             }
 
             @Override
@@ -143,7 +142,7 @@ public class DocumentMenu extends PopUpMenu implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
+            public DBObject getRoot(Object result) {
                 return query;
             }
         }.addJob();

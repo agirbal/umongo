@@ -86,7 +86,7 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
             }
 
             @Override
-            public Object getRoot(Object result) {
+            public DBObject getRoot(Object result) {
                 return indexNode.getIndex();
             }
 
