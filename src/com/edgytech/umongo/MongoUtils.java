@@ -78,7 +78,12 @@ public class MongoUtils {
     }
 
     public static String getObjectString(Object obj, int limit) {
-        return limitString(obj != null ? obj.toString() : "null", limit);
+        String str = obj != null ? obj.toString() : "null";
+        if (obj instanceof Double) {
+            // get rid of annoying scientific format
+            str = String.format("%f", obj);
+        }
+        return limitString(str, limit);
     }
 
     public static String limitString(String str, int limit) {

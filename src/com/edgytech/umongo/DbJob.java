@@ -194,7 +194,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
                 new DocView(null, title, this, sroot, lasterr).addToTabbedDiv();
             }
             if (logRes) {
-                logObj.put("firstResult", res);
+                logObj.put("firstResult", lasterr);
             }
         } else if (res instanceof Exception) {
             UMongo.instance.showError(title, (Exception) res);
