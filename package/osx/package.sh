@@ -23,8 +23,9 @@ function package_build {
 
     mkdir -p $app/Contents/Resources/Java
 	cp ../dist/umongo.jar $app/Contents/Resources/Java/
-	cp ../lib/*.jar $app/Contents/Resources/Java/
-        cp ./common-files/* $app/Contents/Resources/Java/
+    mkdir -p $app/Contents/Resources/Java/lib
+	cp ../lib/*.jar $app/Contents/Resources/Java/lib
+    cp ./common-files/* $app/Contents/Resources/Java/
     cp ../README $appdir/
 
 	zip -r ${appdir}.zip $appdir
