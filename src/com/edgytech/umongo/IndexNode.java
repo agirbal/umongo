@@ -61,6 +61,10 @@ public class IndexNode extends BaseTreeNode {
         return (String) index.get("name");
     }
 
+    public DBObject getKey() {
+        return (DBObject) index.get("key");
+    }
+
     public CollectionNode getCollectionNode() {
         return (CollectionNode) getParentNode();
     }

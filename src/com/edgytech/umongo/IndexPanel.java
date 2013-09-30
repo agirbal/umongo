@@ -17,11 +17,14 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.EnumListener;
+import com.edgytech.swingfast.FormDialog;
+import com.edgytech.swingfast.MenuItem;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.DBObject;
 import java.io.IOException;
 import javax.swing.JPanel;
 import com.edgytech.umongo.IndexPanel.Item;
+import com.mongodb.BasicDBObject;
 
 /**
  *
@@ -39,6 +42,8 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
         stats,
         refresh,
         drop,
+        settings,
+        expireAfterSeconds
     }
 
     public IndexPanel() {
@@ -49,10 +54,17 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
         return (IndexNode) getNode();
     }
 
+    public DBObject getIndexInfo() {
+        BasicDBObject match = new BasicDBObject();
+        match.put("ns", getIndexNode().getIndexedCollection().getFullName());
+        match.put("key", getIndexNode().getKey());
+        return getIndexNode().getCollectionNode().getCollection().getDB().getCollection("system.indexes").findOne(match);
+    }
+    
     @Override
     protected void updateComponentCustom(JPanel comp) {
         try {
-            DBObject index = getIndexNode().getIndex();
+            DBObject index = getIndexInfo();
             setStringFieldValue(Item.name, (String) index.get("name"));
             setStringFieldValue(Item.ns, (String) index.get("ns"));
             ((DocField) getBoundUnit(Item.key)).setDoc((DBObject) index.get("key"));
@@ -100,5 +112,29 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
 
     public void stats(ButtonBase button) {
         new DbJobCmd(getIndexNode().getStatsCollection(), "collstats").addJob();
+    }
+
+    public void settings(ButtonBase button) {
+        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.settings)).getDialog();
+        BasicDBObject index = (BasicDBObject) getIndexInfo();
+        boolean isTTL = false;
+        long ttl = 0;
+        if (index.containsField("expireAfterSeconds")) {
+            isTTL = true;
+            ttl = index.getLong("expireAfterSeconds");
+        }
+        setLongFieldValue(Item.expireAfterSeconds, ttl);
+        if (!dialog.show())
+            return;
+        
+        long newTTL = getLongFieldValue(Item.expireAfterSeconds);
+        if (newTTL != ttl) {
+            BasicDBObject cmd = new BasicDBObject("collMod", getIndexNode().getCollectionNode().getCollection().getName());
+            BasicDBObject param = new BasicDBObject();
+            param.put("keyPattern", (DBObject) index.get("key"));
+            param.put("expireAfterSeconds", newTTL);
+            cmd.put("index", param);
+            new DbJobCmd(getIndexNode().getCollectionNode().getCollection().getDB(), cmd).addJob();
+        }
     }
 }

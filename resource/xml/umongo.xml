@@ -338,12 +338,15 @@
                     <MenuItem id="ensureIndex" label="Ensure Index" call="ensureIndex" icon="index.png" iconGroup="icons">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="eiKeys" label="Index Keys" toolTipText="keys to index by, in JSON format" nonEmpty="true"/>
-                            <CheckBox id="eiUnique" label="Unique" toolTipText="If checked, index will be unique"/>
-                            <CheckBox id="eiDropDups" label="Drop Duplicates" toolTipText="If creating a unique index, remove documents with duplicate keys"/>
-                            <CheckBox id="eiSparse" label="Sparse" toolTipText="Make index sparse, meaning that documents missing the key will not be indexed"/>
-                            <CheckBox id="eiBackground" label="Background" toolTipText="Create the index in the background without locking the database. Index creation will be slower."/>
-                            <IntSpinner id="eiExpireAfter" label="Expire After Seconds" value="0" minValue="0" toolTipText="Specify a TTL value in seconds to create an expiring collection. The index must be on a time field."/>
-                            <TextField id="eiName" label="Index Name" toolTipText="Optional, a custom name for the index"/>
+                            <CheckBox id="eiUnique" label="Unique" value="false" toolTipText="If checked, index will be unique"/>
+                            <CheckBox id="eiDropDups" label="Drop Duplicates" value="false" toolTipText="If creating a unique index, remove documents with duplicate keys"/>
+                            <CheckBox id="eiSparse" label="Sparse" value="false" toolTipText="Make index sparse, meaning that documents missing the key will not be indexed"/>
+                            <CheckBox id="eiBackground" label="Background" value="false" toolTipText="Create the index in the background without locking the database. Index creation will be slower."/>
+                            <TextField id="eiName" label="Index Name" value="" toolTipText="Optional, a custom name for the index"/>
+                            <Div id="eiTTL" label="TTL" titled="true">
+                                <CheckBox id="eiTTLIndex" label="TTL Index" value="false" toolTipText="Make the delete expired documents based on a TTL"/>
+                                <IntSpinner id="eiExpireAfterSeconds" label="Expire After Seconds" value="0" toolTipText="Specify a TTL value in seconds after which older documents should be deleted"/>
+                            </Div>
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
@@ -609,6 +612,11 @@
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                     <MenuItem id="drop" label="Drop" call="drop" icon="stock_delete.png" iconGroup="icons">
                         <ConfirmDialog text="Are you sure you want to drop this index?"/>
+                    </MenuItem>
+                    <MenuItem id="settings" call="settings" showDialog="false">
+                        <FormDialog>
+                            <LongSpinner id="expireAfterSeconds" value="0" toolTipText="Specify a TTL value in seconds after which older documents should be deleted"/>
+                        </FormDialog>
                     </MenuItem>
                 </Menu>
                 <Menu id="command">

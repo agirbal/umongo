@@ -84,7 +84,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
                     Object res = doRun();
                     return res;
                 } catch (Exception e) {
-                    getLogger().log(Level.SEVERE, null, e);
+                    getLogger().log(Level.WARNING, null, e);
                     return e;
                 } finally {
                     endTime = System.currentTimeMillis();

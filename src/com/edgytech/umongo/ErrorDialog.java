@@ -58,7 +58,7 @@ public class ErrorDialog extends InfoDialog {
         pw.flush();
         setStringFieldValue(Item.errorTrace, baos.toString());
         updateComponent();
-        getLogger().log(Level.WARNING, null, exception);
+//        getLogger().log(Level.WARNING, null, exception);
     }
 
 }

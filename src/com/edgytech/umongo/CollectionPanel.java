@@ -112,7 +112,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         eiName,
         eiDropDups,
         eiSparse,
-        eiExpireAfter,
+        eiTTLIndex,
+        eiExpireAfterSeconds,
         eiBackground,
         findAndModify,
         famQuery,
@@ -786,8 +787,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         if (getBooleanFieldValue(Item.eiSparse)) {
             opts.put("sparse", true);
         }
-        if (getIntFieldValue(Item.eiExpireAfter) > 0) {
-            opts.put("expireAfterSeconds", getIntFieldValue(Item.eiExpireAfter));
+        if (getBooleanFieldValue(Item.eiTTLIndex)) {
+            opts.put("expireAfterSeconds", getIntFieldValue(Item.eiExpireAfterSeconds));
         }
         if (getBooleanFieldValue(Item.eiBackground)) {
             opts.put("background", true);
