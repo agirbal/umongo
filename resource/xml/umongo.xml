@@ -922,12 +922,24 @@
                                 <Div id="querying" gap="true" titled="true">
                                     <IntSpinner id="getMoreSize" minValue="1" value="50" toolTipText="Number of documents to fetch when getting more results from a cursor"/>
                                 </Div>
-                                <Div id="logging" gap="true" titled="true">
-                                    <CheckBox id="logActivity" value="false" toolTipText="Log application activity to a file"/>
-                                    <FileSelectorField id="logFile" path="./umongo.log">
+                            </Div>
+                            <Div id="logging" gap="true">
+                                <Div id="applicationLog" gap="true" titled="true">
+                                    <CheckBox id="applicationLogFlag" label="Application Logging" value="false" toolTipText="Log application activity to a file"/>
+                                    <FileSelectorField id="applicationLogFile" label="Log File" path="./umongo.log">
                                         <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
                                     </FileSelectorField>
-                                    <CheckBox id="logFirstResult" label="Include first result" value="false" toolTipText="If true, the first result will be included in log"/>
+                                    <IntSpinner id="applicationLogSize" label="Log File Size" minValue="1" value="64" toolTipText="Log file size, in MB"/>
+                                    <IntSpinner id="applicationLogCount" label="Log File Count" minValue="1" value="3" toolTipText="Number of log files to keep when rotating"/>
+                                    <ComboBox id="applicationLogFormat" label="Log Format" items="Plain;XML" value="0"/>
+                                    <ComboBox id="applicationLogLevel" label="Log Level" items="OFF;ALL;INFO;WARNING;SEVERE" value="2"/>
+                                </Div>
+                                <Div id="activityLog" gap="true" titled="true">
+                                    <CheckBox id="activityLogFlag" label="Activity Logging" value="false" toolTipText="Log application activity to a file"/>
+                                    <FileSelectorField id="activityLogFile" label="Log File" path="./umongo-activity.json">
+                                        <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
+                                    </FileSelectorField>
+                                    <CheckBox id="activityLogFirstResult" label="Include first result" value="false" toolTipText="If true, the first result will be included in log"/>
                                 </Div>
                             </Div>
                             <Div id="advanced" gap="true">

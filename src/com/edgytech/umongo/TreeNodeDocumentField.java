@@ -30,6 +30,7 @@ public class TreeNodeDocumentField extends TreeNodeLabel {
     public TreeNodeDocumentField(String key, Object value) {
         this.key = key;
         this.value = value;
+        markStructured();
     }
 
     @Override

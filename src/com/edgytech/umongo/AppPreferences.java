@@ -20,6 +20,14 @@ import com.edgytech.swingfast.FileSelectorField;
 import com.edgytech.swingfast.FormDialog;
 import com.edgytech.swingfast.FormDialogListener;
 import com.edgytech.swingfast.IntFieldInterface;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.XMLFormatter;
 
 /**
  *
@@ -32,9 +40,17 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
         inlineDocumentLength,
         useSystemLook,
         treeUpdateRate,
-        logActivity,
-        logFile,
-        logFirstResult
+        activityLog,
+        activityLogFlag,
+        activityLogFile,
+        activityLogFirstResult,
+        applicationLog,
+        applicationLogFlag,
+        applicationLogFile,
+        applicationLogSize,
+        applicationLogCount,
+        applicationLogFormat,
+        applicationLogLevel
     }
 
     public AppPreferences() {
@@ -73,9 +89,9 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
         return ((IntFieldInterface) getBoundUnit(Item.treeUpdateRate)).getIntValue();
     }
     
-    public String getLogFile() {
-        if (getBooleanFieldValue(Item.logActivity)) {
-            String path = getStringFieldValue(Item.logFile);
+    public String getActivityLogFile() {
+        if (getBooleanFieldValue(Item.activityLogFlag)) {
+            String path = getStringFieldValue(Item.activityLogFile);
             if (path != null && !path.trim().isEmpty()) {
                 return path;
             }
@@ -83,7 +99,45 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
         return null;
     }
     
-    public boolean getLogFirstResult() {
-        return getBooleanFieldValue(Item.logFirstResult);
+    public boolean getActivityLogFirstResult() {
+        return getBooleanFieldValue(Item.activityLogFirstResult);
+    }
+    
+    public Handler getApplicationLogHandler() {
+        if (!getBooleanFieldValue(Item.applicationLogFlag)) {
+            return null;
+        }
+
+        String path = getStringFieldValue(Item.applicationLogFile);
+        if (path == null || path.trim().isEmpty()) {
+            return null;
+        }
+        
+        Handler handler;
+        try {
+            handler = new FileHandler(path, getIntFieldValue(Item.applicationLogSize) * 1024 * 1024, getIntFieldValue(Item.applicationLogCount), true);
+            Level lvl = Level.WARNING;
+            String lvlStr = getStringFieldValue(Item.applicationLogLevel);
+            if (lvlStr.equals("OFF"))
+                lvl = Level.OFF;
+            else if (lvlStr.equals("ALL"))
+                lvl = Level.ALL;
+            else if (lvlStr.equals("INFO"))
+                lvl = Level.INFO;
+            else if (lvlStr.equals("WARNING"))
+                lvl = Level.WARNING;
+            else if (lvlStr.equals("SEVERE"))
+                lvl = Level.SEVERE;
+            handler.setLevel(lvl);
+
+            Formatter fmt = new SimpleFormatter();
+            if (getStringFieldValue(Item.applicationLogFormat).equals("XML"))
+                fmt = new XMLFormatter();
+            handler.setFormatter(fmt);
+            return handler;
+        } catch (Exception ex) {
+            getLogger().log(Level.WARNING, null, ex);
+        }        
+        return null;
     }
 }

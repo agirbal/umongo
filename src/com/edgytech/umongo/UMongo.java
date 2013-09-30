@@ -34,6 +34,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -66,8 +68,9 @@ public class UMongo extends Application implements Runnable {
     boolean stopped = false;
     BaseTreeNode node = null;
     
-    FileWriter logWriter = null;
-    boolean logFirstResult = false;
+    FileWriter activityLogWriter = null;
+    boolean activityLogFirstResult = false;
+    Handler applicationLogHandler = null;
 
     public UMongo() {
         super(true);
@@ -142,9 +145,11 @@ public class UMongo extends Application implements Runnable {
     }
 
     public void start() {
+        getLogger().log(Level.INFO, "UMONGO STARTING");
     }
 
     public void stop() {
+        getLogger().log(Level.INFO, "UMONGO STOPPING");
         stopped = true;
     }
 
@@ -302,18 +307,33 @@ public class UMongo extends Application implements Runnable {
     }
 
     void updateLogging() {
-        synchronized (this) {
+        synchronized (this) {            
             try {
-                String logFile = getPreferences().getLogFile();
-                if (logFile != null) {
-
-                    logWriter = new FileWriter(logFile, true);
-                    logFirstResult = getPreferences().getLogFirstResult();
+                Handler handler = getPreferences().getApplicationLogHandler();
+                if (handler == null) {
+                    if (applicationLogHandler != null)
+                        Logger.getLogger("").removeHandler(applicationLogHandler);
                 } else {
-                    if (logWriter != null) {
-                        logWriter.close();
+                    if (applicationLogHandler == null)
+                        Logger.getLogger("").addHandler(handler);
+                    else if (!applicationLogHandler.equals(handler)) {
+                        Logger.getLogger("").removeHandler(applicationLogHandler);
+                        Logger.getLogger("").addHandler(handler);
                     }
-                    logWriter = null;
+                }
+                applicationLogHandler = handler;
+
+                String logFile = getPreferences().getActivityLogFile();
+                if (logFile != null) {
+                    if (activityLogWriter != null)
+                        activityLogWriter.close();
+                    activityLogWriter = new FileWriter(logFile, true);
+                    activityLogFirstResult = getPreferences().getActivityLogFirstResult();
+                } else {
+                    if (activityLogWriter != null) {
+                        activityLogWriter.close();
+                    }
+                    activityLogWriter = null;
                 }
             } catch (IOException ex) {
                 getLogger().log(Level.WARNING, null, ex);
@@ -322,11 +342,11 @@ public class UMongo extends Application implements Runnable {
     }
     
     boolean isLoggingOn() {
-        return logWriter != null;
+        return activityLogWriter != null;
     }
     
     boolean isLoggingFirstResultOn() {
-        return logFirstResult;
+        return activityLogFirstResult;
     }
     
     void logActivity(DBObject obj) {
@@ -337,10 +357,10 @@ public class UMongo extends Application implements Runnable {
                     return;
                 }
                 
-                logWriter.write(JSON.serialize(obj));
-                logWriter.write("\n");
-                logWriter.flush();
-            } catch (IOException ex) {
+                activityLogWriter.write(JSON.serialize(obj));
+                activityLogWriter.write("\n");
+                activityLogWriter.flush();
+            } catch (Exception ex) {
                 getLogger().log(Level.WARNING, null, ex);
             }
         }

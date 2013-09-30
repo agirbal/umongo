@@ -33,6 +33,7 @@ public class TreeNodeDocument extends TreeNodeLabel {
         this.job = job;
         MongoUtils.addChildrenToTreeNode(getTreeNode(), dbobject);
         forced = true;
+        markStructured();
     }
 
     public DBObject getDBObject() {
