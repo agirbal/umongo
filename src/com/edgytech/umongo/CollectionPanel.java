@@ -170,7 +170,9 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         ftsProject,
         ftsLimit,
         ftsLanguage,
-        aggregate
+        aggregate,
+        settings,
+        usePowerOf2Sizes
     }
 
     public CollectionPanel() {
@@ -179,6 +181,11 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
     public CollectionNode getCollectionNode() {
         return (CollectionNode) getNode();
+    }
+    
+    public BasicDBObject getStats() {
+        BasicDBObject cmd = new BasicDBObject("collStats", getCollectionNode().getCollection().getName());
+        return getCollectionNode().getCollection().getDB().command(cmd);
     }
 
     @Override
@@ -1325,4 +1332,20 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd, null, button).addJob();
     }
 
+    public void settings(ButtonBase button) {
+        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.settings)).getDialog();
+        BasicDBObject stats = (BasicDBObject) getStats();
+        boolean pwr2 = stats.getBoolean("userFlags", false);
+
+        setBooleanFieldValue(Item.usePowerOf2Sizes, pwr2);
+        if (!dialog.show())
+            return;
+        
+        boolean newPwr2 = getBooleanFieldValue(Item.usePowerOf2Sizes);
+        if (newPwr2 != pwr2) {
+            BasicDBObject cmd = new BasicDBObject("collMod", getCollectionNode().getCollection().getName());
+            cmd.put("usePowerOf2Sizes", newPwr2);
+            new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd).addJob();
+        }
+    }
 }

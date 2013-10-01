@@ -357,6 +357,11 @@
                             <CheckBox id="dropTarget" value="false"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuItem id="settings" call="settings" showDialog="false">
+                        <FormDialog>
+                            <CheckBox id="usePowerOf2Sizes" label="Use Power Of 2 Sizes" value="false" toolTipText="usePowerOf2Sizes flags makes all document spaces a power of 2 which can help reduce fragmentation"/>
+                        </FormDialog>
+                    </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="doImport" label="Import" call="doImport"/>
                     <MenuItem id="export" call="export"/>
