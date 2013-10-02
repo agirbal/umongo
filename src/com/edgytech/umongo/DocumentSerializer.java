@@ -126,12 +126,12 @@ public class DocumentSerializer {
                     os.write(delimiter.getBytes());
                 }
                 String field = filter[i];
-                os.write(JSON.serialize(getFieldValueRecursive(obj, field)).getBytes());
+                os.write(MongoUtils.getJSON(getFieldValueRecursive(obj, field)).getBytes());
             }
         } else if (format == Format.BSON) {
             os.write(BSON.encode(obj));
         } else {
-            os.write(obj.toString().getBytes());
+            os.write(MongoUtils.getJSON(obj).getBytes());
         }
 
         if (format == Format.JSON || format == Format.CSV) {

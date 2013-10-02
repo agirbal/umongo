@@ -152,7 +152,7 @@ public class DocumentMenu extends PopUpMenu implements EnumListener<Item> {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         TreeNodeDocument node = (TreeNodeDocument) dv.getSelectedNode().getUserObject();
         final DBObject doc = node.getDBObject();
-        String selection = doc.toString();
+        String selection = MongoUtils.getJSON(doc);
         StringSelection data = new StringSelection(selection);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(data, data);

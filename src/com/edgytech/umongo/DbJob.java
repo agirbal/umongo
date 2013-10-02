@@ -202,7 +202,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
                 logObj.put("firstResult", res.toString());
             }
         } else {
-            DBObject obj = new BasicDBObject("Result", res.toString());
+            DBObject obj = new BasicDBObject("result", res.toString());
             new DocView(null, title, this, sroot, obj).addToTabbedDiv();
             if (logRes) {
                 logObj.put("firstResult", res.toString());

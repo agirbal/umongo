@@ -34,10 +34,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import org.xml.sax.SAXException;
@@ -357,7 +355,7 @@ public class UMongo extends Application implements Runnable {
                     return;
                 }
                 
-                activityLogWriter.write(JSON.serialize(obj));
+                activityLogWriter.write(MongoUtils.getJSON(obj));
                 activityLogWriter.write("\n");
                 activityLogWriter.flush();
             } catch (Exception ex) {
@@ -365,4 +363,5 @@ public class UMongo extends Application implements Runnable {
             }
         }
     }
+    
 }

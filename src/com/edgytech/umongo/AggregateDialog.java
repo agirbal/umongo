@@ -73,7 +73,7 @@ public class AggregateDialog extends FormDialog implements EnumListener<Item> {
         String[] items = new String[operationList.size()];
         int i = 0;
         for (BasicDBObject op : operationList) {
-            String json = JSON.serialize(op);
+            String json = MongoUtils.getJSON(op);
             items[i++] = json.substring(0, Math.min(80, json.length()));
         }
         list.items = items;
@@ -226,7 +226,7 @@ public class AggregateDialog extends FormDialog implements EnumListener<Item> {
 
     @Override
     protected void commitComponentCustom(JDialog comp) {
-        pipeline = JSON.serialize(getAggregateCommand("dummy"));
+        pipeline = MongoUtils.getJSON(getAggregateCommand("dummy"));
     }
     
 }

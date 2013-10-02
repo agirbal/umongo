@@ -27,8 +27,14 @@
             <MenuItem id="set" call="set"/>
             <MenuItem id="unset" call="unset"/>
             <MenuSeparator/>
-            <MenuItem id="compress" call="compress"/>
-            <MenuItem id="decompress" call="decompress"/>
+            <MenuItem id="compressionStats" call="compressionStats" showDialog="false">
+                <InfoDialog id="compressionStatsDialog" text="/html/about.html"/>
+            </MenuItem>
+            <MenuItem id="saveBinaryToFile" call="saveBinaryToFile">
+                <FileSelectorField id="saveBinaryOutputFile">
+                    <FileSelectorDialog type="SAVE" mode="FILES_ONLY"/>
+                </FileSelectorField>
+            </MenuItem>
             <MenuSeparator/>
             <MenuItem id="copyField" call="copyField"/>
             <MenuItem id="copyValue" call="copyValue"/>
@@ -967,7 +973,7 @@
             </Menu>
             <Menu id="help" alt="h">
                 <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="etIcons" signBorderColor="128;128;128" file="/html/about.html"/>
+                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="edgytechIcons" signBorderColor="128;128;128" file="/html/about.html"/>
                 </MenuItem>
             </Menu>
         </com.edgytech.umongo.MainMenu>

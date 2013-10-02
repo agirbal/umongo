@@ -16,6 +16,8 @@
 package com.edgytech.umongo;
 
 import com.mongodb.*;
+import com.mongodb.util.JSONSerializers;
+import com.mongodb.util.ObjectSerializer;
 import java.util.Date;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -78,10 +80,17 @@ public class MongoUtils {
     }
 
     public static String getObjectString(Object obj, int limit) {
-        String str = obj != null ? obj.toString() : "null";
-        if (obj instanceof Double) {
+        String str;
+        if (obj == null) {
+            str = "null";
+        } else if (obj instanceof DBObject || obj instanceof byte[]) {
+            // get rid of annoying scientific format
+            str = MongoUtils.getJSON(obj);
+        } else if (obj instanceof Double) {
             // get rid of annoying scientific format
             str = String.format("%f", obj);
+        } else {
+            str = obj.toString();
         }
         return limitString(str, limit);
     }
@@ -97,6 +106,18 @@ public class MongoUtils {
         return str;
     }
 
+    static ObjectSerializer getSerializer() {
+        return JSONSerializers.getStrict();
+    }
+    
+    static String getJSONPreview(Object value) {
+        return MongoUtils.limitString(getSerializer().serialize(value), 80);
+    }
+    
+    static String getJSON(Object value) {
+        return getSerializer().serialize(value);
+    }
+    
     public static DBObject getReplicaSetInfo(Mongo mongo) {
         DB db = mongo.getDB("local");
         DBObject result = new BasicDBObject();

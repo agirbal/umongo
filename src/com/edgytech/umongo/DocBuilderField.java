@@ -83,7 +83,7 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
         }
 
         doc = dialog.getDBObject();
-        setComponentStringFieldValue(Item.jsonText, doc.toString());
+        setComponentStringFieldValue(Item.jsonText, MongoUtils.getJSON(doc));
         notifyListener(getComponent());
     }
 
@@ -151,7 +151,7 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
     public void setDBObject(DBObject obj) {
         // it's safe to use obj, not a copy, since builder will build its own
         doc = obj;
-        String txt = doc != null ? doc.toString() : "";
+        String txt = doc != null ? MongoUtils.getJSON(doc) : "";
         setStringFieldValue(Item.jsonText, txt);
     }
 
