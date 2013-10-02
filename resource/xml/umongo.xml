@@ -27,13 +27,24 @@
             <MenuItem id="set" call="set"/>
             <MenuItem id="unset" call="unset"/>
             <MenuSeparator/>
-            <MenuItem id="compressionStats" call="compressionStats" showDialog="false">
-                <InfoDialog id="compressionStatsDialog" text="/html/about.html"/>
+            <MenuItem id="compressionStats" call="compressionStats" showDialog="false" buttons="OK">
+                <FormDialog>
+                    <Text id="compressionStatsOriginal" label="Original" field="true"/>
+                    <Text id="compressionStatsDeflate" label="Deflate" field="true"/>
+                    <Text id="compressionStatsGZip" label="GZip" field="true"/>
+                </FormDialog>
             </MenuItem>
             <MenuItem id="saveBinaryToFile" call="saveBinaryToFile">
-                <FileSelectorField id="saveBinaryOutputFile">
-                    <FileSelectorDialog type="SAVE" mode="FILES_ONLY"/>
-                </FileSelectorField>
+                <FormDialog>
+                    <FileSelectorField id="saveBinaryOutputFile">
+                        <FileSelectorDialog type="SAVE" mode="FILES_ONLY"/>
+                    </FileSelectorField>
+                </FormDialog>
+            </MenuItem>
+            <MenuItem id="decodeBinary" call="decodeBinary">
+                <FormDialog buttons="OK" preferredSize="640;480">
+                    <TextArea id="expandTextArea" field="false" zone="CENTER" editable="false"/>
+                </FormDialog>
             </MenuItem>
             <MenuSeparator/>
             <MenuItem id="copyField" call="copyField"/>
@@ -827,7 +838,9 @@
             </Zone>
         </com.edgytech.umongo.RouterPanel>
         <com.edgytech.umongo.EditBinaryDialog>
-            <IntSpinner id="size"/>
+            <FileSelectorField id="inputFile">
+                <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
+            </FileSelectorField>
         </com.edgytech.umongo.EditBinaryDialog>
         <com.edgytech.umongo.EditBooleanDialog>
             <CheckBox id="value" label="True"/>

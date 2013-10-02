@@ -24,6 +24,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.zip.DeflaterOutputStream;
@@ -40,9 +42,13 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         set,
         unset,
         compressionStats,
-        compressionStatsDialog,
+        compressionStatsOriginal,
+        compressionStatsDeflate,
+        compressionStatsGZip,
         saveBinaryToFile,
         saveBinaryOutputFile,
+        decodeBinary,
+        decodeBinaryText,
         copyField,
         copyValue
     }
@@ -186,7 +192,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
             bytes = MongoUtils.getJSON(value).toString().getBytes(Charset.forName("UTF-8"));
         }
         
-        String msg = "Initial Size: " + bytes.length + "\n";
+        setStringFieldValue(Item.compressionStatsOriginal, String.valueOf(bytes.length));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(bytes.length);
 //        System.out.println("Bytes before: " + bytes.length);
         
@@ -195,7 +201,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         dos.write(bytes);
         dos.close();
         byte[] deflate = baos.toByteArray();
-        msg += "Deflate: " + deflate.length + "\n";
+        setStringFieldValue(Item.compressionStatsDeflate, String.valueOf(deflate.length));
 //        System.out.println("Bytes deflate: " + deflate.length);
         
         baos.reset();
@@ -203,16 +209,46 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         gos.write(bytes);
         gos.close();
         byte[] gzip = baos.toByteArray();
-        msg += "GZip: " + gzip.length + "\n";
+        setStringFieldValue(Item.compressionStatsGZip, String.valueOf(gzip.length));
 //        System.out.println("Bytes gzip: " + gzip.length);
         
-        InfoDialog dia = (InfoDialog)getBoundComponentUnit(Item.compressionStatsDialog);
-        dia.text = msg;
+        Showable dia = ((MenuItem)getBoundComponentUnit(Item.compressionStats)).getDialog();
         dia.show();
     }
 
     public void saveBinaryToFile(ButtonBase button) throws IOException {
+        String path = ((FileSelectorField)getBoundComponentUnit(Item.saveBinaryOutputFile)).getPath();
+
+        final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
+        TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
+        Object value = node.getValue();
+        byte[] bytes = null;
+        if (value instanceof byte[]) {
+            bytes = (byte[]) value;
+        } else if (value instanceof Binary) {
+            bytes = ((Binary)value).getData();
+        } else {
+            bytes = MongoUtils.getJSON(value).toString().getBytes(Charset.forName("UTF-8"));
+        }
         
+        FileOutputStream fos = new FileOutputStream(path);
+        fos.write(bytes);
+        fos.close();
     }
-    
+
+//    public void decodeBinary(ButtonBase button) throws IOException {
+//        final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
+//        TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
+//        Object value = node.getValue();
+//        byte[] bytes = null;
+//        if (value instanceof byte[]) {
+//            bytes = (byte[]) value;
+//        } else if (value instanceof Binary) {
+//            bytes = ((Binary)value).getData();
+//        } else {
+//            bytes = MongoUtils.getJSON(value).toString().getBytes(Charset.forName("UTF-8"));
+//        }
+//        
+//        BinaryDecoder
+//    }
 }
