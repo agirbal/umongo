@@ -41,9 +41,9 @@
                     </FileSelectorField>
                 </FormDialog>
             </MenuItem>
-            <MenuItem id="decodeBinary" call="decodeBinary">
-                <FormDialog buttons="OK" preferredSize="640;480">
-                    <TextArea id="expandTextArea" field="false" zone="CENTER" editable="false"/>
+            <MenuItem id="decodeBinary" call="decodeBinary" showDialog="false">
+                <FormDialog buttons="OK" preferredSize="640;480" save="false">
+                    <TextArea id="decodeBinaryText" field="false" zone="CENTER" editable="false"/>
                 </FormDialog>
             </MenuItem>
             <MenuSeparator/>
@@ -286,7 +286,7 @@
                     <MenuItem id="uploadFile" call="uploadFile">
                         <FormDialog id="uploadFileDialog">
                             <FileSelectorField id="uploadFilePath" label="Local File">
-                                <FileSelectorDialog type="OPEN" selectionMode="FILES_ONLY"/>
+                                <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
                             </FileSelectorField>
                             <TextField id="uploadFileName" label="File Name" toolTipText="Optional, Name of the file as stored on the server"/>
                             <TextField id="uploadContentType" toolTipText="Optional, Content type to associate with file"/>
@@ -299,7 +299,7 @@
                             <com.edgytech.umongo.DocBuilderField id="downloadQuery" label="Query" toolTipText="Find the file using this query"/>
                             <TextField id="downloadFileName" label="File Name" toolTipText="Name of the file as stored on the server"/>
                             <FileSelectorField id="downloadFilePath" label="Save As">
-                                <FileSelectorDialog type="SAVE" selectionMode="FILES_ONLY"/>
+                                <FileSelectorDialog type="SAVE" mode="FILES_ONLY"/>
                             </FileSelectorField>
                         </FormDialog>
                     </MenuItem>
@@ -972,6 +972,14 @@
                                         <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
                                     </FileSelectorField>
                                     <CheckBox id="activityLogFirstResult" label="Include first result" value="false" toolTipText="If true, the first result will be included in log"/>
+                                </Div>
+                            </Div>
+                            <Div id="plugins" gap="true">
+                                <Div>
+                                    <CheckBox id="allowPlugins" value="true"/>
+                                    <FileSelectorField id="pluginFolder" path="./plugins">
+                                        <FileSelectorDialog type="OPEN" mode="DIRECTORIES_ONLY"/>
+                                    </FileSelectorField>
                                 </Div>
                             </Div>
                             <Div id="advanced" gap="true">

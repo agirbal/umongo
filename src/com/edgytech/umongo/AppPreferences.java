@@ -50,7 +50,9 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
         applicationLogSize,
         applicationLogCount,
         applicationLogFormat,
-        applicationLogLevel
+        applicationLogLevel,
+        pluginFolder,
+        allowPlugins
     }
 
     public AppPreferences() {
@@ -65,6 +67,7 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
 
     public void formOkCbk() {
         UMongo.instance.updateLogging();
+        UMongo.instance.updatePlugins();
     }
 
     public void formCancelCbk() {
@@ -138,6 +141,13 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
         } catch (Exception ex) {
             getLogger().log(Level.WARNING, null, ex);
         }        
+        return null;
+    }
+    
+    public String getPluginFolder() {
+        if (getBooleanFieldValue(Item.allowPlugins)) {
+            return getStringFieldValue(Item.pluginFolder);
+        }
         return null;
     }
 }

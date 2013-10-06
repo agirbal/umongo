@@ -236,19 +236,22 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         fos.close();
     }
 
-//    public void decodeBinary(ButtonBase button) throws IOException {
-//        final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
-//        TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
-//        Object value = node.getValue();
-//        byte[] bytes = null;
-//        if (value instanceof byte[]) {
-//            bytes = (byte[]) value;
-//        } else if (value instanceof Binary) {
-//            bytes = ((Binary)value).getData();
-//        } else {
-//            bytes = MongoUtils.getJSON(value).toString().getBytes(Charset.forName("UTF-8"));
-//        }
-//        
-//        BinaryDecoder
-//    }
+    public void decodeBinary(ButtonBase button) throws IOException {
+        final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
+        TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
+        Object value = node.getValue();
+        byte[] bytes = null;
+        if (value instanceof byte[]) {
+            bytes = (byte[]) value;
+        } else if (value instanceof Binary) {
+            bytes = ((Binary)value).getData();
+        } else {
+            bytes = MongoUtils.getJSON(value).toString().getBytes(Charset.forName("UTF-8"));
+        }
+        
+        BinaryDecoder dec = UMongo.instance.getBinaryDecoder();
+        setStringFieldValue(Item.decodeBinaryText, dec.getText(bytes));
+        FormDialog dia = (FormDialog) button.getDialog();
+        dia.show();
+    }
 }

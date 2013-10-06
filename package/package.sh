@@ -22,6 +22,7 @@ function package_build {
 	mkdir $appdir/lib
 	cp ../lib/*.jar $appdir/lib/
     cp ../README $appdir/
+	mkdir $appdir/plugins
 
 	zip -r ${appdir}.zip $appdir
 }

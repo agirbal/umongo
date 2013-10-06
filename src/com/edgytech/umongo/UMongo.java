@@ -1,17 +1,17 @@
 /**
- *      Copyright (C) 2010 EdgyTech Inc.
+ * Copyright (C) 2010 EdgyTech Inc.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.edgytech.umongo;
 
@@ -27,16 +27,24 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
 import java.awt.event.WindowEvent;
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
 import javax.swing.SwingUtilities;
 import org.xml.sax.SAXException;
 
@@ -65,10 +73,11 @@ public class UMongo extends Application implements Runnable {
     private ArrayList<MongoNode> mongos = new ArrayList<MongoNode>();
     boolean stopped = false;
     BaseTreeNode node = null;
-    
     FileWriter activityLogWriter = null;
     boolean activityLogFirstResult = false;
     Handler applicationLogHandler = null;
+    String pluginFolder = null;
+    BinaryDecoder binaryDecoder = null;
 
     public UMongo() {
         super(true);
@@ -153,7 +162,7 @@ public class UMongo extends Application implements Runnable {
 
     public static void main(String[] args) {
 //        LogManager.getLogManager().getLogger("").setLevel(Level.FINE);
-        
+
         instance.launch();
     }
 
@@ -172,7 +181,7 @@ public class UMongo extends Application implements Runnable {
 
     void disconnect(MongoNode node) {
         mongos.remove(node);
-        
+
         node.removeNode();
         Mongo mongo = ((MongoNode) node).getMongo();
         mongo.close();
@@ -208,24 +217,25 @@ public class UMongo extends Application implements Runnable {
     JobBar getJobBar() {
         return (JobBar) getBoundUnit(Item.jobBar);
     }
-    
+
     public void displayNode(BaseTreeNode node) {
         this.node = node;
         BasePanel panel = null;
-        if (node instanceof MongoNode)
+        if (node instanceof MongoNode) {
             panel = getGlobalStore().getMongoPanel();
-        else if(node instanceof DbNode)
+        } else if (node instanceof DbNode) {
             panel = getGlobalStore().getDbPanel();
-        else if(node instanceof CollectionNode)
+        } else if (node instanceof CollectionNode) {
             panel = getGlobalStore().getCollectionPanel();
-        else if(node instanceof IndexNode)
+        } else if (node instanceof IndexNode) {
             panel = getGlobalStore().getIndexPanel();
-        else if(node instanceof ServerNode)
+        } else if (node instanceof ServerNode) {
             panel = getGlobalStore().getServerPanel();
-        else if(node instanceof RouterNode)
+        } else if (node instanceof RouterNode) {
             panel = getGlobalStore().getRouterPanel();
-        else if(node instanceof ReplSetNode)
+        } else if (node instanceof ReplSetNode) {
             panel = getGlobalStore().getReplSetPanel();
+        }
 
         panel.setNode(node);
         displayElement(panel);
@@ -234,7 +244,7 @@ public class UMongo extends Application implements Runnable {
     public BaseTreeNode getNode() {
         return node;
     }
-    
+
     public void runJob(DbJob job) {
         getJobBar().addJob(job);
         job.start();
@@ -243,16 +253,13 @@ public class UMongo extends Application implements Runnable {
     public void removeJob(DbJob job) {
         getJobBar().removeJob(job);
     }
-
     long _nextTreeUpdate = System.currentTimeMillis();
-
     ConcurrentLinkedQueue<BaseTreeNode> nodesToRefresh = new ConcurrentLinkedQueue<BaseTreeNode>();
 
     void addNodeToRefresh(BaseTreeNode node) {
         nodesToRefresh.add(node);
     }
 
-    
     public void run() {
         while (!stopped) {
             try {
@@ -270,7 +277,7 @@ public class UMongo extends Application implements Runnable {
                         }
                     });
                 }
-                
+
                 BaseTreeNode node = null;
                 while ((node = nodesToRefresh.poll()) != null) {
                     node.refresh();
@@ -281,7 +288,7 @@ public class UMongo extends Application implements Runnable {
                         }
                     });
                 }
-                
+
             } catch (Exception ex) {
                 getLogger().log(Level.SEVERE, null, ex);
             }
@@ -298,23 +305,25 @@ public class UMongo extends Application implements Runnable {
         if (getJobBar().hasChildren()) {
             String text = "There are jobs running, force exit?";
             ConfirmDialog confirm = new ConfirmDialog(null, "Confirm Exit", null, text);
-            if (!confirm.show())
+            if (!confirm.show()) {
                 return;
+            }
         }
         super.windowClosing(e);
     }
 
     void updateLogging() {
-        synchronized (this) {            
+        synchronized (this) {
             try {
                 Handler handler = getPreferences().getApplicationLogHandler();
                 if (handler == null) {
-                    if (applicationLogHandler != null)
+                    if (applicationLogHandler != null) {
                         Logger.getLogger("").removeHandler(applicationLogHandler);
+                    }
                 } else {
-                    if (applicationLogHandler == null)
+                    if (applicationLogHandler == null) {
                         Logger.getLogger("").addHandler(handler);
-                    else if (!applicationLogHandler.equals(handler)) {
+                    } else if (!applicationLogHandler.equals(handler)) {
                         Logger.getLogger("").removeHandler(applicationLogHandler);
                         Logger.getLogger("").addHandler(handler);
                     }
@@ -323,8 +332,9 @@ public class UMongo extends Application implements Runnable {
 
                 String logFile = getPreferences().getActivityLogFile();
                 if (logFile != null) {
-                    if (activityLogWriter != null)
+                    if (activityLogWriter != null) {
                         activityLogWriter.close();
+                    }
                     activityLogWriter = new FileWriter(logFile, true);
                     activityLogFirstResult = getPreferences().getActivityLogFirstResult();
                 } else {
@@ -338,15 +348,15 @@ public class UMongo extends Application implements Runnable {
             }
         }
     }
-    
+
     boolean isLoggingOn() {
         return activityLogWriter != null;
     }
-    
+
     boolean isLoggingFirstResultOn() {
         return activityLogFirstResult;
     }
-    
+
     void logActivity(DBObject obj) {
         synchronized (this) {
             try {
@@ -354,7 +364,7 @@ public class UMongo extends Application implements Runnable {
                     // dont log auth
                     return;
                 }
-                
+
                 activityLogWriter.write(MongoUtils.getJSON(obj));
                 activityLogWriter.write("\n");
                 activityLogWriter.flush();
@@ -363,5 +373,71 @@ public class UMongo extends Application implements Runnable {
             }
         }
     }
-    
+
+    void updatePlugins() {
+        String folder = getPreferences().getPluginFolder();
+        if (folder != null && folder.equals(pluginFolder)) {
+            return;
+        }
+
+        pluginFolder = folder;
+        resetPlugins();
+        if (folder == null) {
+            return;
+        }
+
+//        System.setSecurityManager(new PluginSecurityManager(pluginFolder));
+        
+        //System.getProperty("user.dir")
+        File dir = new File(pluginFolder);
+        PluginClassLoader cl = new PluginClassLoader(dir);
+        if (dir.exists() && dir.isDirectory()) {
+            // we'll only load classes directly in this directory -
+            // no subdirectories, and no classes in packages are recognized
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                try {
+                    List<Class> classes = null;
+                    
+                    File file = files[i];
+                    if (file.getPath().endsWith(".jar")) {
+                        getLogger().info("Attempting to load plugin " + file.getPath());
+                        JarFile jar = new JarFile(file);
+                        classes = cl.loadClasses(jar);
+                    }
+                    
+/*                    // only consider files ending in ".class"
+                    if (!files[i].endsWith(".class")) {
+                        continue;
+                    }
+
+                    getLogger().info("Attempting to load plugin " + files[i]);
+                    Class c = cl.loadClass(files[i].substring(0, files[i].indexOf("."))); */
+
+                    for (Class c : classes) {
+                        Class[] intf = c.getInterfaces();
+                        for (int j = 0; j < intf.length; j++) {
+                            if (intf[j].getName().equals("com.edgytech.umongo.BinaryDecoder")) {
+                                getLogger().info("Detected BinaryDecoder plugin in " + c.getCanonicalName());
+                                // the following line assumes that PluginFunction has a no-argument constructor
+                                BinaryDecoder bd = (BinaryDecoder) c.newInstance();
+                                binaryDecoder = bd;
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    getLogger().log(Level.WARNING, null, ex);
+                }
+            }
+        }
+
+    }
+
+    void resetPlugins() {
+        binaryDecoder = null;
+    }
+
+    BinaryDecoder getBinaryDecoder() {
+        return binaryDecoder;
+    }
 }
