@@ -509,7 +509,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 obj.put("query", res.getQuery());
                 obj.put("fields", res.getKeysWanted());
                 obj.put("options", res.getOptions());
-                obj.put("readPreference", res.getReadPreference());
+                obj.put("readPreference", res.getReadPreference().toDBObject());
                 obj.put("numSeen", res.numSeen());
                 obj.put("numGetMores", res.numGetMores());
                 // want skip, limit, batchsize
