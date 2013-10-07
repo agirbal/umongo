@@ -8,7 +8,7 @@
         Purpose of the document follows.
 -->
 
-<Div axis="X" field="true" gap="true">
+<Div axis="X" field="true" gap="false">
     <Div id="fields" borderSize="0" borderColor="127;127;127" gap="true">
         <Text id="value"/>
     </Div>

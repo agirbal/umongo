@@ -107,14 +107,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         insertCount,
         insertBulk,
         ensureIndex,
-        eiKeys,
-        eiUnique,
-        eiName,
-        eiDropDups,
-        eiSparse,
-        eiTTLIndex,
-        eiExpireAfterSeconds,
-        eiBackground,
         findAndModify,
         famQuery,
         famFields,
@@ -778,29 +770,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     public void ensureIndex(final ButtonBase button) {
         final CollectionNode node = getCollectionNode();
         final DBCollection col = getCollectionNode().getCollection();
-        final DBObject keys = ((DocBuilderField) getBoundUnit(Item.eiKeys)).getDBObject();
-
-        final DBObject opts = new BasicDBObject();
-        final String name = getStringFieldValue(Item.eiName);
-        if (name != null && !name.trim().isEmpty()) {
-            opts.put("name", name);
-        }
-        if (getBooleanFieldValue(Item.eiUnique)) {
-            opts.put("unique", true);
-        }
-        if (getBooleanFieldValue(Item.eiDropDups)) {
-            opts.put("dropDups", true);
-        }
-        if (getBooleanFieldValue(Item.eiSparse)) {
-            opts.put("sparse", true);
-        }
-        if (getBooleanFieldValue(Item.eiTTLIndex)) {
-            opts.put("expireAfterSeconds", getIntFieldValue(Item.eiExpireAfterSeconds));
-        }
-        if (getBooleanFieldValue(Item.eiBackground)) {
-            opts.put("background", true);
-        }
-
+        EnsureIndexDialog dia = (EnsureIndexDialog) button.getDialog();
+        final DBObject keys = dia.getKeys();
+        final DBObject opts = dia.getOptions();
+       
         if (!UMongo.instance.getGlobalStore().confirmLockingOperation()) {
             return;
         }

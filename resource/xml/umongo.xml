@@ -353,18 +353,23 @@
                 <Text id="icon" icon="folder.png" iconGroup="icons" toolTipText="Collection"/>
                 <Menu id="collection">
                     <MenuItem id="ensureIndex" label="Ensure Index" call="ensureIndex" icon="index.png" iconGroup="icons">
-                        <FormDialog>
-                            <com.edgytech.umongo.DocBuilderField id="eiKeys" label="Index Keys" toolTipText="keys to index by, in JSON format" nonEmpty="true"/>
-                            <CheckBox id="eiUnique" label="Unique" value="false" toolTipText="If checked, index will be unique"/>
-                            <CheckBox id="eiDropDups" label="Drop Duplicates" value="false" toolTipText="If creating a unique index, remove documents with duplicate keys"/>
-                            <CheckBox id="eiSparse" label="Sparse" value="false" toolTipText="Make index sparse, meaning that documents missing the key will not be indexed"/>
-                            <CheckBox id="eiBackground" label="Background" value="false" toolTipText="Create the index in the background without locking the database. Index creation will be slower."/>
-                            <TextField id="eiName" label="Index Name" value="" toolTipText="Optional, a custom name for the index"/>
-                            <Div id="eiTTL" label="TTL" titled="true">
-                                <CheckBox id="eiTTLIndex" label="TTL Index" value="false" toolTipText="Make the delete expired documents based on a TTL"/>
-                                <IntSpinner id="eiExpireAfterSeconds" label="Expire After Seconds" value="0" toolTipText="Specify a TTL value in seconds after which older documents should be deleted"/>
+                        <com.edgytech.umongo.EnsureIndexDialog>
+                            <com.edgytech.umongo.DocBuilderField id="keys" toolTipText="keys to index by, in JSON format" nonEmpty="true"/>
+                            <CheckBox id="unique" value="false" toolTipText="If checked, index will be unique"/>
+                            <CheckBox id="dropDuplicates" value="false" toolTipText="If creating a unique index, remove documents with duplicate keys"/>
+                            <CheckBox id="sparse" value="false" toolTipText="Make index sparse, meaning that documents missing the key will not be indexed"/>
+                            <CheckBox id="background" value="false" toolTipText="Create the index in the background without locking the database. Index creation will be slower."/>
+                            <TextField id="name" value="" toolTipText="Optional, a custom name for the index"/>
+                            <Div id="ttlIndex" label="TTL Index" titled="true">
+                                <CheckBox id="expireDocuments" value="false" toolTipText="Make expired documents be deleted based on a TTL"/>
+                                <IntSpinner id="expireAfterSeconds" label="Expire After Seconds" value="0" toolTipText="Specify a TTL value in seconds after which older documents should be deleted"/>
                             </Div>
-                        </FormDialog>
+                            <Div id="textIndex" titled="true">
+                                <com.edgytech.umongo.DocBuilderField id="weights" toolTipText="For a text index, the significance of the field relative to the other indexed fields. The document contains field and weight pairs"/>
+                                <TextField id="defaultLanguage" toolTipText="For a text index, the language that determines the list of stop words and the rules for the stemmer and tokenizer"/>
+                                <TextField id="languageOverride" toolTipText="For a text index, specify the name of the field in the document that contains, for that document, the language to override the default language"/>
+                            </Div>
+                        </com.edgytech.umongo.EnsureIndexDialog>
                     </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
