@@ -369,6 +369,7 @@
                                 <TextField id="defaultLanguage" toolTipText="For a text index, the language that determines the list of stop words and the rules for the stemmer and tokenizer"/>
                                 <TextField id="languageOverride" toolTipText="For a text index, specify the name of the field in the document that contains, for that document, the language to override the default language"/>
                             </Div>
+                            <com.edgytech.umongo.DocBuilderField id="extra" toolTipText="Extra options for the index creation"/>
                         </com.edgytech.umongo.EnsureIndexDialog>
                     </MenuItem>
                     <MenuSeparator/>

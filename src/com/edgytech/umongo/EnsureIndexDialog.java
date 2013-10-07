@@ -36,7 +36,8 @@ public class EnsureIndexDialog extends FormDialog {
         background,
         weights,
         defaultLanguage,
-        languageOverride
+        languageOverride,
+        extra
     }
 
     public EnsureIndexDialog() {
@@ -80,6 +81,11 @@ public class EnsureIndexDialog extends FormDialog {
         String languageOverride = getStringFieldValue(Item.languageOverride);
         if (!languageOverride.trim().isEmpty()) {
             opts.put("language_override", languageOverride);
+        }
+
+        DBObject extra = ((DocBuilderField) getBoundUnit(Item.extra)).getDBObject();
+        if (extra != null) {
+            opts.putAll(extra);
         }
         return opts;
     }
