@@ -512,12 +512,12 @@
                             <CheckBox id="findExport" label="Export to File" toolTipText="Export to file, like mongoexport utility"/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuItem id="findOne" call="findOne" key="o" keyMod="cmd+shift">
+<!--                    <MenuItem id="findOne" call="findOne" key="o" keyMod="cmd+shift">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="foQuery" label="Query" toolTipText="Query to find by, in JSON format"/>
                             <com.edgytech.umongo.DocBuilderField id="foFields" label="Fields" toolTipText="Fields to include in results, in JSON format"/>
                         </FormDialog>
-                    </MenuItem>
+                    </MenuItem>-->
                     <MenuItem id="count" call="count" key="c" keyMod="cmd+shift">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="countQuery" label="Query" toolTipText="Query to find by, in JSON format"/>

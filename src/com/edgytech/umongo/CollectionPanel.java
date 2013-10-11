@@ -72,7 +72,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         findExplain,
         findExport,
         findHint,
-        findOne,
         foQuery,
         foFields,
         count,
@@ -283,41 +282,41 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }
     }
 
-    public void findOne(final ButtonBase button) {
-        final DBCollection col = getCollectionNode().getCollection();
-        final DBObject query = ((DocBuilderField) getBoundUnit(Item.foQuery)).getDBObject();
-        final DBObject fields = ((DocBuilderField) getBoundUnit(Item.foFields)).getDBObject();
-
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                return col.findOne(query, fields);
-            }
-
-            @Override
-            public String getNS() {
-                return col.getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "FindOne";
-            }
-
-            @Override
-            public DBObject getRoot(Object result) {
-                DBObject root = new BasicDBObject("query", query);
-                root.put("fields", fields);
-                return root;
-            }
-
-            @Override
-            public ButtonBase getButton() {
-                return button;
-            }
-        }.addJob();
-    }
+//    public void findOne(final ButtonBase button) {
+//        final DBCollection col = getCollectionNode().getCollection();
+//        final DBObject query = ((DocBuilderField) getBoundUnit(Item.foQuery)).getDBObject();
+//        final DBObject fields = ((DocBuilderField) getBoundUnit(Item.foFields)).getDBObject();
+//
+//        new DbJob() {
+//
+//            @Override
+//            public Object doRun() {
+//                return col.findOne(query, fields);
+//            }
+//
+//            @Override
+//            public String getNS() {
+//                return col.getFullName();
+//            }
+//
+//            @Override
+//            public String getShortName() {
+//                return "FindOne";
+//            }
+//
+//            @Override
+//            public DBObject getRoot(Object result) {
+//                DBObject root = new BasicDBObject("query", query);
+//                root.put("fields", fields);
+//                return root;
+//            }
+//
+//            @Override
+//            public ButtonBase getButton() {
+//                return button;
+//            }
+//        }.addJob();
+//    }
 
     public void rename(ButtonBase button) {
         final CollectionNode colNode = getCollectionNode();
@@ -572,32 +571,32 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    static void doFindOne(final DBCollection col, final DBObject query, final DBObject fields) {
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                return col.findOne(query, fields);
-            }
-
-            @Override
-            public String getNS() {
-                return col.getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "FindOne";
-            }
-
-            @Override
-            public DBObject getRoot(Object result) {
-                BasicDBObject obj = new BasicDBObject("query", query);
-                obj.put("fields", fields);
-                return obj;
-            }
-        }.addJob();
-    }
+//    static void doFindOne(final DBCollection col, final DBObject query, final DBObject fields) {
+//        new DbJob() {
+//
+//            @Override
+//            public Object doRun() {
+//                return col.findOne(query, fields);
+//            }
+//
+//            @Override
+//            public String getNS() {
+//                return col.getFullName();
+//            }
+//
+//            @Override
+//            public String getShortName() {
+//                return "FindOne";
+//            }
+//
+//            @Override
+//            public DBObject getRoot(Object result) {
+//                BasicDBObject obj = new BasicDBObject("query", query);
+//                obj.put("fields", fields);
+//                return obj;
+//            }
+//        }.addJob();
+//    }
 
     public void dropCollection(ButtonBase button) {
         final CollectionNode colNode = getCollectionNode();
