@@ -1,17 +1,17 @@
 /**
- *      Copyright (C) 2010 EdgyTech Inc.
+ * Copyright (C) 2010 EdgyTech LLC.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.edgytech.umongo;
 
@@ -24,6 +24,16 @@ import java.util.ArrayList;
 import java.util.List;
 import com.edgytech.umongo.MainMenu.Item;
 import com.mongodb.MongoClient;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Map.Entry;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  *
@@ -38,7 +48,9 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         exit,
         preferences,
         prefDialog,
-        importFile
+        importFile,
+        about,
+        aboutTextArea
     }
 
     public MainMenu() {
@@ -64,7 +76,6 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         final DocumentDeserializer dd = dia.getDocumentDeserializer();
 
         new DbJob() {
-
             @Override
             public Object doRun() throws Exception {
                 return dd.iterator();
@@ -127,7 +138,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
             if (dbs.size() == 0) {
                 dbs = null;
             }
-            
+
             String user = dialog.getStringFieldValue(ConnectDialog.Item.user).trim();
             String password = dialog.getStringFieldValue(ConnectDialog.Item.password);
             if (!user.isEmpty()) {
@@ -140,12 +151,11 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
                     mongo.getDB("admin").authenticate(user, password.toCharArray());
                 }
             }
-            
+
             final Mongo fmongo = mongo;
             final List<String> fdbs = dbs;
             // doing in background can mean concurrent modification, but dialog is modal so unlikely
             progress.show(new ProgressDialogWorker(progress) {
-
                 @Override
                 protected void finished() {
                 }
@@ -164,5 +174,43 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
 
     public void exit(ButtonBase button) {
         UMongo.instance.windowClosing(null);
+    }
+
+    public void about(ButtonBase button) throws IOException {
+        FormDialog dia = (FormDialog) button.getDialog();
+
+        StringBuilder text = new StringBuilder();
+        text.append("<html>");
+
+        Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources("META-INF/MANIFEST.MF");
+        while (urls.hasMoreElements()) {
+            URL url = urls.nextElement();
+            if (!url.getPath().contains("umongo")) {
+                continue;
+            }
+            
+            String jar = url.getPath();
+            int end = jar.indexOf(".jar");
+            if (end < 0)
+                continue;
+            jar = jar.substring(0, end + 4);
+            text.append("<b>").append(jar).append("</b>").append(":<br/>");
+//        text.append(url.getPath()).append("<br/>");
+//        InputStream is = getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF");
+//        BufferedReader d = new BufferedReader(new InputStreamReader(is));
+            BufferedReader d = new BufferedReader(new InputStreamReader(url.openStream()));
+            String str;
+            while ((str = d.readLine()) != null) {
+                text.append(str).append("<br/>");
+            }
+            text.append("<br/>");
+//        for (Entry e : man.getMainAttributes().entrySet()) {
+//            text.append(e.getKey()).append(": ").append(e.getValue()).append("<br/>");
+//        }
+        }
+        text.append("</html>");
+        setStringFieldValue(Item.aboutTextArea, text.toString());
+//        is.close();
+        dia.show();
     }
 }

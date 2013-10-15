@@ -4,7 +4,8 @@ pkgdir=`dirname $0`
 pkgdir=`dirname pkgdir`
 echo Moving to package folder $pkgdir
 cd $pkgdir
-version=`cat version`
+
+version=`cat ../manifest.mf | grep Bundle-Version | cut -d " " -f2`
 vdash=`echo $version | sed -e s/'\.'/-/g`
 
 cp ../dist/lib/*.jar ../lib/

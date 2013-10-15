@@ -42,9 +42,13 @@ $ ssh -D 9000 -i key.pem hostThatCanConnectToDB -N
 
 Then make sure you select a SOCKS proxy of "localhost:9000" in the connection settings.
 
-** Compile **
+** Building UMongo **
 
-Right now, you can only compile the app using the netbeans project, which should be improved soon.
+To compile:
+- run "ant jar" from the base directory
+
+To package the application:
+- go to the "package" folder and run "./package.sh"
 
 --
-EdgyTech Inc
+EdgyTech LLC

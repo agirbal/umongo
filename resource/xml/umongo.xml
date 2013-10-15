@@ -999,8 +999,21 @@
                 </MenuItem>
             </Menu>
             <Menu id="help" alt="h">
-                <MenuItem id="about" alt="a">
-                    <InfoDialog signIcon="edgytech-small.png" signIconGroup="edgytechIcons" signBorderColor="128;128;128" file="/html/about.html"/>
+                <MenuItem id="about" alt="a" call="about" showDialog="false">
+                    <FormDialog buttons="OK" signIcon="edgytech-small.png" signIconGroup="edgytechIcons" signBorderColor="128;128;128" preferredSize="600;400">
+                        <Zone>
+                            <Div axis="Y" zone="NORTH">
+                                <Text field="false" value="UMongo by EdgyTech LLC."/>
+                            </Div>
+                            <Scroller zone="CENTER">
+                                <Text id="aboutTextArea" field="false"/>
+                            </Scroller>
+                            <Div axis="Y" zone="SOUTH">
+                                <Text field="false" value="Copyright (C) 2010 EdgyTech LLC."/>
+                            </Div>
+                        </Zone>
+                    </FormDialog>
+                    <!--<InfoDialog signIcon="edgytech-small.png" signIconGroup="edgytechIcons" signBorderColor="128;128;128" file="/html/about.html"/>-->
                 </MenuItem>
             </Menu>
         </com.edgytech.umongo.MainMenu>

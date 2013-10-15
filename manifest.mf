@@ -1,3 +1,9 @@
 Manifest-Version: 1.0
+Bundle-Name: UMongo
+Bundle-Version: 1.6.0
+Bundle-Vendor: EdgyTech, LLC
+Bundle-ContactAddress: http://www.edgytech.com/umongo
+Bundle-SymbolicName: com.edgytech.umongo
+Bundle-Description: UMongo GUI MongoDB browser
 X-COMMENT: Main-Class will be added automatically by build
 
