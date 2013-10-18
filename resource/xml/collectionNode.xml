@@ -17,7 +17,7 @@
         <MenuItem id="ensureIndex" bind="globalStore.collectionPanel.menu.ensureIndex"/>
         <MenuSeparator/>
         <MenuItem id="find" bind="globalStore.collectionPanel.menu.find"/>
-        <MenuItem id="findOne" bind="globalStore.collectionPanel.menu.findOne"/>
+        <!--<MenuItem id="findOne" bind="globalStore.collectionPanel.menu.findOne"/>-->
         <MenuItem id="count" bind="globalStore.collectionPanel.menu.count"/>
         <MenuItem id="insert" bind="globalStore.collectionPanel.menu.insert"/>
         <MenuItem id="save" bind="globalStore.collectionPanel.menu.save"/>
