@@ -56,11 +56,18 @@ public class ReplSetNode extends BaseTreeNode {
         // need to make a query to update server list
         try {
             mongo.getDatabaseNames();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, null, e);
+        }
 
         List<ServerAddress> addrs = mongo.getServerAddressList();
         for (ServerAddress addr : addrs) {
-            addChild(new ServerNode(addr, mongo.getMongoOptions()));
+            try {
+                // this will create new Mongo instance, catch any exception
+                addChild(new ServerNode(addr, mongo.getMongoOptions()));
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING, null, e);
+            }
         }
     }
 
