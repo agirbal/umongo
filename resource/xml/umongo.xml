@@ -715,6 +715,10 @@
                             <IntField id="rsFreezeTime" label="Freeze Time (Sec)" toolTipText="Time to freeze for, in seconds. If 0, it will unfreeze the server." value="60"/>
                         </FormDialog>
                     </MenuItem>
+                    <MenuSeparator/>
+                    <MenuItem id="rsRemove" call="rsRemove" label="Remove" toolTipText="Remove this server from the replica set">
+                        <ConfirmDialog id="rsRemoveConfirm" text="Are you sure that you want to remove this server from the replica set?"/>
+                    </MenuItem>
                 </Menu>
             </MenuBar>
             <Zone zone="CENTER">

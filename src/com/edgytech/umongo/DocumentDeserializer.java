@@ -143,8 +143,9 @@ public class DocumentDeserializer {
             if (quote.equals(sep)) {
                 int qpos = m.start();
                 // only turn on quote mode if previous char was the delimiter
-                if (qpos == pos)
+                if (qpos == pos) {
                     quoteMode = !quoteMode;
+                }
             } else if (!quoteMode && delimiter.equals(sep)) {
                 int toPos = m.start();
                 list.add(s.substring(pos, toPos));
@@ -183,7 +184,21 @@ public class DocumentDeserializer {
                 callback = new DefaultDBCallback(null);
                 decoder = new BasicBSONDecoder();
             }
+
+            if (format == Format.JSON_ARRAY) {
+                String line = br.readLine();
+                BasicDBList list = (BasicDBList) JSON.parse(line);
+                iterator = list.iterator();
+            }
+
             first = false;
+        }
+
+        if (format == Format.JSON_ARRAY) {
+            if (iterator == null || !iterator.hasNext()) {
+                return null;
+            }
+            return (DBObject) iterator.next();
         }
 
         DBObject obj = null;
@@ -202,11 +217,6 @@ public class DocumentDeserializer {
                 }
             }
 
-            if (format == Format.JSON_ARRAY && iterator == null) {
-                BasicDBList list = (BasicDBList) JSON.parse(line);
-                iterator = list.iterator();
-            }
-
             if (format == Format.CSV) {
                 List<String> values = splitByCommasNotInQuotes(line);
                 if (template == null) {
@@ -220,10 +230,6 @@ public class DocumentDeserializer {
                 } else {
                     obj = (BasicDBObject) template.copy();
                     fillInTemplate(obj, values);
-                }
-            } else if (format == Format.JSON_ARRAY) {
-                if (iterator.hasNext()) {
-                    obj = (DBObject) iterator.next();
                 }
             } else {
                 obj = (DBObject) JSON.parse(line);
@@ -327,19 +333,21 @@ public class DocumentDeserializer {
                     obj.put(field, val);
                 }
             } else {
-                    // this is a static value
-                    obj.put(field, val);
-                }
+                // this is a static value
+                obj.put(field, val);
+            }
         }
     }
 
     void setDelimiter(String delimiter) {
-        if (!delimiter.trim().isEmpty())
+        if (!delimiter.trim().isEmpty()) {
             this.delimiter = delimiter.substring(0, 1);
+        }
     }
 
     void setQuote(String quote) {
-        if (!quote.trim().isEmpty())
+        if (!quote.trim().isEmpty()) {
             this.quote = quote.substring(0, 1);
+        }
     }
 }
