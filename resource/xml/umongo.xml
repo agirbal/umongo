@@ -113,6 +113,16 @@
                 <com.edgytech.umongo.DocBuilderField id="template" toolTipText="Optional, the document template"/>
             </Div>
         </com.edgytech.umongo.ImportDialog>
+        <com.edgytech.umongo.ReplicaDialog id="replicaDialog" helpFile="/html/replicaHelp.html">
+            <TextField id="host" label="Host" toolTipText="Name of host, in the same form as the current configuration's hosts" nonEmpty="true"/>
+            <CheckBox id="arbiterOnly" label="Arbiter only" toolTipText="Whether this replica should be an arbiter only, with no data" value="false"/>
+            <CheckBox id="hidden" toolTipText="If true, the replica will not be seen by the client applications (e.g. backup only server)" value="false"/>
+            <DoubleSpinner id="priority" toolTipText="Priority of the replica to become primary, between 0 and 1000 (1 is default, 0 means never primary)" minValue="0" maxValue="1000" value="1"/>
+            <com.edgytech.umongo.DocBuilderField id="tags" toolTipText="An object representing tags for this server"/>
+            <IntSpinner id="slaveDelay" minValue="0" value="0" toolTipText="Time in second to remain behind the primary"/>
+            <IntSpinner id="votes" minValue="0" value="1" toolTipText="Number of votes for this replica. This option should generally be set to 1."/>
+            <CheckBox id="ignoreIndexes" toolTipText="If true, the replica will not build indexes (e.g. backup only server)" value="false"/>
+        </com.edgytech.umongo.ReplicaDialog>
         <ConfirmDialog id="lockingOperationDialog" text="Are you sure you want to run this command? It can potentially lock the db for a long time."/>
         <com.edgytech.umongo.MongoPanel id="mongoPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
@@ -252,7 +262,7 @@
                         </FormDialog>
                         <ConfirmDialog id="userChange" text="Do you wish to proceed with the User change?"/>
                         <com.edgytech.umongo.UserDialog id="userDialog" buttons="OK_CANCEL" okLabel="Save" save="false">
-<!--                            <Text id="userRO" field="true" label="User" toolTipText="the username" visible="false"/>-->
+                            <!--                            <Text id="userRO" field="true" label="User" toolTipText="the username" visible="false"/>-->
                             <TextField id="user" value="" toolTipText="the username" nonEmpty="true"/>
                             <PasswordField id="password" value="" toolTipText="the password" nonEmpty="true"/>
                             <TextField id="userSource" value="" toolTipText="Optional, A string that holds the name of the database that contains the credentials for the user. Use $external for external source."/>
@@ -512,7 +522,7 @@
                             <CheckBox id="findExport" label="Export to File" toolTipText="Export to file, like mongoexport utility"/>
                         </FormDialog>
                     </MenuItem>
-<!--                    <MenuItem id="findOne" call="findOne" key="o" keyMod="cmd+shift">
+                    <!--                    <MenuItem id="findOne" call="findOne" key="o" keyMod="cmd+shift">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="foQuery" label="Query" toolTipText="Query to find by, in JSON format"/>
                             <com.edgytech.umongo.DocBuilderField id="foFields" label="Fields" toolTipText="Fields to include in results, in JSON format"/>
@@ -611,7 +621,7 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuItem id="reIndex" call="reIndex"/>
-<!--                    <MenuItem id="fixCollection" call="fixCollection" showDialog="false">
+                    <!--                    <MenuItem id="fixCollection" call="fixCollection" showDialog="false">
                         <FormDialog id="fcDialog">
                             <ComboBox id="fcSrcMongo" label="Source Mongo" toolTipText="Pick one of the other Mongo instances as source"/>
                             <CheckBox id="fcUpsert" label="Upsert" toolTipText="If checked, operation will be upsert instead of insert"/>
@@ -716,6 +726,7 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
+                    <MenuItem id="rsReconfigure" call="rsReconfigure" label="Reconfigure" toolTipText="Reconfigure this server in the replica set"/>
                     <MenuItem id="rsRemove" call="rsRemove" label="Remove" toolTipText="Remove this server from the replica set">
                         <ConfirmDialog id="rsRemoveConfirm" text="Are you sure that you want to remove this server from the replica set?"/>
                     </MenuItem>
@@ -727,7 +738,7 @@
                     <Text id="address" field="true"/>
                     <Text id="replication" field="true" toolTipText="Replication status" icon="overlay/tick_circle.png" iconGroup="icons"/>
                     <Text id="maxObjectSize" field="true"/>
-<!--                    <Text id="journaling" field="true" icon="overlay/shield_blue.png" iconGroup="icons"/>-->
+                    <!--                    <Text id="journaling" field="true" icon="overlay/shield_blue.png" iconGroup="icons"/>-->
                 </Div>
             </Zone>
         </com.edgytech.umongo.ServerPanel>
@@ -737,6 +748,9 @@
                 <Menu id="replSet" label="ReplicaSet">
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
                     <MenuSeparator/>
+                    <MenuItem id="addReplica" call="addReplica"/>
+                </Menu>
+                <Menu id="command">
                     <MenuItem id="initiate" call="initiate">
                         <com.edgytech.umongo.DocBuilderField id="initConfig" label="Config" toolTipText="An object representing the configuration. Leave empty to start with a single server."/>
                     </MenuItem>
@@ -745,28 +759,10 @@
                             <com.edgytech.umongo.DocBuilderField id="reconfConfig" label="Config" toolTipText="An object representing the new configuration." nonEmpty="true"/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuItem id="addReplica" call="addReplica">
-                        <FormDialog>
-                            <TextField id="arHost" label="Host" toolTipText="Name of host to add to the replica set" nonEmpty="true"/>
-                            <CheckBox id="arArbiterOnly" label="Arbiter only" toolTipText="Whether this replica should be an arbiter only, with no data" value="false"/>
-                            <CheckBox id="arHidden" label="Hidden" toolTipText="If true, the replica will not be seen by the client applications (e.g. backup only server)" value="false"/>
-                            <DoubleSpinner id="arPriority" label="Priority" toolTipText="Priority of the replica to become primary, between 0 and 1000 (1 is default, 0 means never primary)" minValue="0" maxValue="1000" value="1"/>
-                            <com.edgytech.umongo.DocBuilderField id="arTags" label="Tags" toolTipText="An object representing tags for this server"/>
-                            <IntSpinner id="arSlaveDelay" label="Slave delay" minValue="0" value="0" toolTipText="Time in second to remain behind the primary"/>
-                            <IntSpinner id="arVotes" label="Votes" minValue="0" value="1" toolTipText="Number of votes for this replica. This option should generally be set to 1."/>
-                            <CheckBox id="arIgnoreIndexes" label="Ignore indexes" toolTipText="If true, the replica will not build indexes (e.g. backup only server)" value="false"/>
-                        </FormDialog>
-                    </MenuItem>
-                    <MenuItem id="removeReplica" call="removeReplica" showDialog="false">
-                        <FormDialog>
-                            <ComboBox id="rrHost" label="Host" items="None" toolTipText="Name of host to remove"/>
-                        </FormDialog>
-                    </MenuItem>
-                </Menu>
-                <Menu id="command">
-                    <MenuItem id="rsConfig" call="rsConfig" label="Config"/>
-                    <MenuItem id="rsStatus" call="rsStatus" label="Status"/>
-                    <MenuItem id="rsOplogInfo" call="rsOplogInfo" label="Oplog Info"/>
+                    <MenuSeparator/>
+                    <MenuItem id="rsConfig" call="rsConfig" label="Get Configuration"/>
+                    <MenuItem id="rsStatus" call="rsStatus" label="Get Status"/>
+                    <MenuItem id="rsOplogInfo" call="rsOplogInfo" label="Get Oplog Info"/>
                 </Menu>
                 <Menu id="tools">
                     <MenuItem id="compareReplicas" call="compareReplicas">
@@ -780,7 +776,6 @@
             <Zone zone="CENTER">
                 <Div zone="NORTH" gap="true" bgColor="255;255;255">
                     <Text id="name" field="true"/>
-                    <Text id="maxObjectSize" field="true"/>
                     <Text id="replicas" field="true"/>
                 </Div>
             </Zone>
@@ -823,7 +818,7 @@
                 <Menu id="tools">
                     <MenuItem id="regenConfigDB" label="Regenerate Config DB" call="regenConfigDB">
                         <FormDialog okLabel="start">
-<!--                            <TextField id="regenServers" label="Servers" toolTipText="Comma-separated list of servers (host:port) containing the data. You must provide at least one available server per shard."/> -->
+                            <!--                            <TextField id="regenServers" label="Servers" toolTipText="Comma-separated list of servers (host:port) containing the data. You must provide at least one available server per shard."/> -->
                             <TextArea id="regenServers" label="Servers" rows="10" columns="50" editable="true" toolTipText="List of servers containing the data, one by line, in format host:port/shardName. You must provide at least one available server per shard." nonEmpty="true"/>
                             <TextField id="regenDB" label="Database" toolTipText="Database to scan" nonEmpty="true"/>
                             <TextField id="regenCollection" label="Collection" toolTipText="Collection to scan" nonEmpty="true"/>
@@ -931,7 +926,7 @@
                             <ComboBox id="socketType" value="0" items="Plain;SSL;SSL no validation" toolTipText="Type of socket to use."/>
                             <IntSpinner id="connectTimeout" minValue="0" value="2000" toolTipText="Timeout for the socket connect operation"/>
                             <IntSpinner id="socketTimeout" minValue="0" value="0" toolTipText="Timeout for the socket read/write operations"/>
-<!--                            <CheckBox id="autoConnectRetry" value="false" toolTipText="If true, then driver will keep retrying to connect to the server in case of connection failure"/>-->
+                            <!--                            <CheckBox id="autoConnectRetry" value="false" toolTipText="If true, then driver will keep retrying to connect to the server in case of connection failure"/>-->
                             <CheckBox id="safeWrites" value="true" toolTipText="Sets the global WriteConcern as SAFE, which means that writes are acknowledged by the server"/>
                             <CheckBox id="secondaryReads" value="false" toolTipText="Allows the read operations to go to secondary servers"/>
                         </Div>
@@ -939,7 +934,7 @@
                             <ComboBox id="proxyType" label="Type" value="0" items="None;SOCKS" toolTipText="Type of proxy"/>
                             <TextField id="proxyHost" label="Host" value="localhost" toolTipText="The proxy host"/>
                             <IntSpinner id="proxyPort" label="Port" minValue="0" value="9000" toolTipText="The proxy port"/>
-<!--                            <TextField id="proxyUser" toolTipText="The proxy username"/>
+                            <!--                            <TextField id="proxyUser" toolTipText="The proxy username"/>
                             <PasswordField id="proxyPassword" toolTipText="The proxy password"/>-->
                         </Div>
                     </com.edgytech.umongo.ConnectDialog>
@@ -1022,14 +1017,14 @@
             </Menu>
         </com.edgytech.umongo.MainMenu>
         <Zone id="mainZone" bgColor="255;255;255">
-<!--            <com.edgytech.umongo.MainToolBar id="mainToolBar" zone="NORTH" minHeight="50" prefHeight="50" start="start" stop="stop" contexts="Connect">
+            <!--            <com.edgytech.umongo.MainToolBar id="mainToolBar" zone="NORTH" minHeight="50" prefHeight="50" start="start" stop="stop" contexts="Connect">
                 <ToolBarSeparator/>
                 <MemoryBar id="memBar" focusable="false" maximumSize="120;-1"/>
             </com.edgytech.umongo.MainToolBar> -->
             <SplitPane axis="X" zone="CENTER" resizeWeight="0.2" bgColor="255;255;255">
                 <Scroller id="treeScroll" preferredSize="125;-1" maximumSize="125;-1" verticalSpeed="50">
                     <Tree id="tree" label="Mongo Instances" bgColor="255;255;255">
-<!-- pop up doesnt work well on root                       <PopUpMenu>
+                        <!-- pop up doesnt work well on root                       <PopUpMenu>
                             <MenuItem id="connect" bind="frame.mainMenu.file.connect"/>
                         </PopUpMenu> -->
                     </Tree>

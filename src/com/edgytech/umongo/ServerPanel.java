@@ -17,6 +17,7 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.EnumListener;
+import com.edgytech.swingfast.InfoDialog;
 import com.edgytech.swingfast.Text;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
@@ -52,6 +53,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         rsFreeze,
         rsFreezeTime,
         rsRemove,
+        rsReconfigure,
         isMaster,
         serverStatus,
         serverBuildInfo,
@@ -248,5 +250,54 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         final int opid = getIntFieldValue(Item.killOpId);
         final DBObject query = new BasicDBObject("op", opid);
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query);
+    }
+    
+    public void rsRemove(ButtonBase button) throws Exception {
+        ReplSetNode replset = (ReplSetNode) getServerNode().getParentNode();
+        final DBCollection col = replset.getMongo().getDB("local").getCollection("system.replset");
+        DBObject config = col.findOne();
+        
+        BasicDBList members = (BasicDBList) config.get("members");
+        int i = 0;
+        String myhost = getServerNode().getServerAddress().getHost() + ":" + getServerNode().getServerAddress().getPort();
+        for (; i < members.size(); ++i) {
+            if (myhost.equals(((DBObject)members.get(i)).get("host")))
+                break;
+        }
+        
+        if (i == members.size()) {
+            throw new Exception("No such server in configuration");
+        }
+        
+        members.remove(i);
+        ReplSetPanel.reconfigure(replset, config);
+    }
+    
+    public void rsReconfigure(ButtonBase button) throws Exception {
+        ReplSetNode replset = (ReplSetNode) getServerNode().getParentNode();
+        final DBCollection col = replset.getMongo().getDB("local").getCollection("system.replset");
+        DBObject config = col.findOne();
+        
+        BasicDBList members = (BasicDBList) config.get("members");
+        int i = 0;
+        String myhost = getServerNode().getServerAddress().getHost() + ":" + getServerNode().getServerAddress().getPort();
+        for (; i < members.size(); ++i) {
+            if (myhost.equals(((DBObject)members.get(i)).get("host")))
+                break;
+        }
+        
+        if (i == members.size()) {
+            throw new Exception("No such server in configuration");
+        }
+        
+        ReplicaDialog dia = UMongo.instance.getGlobalStore().getReplicaDialog();
+        BasicDBObject oldConf = (BasicDBObject) members.get(i);
+        dia.updateFromReplicaConfig(oldConf);
+        if (!dia.show())
+            return;
+        BasicDBObject conf = dia.getReplicaConfig(oldConf.getInt("_id"));
+        members.put(i, conf);
+
+        ReplSetPanel.reconfigure(replset, config);
     }
 }

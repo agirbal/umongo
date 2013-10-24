@@ -39,23 +39,12 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     enum Item {
         refresh,
         name,
-        maxObjectSize,
         replicas,
         initiate,
         initConfig,
         reconfigure,
         reconfConfig,
         addReplica,
-        arHost,
-        arArbiterOnly,
-        arHidden,
-        arPriority,
-        arVotes,
-        arTags,
-        arSlaveDelay,
-        arIgnoreIndexes,
-        removeReplica,
-        rrHost,
         rsConfig,
         rsStatus,
         rsOplogInfo,
@@ -75,7 +64,6 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     protected void updateComponentCustom(JPanel comp) {
         try {
             setStringFieldValue(Item.name, getReplSetNode().getName());
-            setStringFieldValue(Item.maxObjectSize, String.valueOf(getReplSetNode().getMongo().getReplicaSetStatus().getMaxBsonObjectSize()));
             String replicas = "";
             for (String replica : getReplSetNode().getReplicaNames()) {
                 replicas += replica + ",";
@@ -139,19 +127,18 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
             return;
         
         DBObject config = ((DocBuilderField)getBoundUnit(Item.reconfConfig)).getDBObject();
-        reconfigure(config);
+        reconfigure(getReplSetNode(), config);
     }
 
-    public void reconfigure(DBObject config) {
-        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
+    static public void reconfigure(final ReplSetNode rsNode, DBObject config) {
+        final DBCollection col = rsNode.getMongo().getDB("local").getCollection("system.replset");
         DBObject oldConf = col.findOne();
         int version = ((Integer) oldConf.get("version")) + 1;
         config.put("version", version);
         
         // reconfig usually triggers an error as connections are bounced.. try to absorb it
         final DBObject cmd = new BasicDBObject("replSetReconfig", config);
-        final DB admin = getReplSetNode().getMongo().getDB("admin");
-        final ReplSetNode node = getReplSetNode();
+        final DB admin = rsNode.getMongo().getDB("admin");
 
         new DbJob() {
 
@@ -161,7 +148,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
                 try {
                     res = admin.command(cmd);
                 } catch (MongoException.Network e) {
-                    res = "Operation was likely successful, but connection error: " + e.toString();
+                    res = new BasicDBObject("msg", "Operation was likely successful, but connection was bounced");
                 }
                 
                 try {
@@ -192,7 +179,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
             public void wrapUp(Object res) {
                 // try to restructure but changes arent seen for a few seconds
                 super.wrapUp(res);
-                node.structureComponent();
+                rsNode.structureComponent();
             }
         }.addJob();
     }
@@ -213,62 +200,12 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
                 max = id;
         }
         
-        DBObject member = new BasicDBObject("_id", max + 1);
-        member.put("host", getStringFieldValue(Item.arHost));
-        boolean arb = getBooleanFieldValue(Item.arArbiterOnly);
-        if (arb) member.put("arbiterOnly", true);
-        boolean hidden = getBooleanFieldValue(Item.arHidden);
-        if (hidden) member.put("hidden", true);
-        boolean ignoreIndexes = getBooleanFieldValue(Item.arIgnoreIndexes);
-        if (ignoreIndexes) member.put("buildIndexes", false);
-        double priority = getDoubleFieldValue(Item.arPriority);
-        if (priority != 1.0) member.put("priority", priority);
-        int slaveDelay = getIntFieldValue(Item.arSlaveDelay);
-        if (slaveDelay > 0) member.put("slaveDelay", slaveDelay);
-        int votes = getIntFieldValue(Item.arVotes);
-        if (votes != 1) member.put("votes", votes);
-        DBObject tags = ((DocBuilderField)getBoundUnit(Item.arTags)).getDBObject();
-        if (tags != null) member.put("tags", tags);
-        members.add(member);
-        reconfigure(config);
-    }
-    
-    public void removeReplica(ButtonBase button) {
-        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
-        DBObject config = col.findOne();
-        if (config == null) {
-            new InfoDialog(null, "reconfig error", null, "No existing replica set configuration").show();
+        ReplicaDialog dia = UMongo.instance.getGlobalStore().getReplicaDialog();
+        if (!dia.show())
             return;
-        }
-
-        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.removeReplica)).getDialog();
-        ComboBox combo = (ComboBox) getBoundUnit(Item.rrHost);
-        combo.value = 0;
-        combo.items = getReplSetNode().getReplicaNames();
-        combo.structureComponent();
-
-        if (!dialog.show())
-            return;
-        
-        String host = getStringFieldValue(Item.rrHost);
-        
-        if (!new ConfirmDialog(null, "Remove Replica", null, "Are you sure you want to remove " + host + "? This server should be stopped before removing.").show())
-            return;
-        
-        BasicDBList members = (BasicDBList) config.get("members");
-        int i = 0;
-        for (; i < members.size(); ++i) {
-            if (host.equals(((DBObject)members.get(i)).get("host")))
-                break;
-        }
-        
-        if (i == members.size()) {
-            new InfoDialog(null, "reconfig error", null, "Cannot remove replica " + host).show();
-            return;
-        }    
-        
-        members.remove(i);
-        reconfigure(config);
+        BasicDBObject conf = dia.getReplicaConfig(max + 1);
+        members.add(conf);
+        reconfigure(getReplSetNode(), config);
     }
 
     public void compareReplicas(ButtonBase button) {

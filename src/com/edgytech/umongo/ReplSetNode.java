@@ -60,11 +60,21 @@ public class ReplSetNode extends BaseTreeNode {
             getLogger().log(Level.WARNING, null, e);
         }
 
-        List<ServerAddress> addrs = mongo.getServerAddressList();
-        for (ServerAddress addr : addrs) {
+        // need to pull servers from configuration to see hidden
+//        List<ServerAddress> addrs = mongo.getServerAddressList();
+        final DBCollection col = mongo.getDB("local").getCollection("system.replset");
+        DBObject config = col.findOne();
+        if (config == null) {
+            getLogger().log(Level.WARNING, "No replica set configuration found");
+            return;
+        }
+        
+        BasicDBList members = (BasicDBList) config.get("members");
+        for (int i = 0; i < members.size(); ++i) {
+            String host = (String) ((DBObject)members.get(i)).get("host");
             try {
                 // this will create new Mongo instance, catch any exception
-                addChild(new ServerNode(addr, mongo.getMongoOptions()));
+                addChild(new ServerNode(host, mongo.getMongoOptions()));
             } catch (Exception e) {
                 getLogger().log(Level.WARNING, null, e);
             }
