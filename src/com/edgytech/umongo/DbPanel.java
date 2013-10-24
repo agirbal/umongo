@@ -74,7 +74,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         evalCode,
         evalNoLock,
         dbHash,
-        options,
+        readWriteOptions,
         authenticate,
         authUser,
         authPassword,
@@ -374,7 +374,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void options(ButtonBase button) {
+    public void readWriteOptions(ButtonBase button) {
         final DB db = getDbNode().getDb();
         OptionDialog od = UMongo.instance.getGlobalStore().getOptionDialog();
         od.update(db.getOptions(), db.getWriteConcern(), db.getReadPreference());

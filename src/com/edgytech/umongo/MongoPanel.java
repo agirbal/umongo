@@ -48,7 +48,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         serverStatus,
         fsync,
         fsyncAndLock,
-        options,
+        readWriteOptions,
         refresh,
         close,
         createDB,
@@ -176,7 +176,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void options(ButtonBase button) {
+    public void readWriteOptions(ButtonBase button) {
         Mongo mongo = getMongoNode().getMongo();
         OptionDialog od = UMongo.instance.getGlobalStore().getOptionDialog();
         od.update(mongo.getOptions(), mongo.getWriteConcern(), mongo.getReadPreference());

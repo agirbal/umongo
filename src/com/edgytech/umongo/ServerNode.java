@@ -109,7 +109,7 @@ public class ServerNode extends BaseTreeNode {
             }
             
             if (stats.getBoolean("hidden", false)) {
-                addOverlay("overlay/hidden.png");               
+                addOverlay("overlay/hidden.png");
             }
 
     //        if (res.containsField("dur")) {

@@ -143,6 +143,14 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
         }
     }
 
+    public BasicDBObject getDescription(DBObject root) {
+        BasicDBObject sroot = new BasicDBObject();
+        sroot.put("ns", getNS());
+        sroot.put("name", getShortName());
+        sroot.put("details", root);
+        return sroot;
+    }
+    
     public void wrapUp(Object res) {
         UMongo.instance.removeJob(this);
         
@@ -158,10 +166,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
         boolean log = UMongo.instance.isLoggingOn();
         boolean logRes = UMongo.instance.isLoggingFirstResultOn();
 
-        BasicDBObject sroot = new BasicDBObject();
-        sroot.put("ns", getNS());
-        sroot.put("name", getShortName());
-        sroot.put("details", getRoot(res));
+        BasicDBObject sroot = getDescription(getRoot(res));
         
         BasicDBObject logObj = null;
         if (log) {

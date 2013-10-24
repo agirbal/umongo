@@ -493,7 +493,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
 
             @Override
             public String getShortName() {
-                return "Get More";
+                return "Find";
             }
 
             @Override
@@ -503,7 +503,8 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
                     // res should be null
                     // should have a cursor id now
                     if (dbcursor != null) {
-                        getTree().label = DocView.this.job.getRoot(dbcursor).toString();
+                        BasicDBObject desc = getDescription(DocView.this.job.getRoot(dbcursor));
+                        getTree().label = desc.toString();
                     }
                     getTree().structureComponent();
                     getTree().expandNode(getTree().getTreeNode());

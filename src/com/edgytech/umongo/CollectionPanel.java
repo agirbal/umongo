@@ -100,7 +100,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         grpInitialValue,
         grpReduce,
         grpFinalize,
-        options,
+        readWriteOptions,
         insert,
         insertDoc,
         insertCount,
@@ -263,6 +263,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                     }
                     DBCursor res = (DBCursor) result;
                     BasicDBObject obj = new BasicDBObject("cursorId", res.getCursorId());
+                    obj.put("server", res.getServerAddress().toString());
                     obj.put("query", res.getQuery());
                     obj.put("fields", res.getKeysWanted());
                     obj.put("options", res.getOptions());
@@ -627,7 +628,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void options(ButtonBase button) {
+    public void readWriteOptions(ButtonBase button) {
         final DBCollection col = getCollectionNode().getCollection();
         OptionDialog od = UMongo.instance.getGlobalStore().getOptionDialog();
         od.update(col.getOptions(), col.getWriteConcern(), col.getReadPreference());

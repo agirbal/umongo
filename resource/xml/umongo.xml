@@ -63,13 +63,14 @@
                 </Div>
                 <Div id="writeConcern">
                     <IntSpinner id="writeFactor" minValue="0" value="0" toolTipText="Sets the number of servers that write should be acknowledged from. 0 means 'fire-and-forget'."/>
-                    <TextField id="writePolicy" toolTipText="Sets the write policy. If set, will override the write factor number."/>
+                    <TextField id="writePolicy" toolTipText="Sets the write policy (e.g. 'majority'). If set, will override the write factor number."/>
                     <IntSpinner id="writeTimeout" minValue="0" value="0" toolTipText="Timeout in milliseconds for primary server to ensure that write operation was fulfilled on all servers."/>
-                    <CheckBox id="fsync" value="false" toolTipText="Forces syncing of memory to disk on the server before acknowledgment of write operation success."/>
+                    <!--<CheckBox id="fsync" value="false" toolTipText="Forces syncing of memory to disk on the server before acknowledgment of write operation success."/>-->
                     <CheckBox id="jsync" value="false" toolTipText="Waits that the data has been commited to the journal on disk."/>
                 </Div>
                 <Div id="readPreference">
                     <ComboBox id="rpPreference" label="Read Preference" items="Primary;Primary Preferred;Secondary;Secondary Preferred;Nearest" value="0" toolTipText="The read preference mode. Primary to read from master, Secondary to read from slaves."/>
+                    <com.edgytech.umongo.DocBuilderField id="rpTag" label="Tag" toolTipText="Optional, the tag to use in combination with the read preference"/>
                 </Div>
             </TabbedDiv>
         </com.edgytech.umongo.OptionDialog>
@@ -166,6 +167,8 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="tools">
+                    <MenuItem id="readWriteOptions" call="readWriteOptions"/>
+                    <MenuSeparator/>
                     <MenuItem id="fsync" call="fsync"/>
                     <CheckBoxMenuItem id="fsyncAndLock" call="fsyncAndLock"/>
                     <MenuSeparator/>
@@ -180,8 +183,6 @@
                             <CheckBox id="cloneDBSlaveOk" label="Slave Ok" toolTipText="Allow the database to be cloned from a slave"/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuSeparator/>
-                    <MenuItem id="options" call="options"/>
                 </Menu>
             </MenuBar>
             <Zone zone="CENTER">
@@ -323,6 +324,8 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="tools">
+                    <MenuItem id="readWriteOptions" call="readWriteOptions"/>
+                    <MenuSeparator/>
                     <MenuItem id="profile" call="profile">
                         <FormDialog>
                             <ComboBox id="profileLevel" label="Level" items="0 - None;1 - Slow Queries;2 - All Queries" value="0" toolTipText="Profiling level for the database."/>
@@ -344,8 +347,6 @@
                             <TextField id="findJSFunctionName" label="Name" toolTipText="Name of the function. Leave Empty to get all functions."/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuSeparator/>
-                    <MenuItem id="options" call="options"/>
                 </Menu>
             </MenuBar>
             <Zone zone="CENTER">
@@ -603,6 +604,8 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="tools">
+                    <MenuItem id="readWriteOptions" call="readWriteOptions"/>
+                    <MenuSeparator/>
                     <MenuItem id="validate" call="validate">
                         <FormDialog>
                             <CheckBox id="validateFull" label="Full" toolTipText="Turns on full validation, which is slower"/>
@@ -628,7 +631,6 @@
                         </FormDialog>
                     </MenuItem>-->
                     <MenuSeparator/>
-                    <MenuItem id="options" call="options"/>
                     <CheckBoxMenuItem id="lazyDecoding" value="false"/>
                 </Menu>
             </MenuBar>

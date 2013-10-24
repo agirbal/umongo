@@ -18,9 +18,13 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.ComboBox;
 import com.edgytech.swingfast.FormDialog;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.Bytes;
+import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
+import java.util.List;
 
 /**
  *
@@ -38,9 +42,9 @@ public class OptionDialog extends FormDialog {
         writeFactor,
         writePolicy,
         writeTimeout,
-        fsync,
         jsync,
-        rpPreference
+        rpPreference,
+        rpTag
     }
     
     enum ReadPref {
@@ -56,6 +60,9 @@ public class OptionDialog extends FormDialog {
     }
 
     void update(int options, WriteConcern wc, ReadPreference rp) {
+        // reset
+        xmlLoadCheckpoint();
+        
         setBooleanFieldValue(Item.tailable, (options & Bytes.QUERYOPTION_TAILABLE) != 0);
         setBooleanFieldValue(Item.slaveOk, (options & Bytes.QUERYOPTION_SLAVEOK) != 0);
         setBooleanFieldValue(Item.opLogReplay, (options & Bytes.QUERYOPTION_OPLOGREPLAY) != 0);
@@ -70,13 +77,20 @@ public class OptionDialog extends FormDialog {
         setIntFieldValue(Item.writeFactor, wInt);
         setStringFieldValue(Item.writePolicy, wStr);
         setIntFieldValue(Item.writeTimeout, wc.getWtimeout());
-        setBooleanFieldValue(Item.fsync, wc.fsync());
+//        setBooleanFieldValue(Item.fsync, wc.fsync());
         
+        DBObject rpObj = rp.toDBObject();
         ComboBox readBox = (ComboBox) getBoundUnit(Item.rpPreference);
         ReadPref rpEnm = ReadPref.primary;
         if (rp != null)
             rpEnm = ReadPref.valueOf(rp.getName());
         readBox.value = rpEnm.ordinal();
+        if (rpObj.containsField("tags")) {
+            List tags = (List) rpObj.get("tags");
+            if (tags.size() > 0) {
+                ((DocBuilderField) getBoundComponentUnit(Item.rpTag)).setDBObject((DBObject) tags.get(0));
+            }
+        }
     }
 
     int getQueryOptions() {
@@ -95,16 +109,19 @@ public class OptionDialog extends FormDialog {
         int w = getIntFieldValue(Item.writeFactor);
         String wPolicy = getStringFieldValue(Item.writePolicy);
         int wtimeout = getIntFieldValue(Item.writeTimeout);
-        boolean fsync = getBooleanFieldValue(Item.fsync);
+//        boolean fsync = getBooleanFieldValue(Item.fsync);
         boolean jsync = getBooleanFieldValue(Item.jsync);
         if (!wPolicy.trim().isEmpty())
-            return new WriteConcern(wPolicy, wtimeout, fsync, jsync);
-        return new WriteConcern(w, wtimeout, fsync, jsync);
+            return new WriteConcern(wPolicy, wtimeout, false, jsync);
+        return new WriteConcern(w, wtimeout, false, jsync);
     }
     
     ReadPreference getReadPreference() {
         ComboBox readBox = (ComboBox) getBoundUnit(Item.rpPreference);
         ReadPref rpEnm = ReadPref.values()[readBox.value];
-        return ReadPreference.valueOf(rpEnm.name());        
+        BasicDBObject tag = (BasicDBObject) ((DocBuilderField) getBoundComponentUnit(Item.rpTag)).getDBObject();
+        if (tag != null)
+            return ReadPreference.valueOf(rpEnm.name(), tag);
+        return ReadPreference.valueOf(rpEnm.name());
     }
 }
