@@ -20,6 +20,7 @@ function package_build {
 
 	cp -r ${os}/umongo.app $appdir
 	app=${appdir}/umongo.app
+        sed -i "" -e "N; s/\(.*CFBundleVersion.*\n\).*/\1        <string>$version<\/string>/" $app/Contents/Info.plist
         sed -i "" -e "N; s/\(.*CFBundleShortVersionString.*\n\).*/\1        <string>$version<\/string>/" $app/Contents/Info.plist
 
     mkdir -p $app/Contents/Resources/Java
