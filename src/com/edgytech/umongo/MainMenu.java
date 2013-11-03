@@ -23,17 +23,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import com.edgytech.umongo.MainMenu.Item;
-import com.mongodb.MongoClient;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Map.Entry;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 /**
  *
@@ -194,6 +187,8 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
             if (end < 0)
                 continue;
             jar = jar.substring(0, end + 4);
+            int start = jar.lastIndexOf("/");
+            jar = jar.substring(start + 1);
             text.append("<b>").append(jar).append("</b>").append(":<br/>");
 //        text.append(url.getPath()).append("<br/>");
 //        InputStream is = getClass().getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF");

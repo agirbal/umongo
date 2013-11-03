@@ -1010,14 +1010,14 @@
                 <MenuItem id="about" alt="a" call="about" showDialog="false">
                     <FormDialog buttons="OK" signIcon="edgytech-small.png" signIconGroup="edgytechIcons" signBorderColor="128;128;128" preferredSize="600;400">
                         <Zone>
-                            <Div axis="Y" zone="NORTH">
+                            <Div axis="Y" zone="NORTH" gap="true">
                                 <Text field="false" value="UMongo by EdgyTech LLC."/>
                             </Div>
                             <Scroller zone="CENTER">
                                 <Text id="aboutTextArea" field="false"/>
                             </Scroller>
-                            <Div axis="Y" zone="SOUTH">
-                                <Text field="false" value="Copyright (C) 2010 EdgyTech LLC."/>
+                            <Div axis="Y" zone="SOUTH" gap="true">
+                                <Text field="false" value="Copyright © 2010 EdgyTech LLC."/>
                             </Div>
                         </Zone>
                     </FormDialog>

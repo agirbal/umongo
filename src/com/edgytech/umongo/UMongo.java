@@ -18,6 +18,7 @@ package com.edgytech.umongo;
 import com.edgytech.swingfast.Application;
 import com.edgytech.swingfast.ConfirmDialog;
 import com.edgytech.swingfast.Frame;
+import com.edgytech.swingfast.MenuItem;
 import com.edgytech.swingfast.Scroller;
 import com.edgytech.swingfast.TabbedDiv;
 import com.edgytech.swingfast.Tree;
@@ -439,5 +440,10 @@ public class UMongo extends Application implements Runnable {
 
     BinaryDecoder getBinaryDecoder() {
         return binaryDecoder;
+    }
+
+    @Override
+    public void handleMacAbout() {
+        ((MenuItem)getMainMenu().getBoundUnit(MainMenu.Item.about)).getButton().doClick();
     }
 }
