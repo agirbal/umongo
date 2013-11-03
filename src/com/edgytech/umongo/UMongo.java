@@ -238,6 +238,7 @@ public class UMongo extends Application implements Runnable {
             panel = getGlobalStore().getReplSetPanel();
         }
 
+        panel.xmlLoadCheckpoint();
         panel.setNode(node);
         displayElement(panel);
     }

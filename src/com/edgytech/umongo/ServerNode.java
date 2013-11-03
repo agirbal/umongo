@@ -35,11 +35,15 @@ public class ServerNode extends BaseTreeNode {
     ServerAddress serverAddress;
     Mongo serverMongo;
     BasicDBObject stats;
+    boolean isReplica = false;
+    boolean isConfig = false;
 
-    public ServerNode(Mongo mongo) {
+    public ServerNode(Mongo mongo, boolean isReplica, boolean isConfig) {
         serverMongo = mongo;
         serverAddress = mongo.getAddress();
         setLabel(serverAddress.toString());
+        this.isReplica = isReplica;
+        this.isConfig = isConfig;
 
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
@@ -50,11 +54,13 @@ public class ServerNode extends BaseTreeNode {
         markStructured();
     }
     
-    public ServerNode(ServerAddress serverAddress, MongoOptions opts) {
+    public ServerNode(ServerAddress serverAddress, MongoOptions opts, boolean isReplica, boolean isConfig) {
         setLabel(serverAddress.toString());
         this.serverAddress = serverAddress;
         serverMongo = new Mongo(serverAddress, opts);
         serverMongo.addOption( Bytes.QUERYOPTION_SLAVEOK );
+        this.isReplica = isReplica;
+        this.isConfig = isConfig;
         
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
@@ -65,12 +71,14 @@ public class ServerNode extends BaseTreeNode {
         markStructured();
     }
     
-    public ServerNode(String host, MongoOptions opts) throws UnknownHostException {
+    public ServerNode(String host, MongoOptions opts, boolean isReplica, boolean isConfig) throws UnknownHostException {
         setLabel(host);
         this.host = host;
         this.serverAddress = new ServerAddress(host);
         serverMongo = new Mongo(serverAddress, opts);
         serverMongo.addOption( Bytes.QUERYOPTION_SLAVEOK );
+        this.isReplica = isReplica;
+        this.isConfig = isConfig;
         
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
@@ -99,11 +107,16 @@ public class ServerNode extends BaseTreeNode {
 
     @Override
     protected void updateNode() {
-        label = "MongoD: " + (host != null ? host : serverAddress.toString());
+        if (isConfig)
+            label = "ConfigDB";
+        else
+            label = "MongoD";
+        label += ": " + (host != null ? host : serverAddress.toString());
         
         if (stats != null) {
             if (stats.getBoolean("ismaster", false)) {
-                addOverlay("overlay/tick_circle_tiny.png");
+                if (!isConfig)
+                    addOverlay("overlay/tick_circle_tiny.png");
             } else if (!stats.getBoolean("secondary")) {
                 addOverlay("overlay/error.png");
             }
@@ -124,5 +137,13 @@ public class ServerNode extends BaseTreeNode {
         CommandResult res = getServerMongo().getDB("local").command("isMaster");
         res.throwOnError();
         stats = res;
+    }
+    
+    boolean isReplica() {
+        return isReplica;
+    }
+    
+    boolean isConfig() {
+        return isConfig;
     }
 }

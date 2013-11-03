@@ -18,6 +18,7 @@ package com.edgytech.umongo;
 import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.InfoDialog;
+import com.edgytech.swingfast.Menu;
 import com.edgytech.swingfast.Text;
 import com.edgytech.swingfast.XmlComponentUnit;
 import com.mongodb.BasicDBObject;
@@ -68,7 +69,8 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         setLogLevel,
         setLogLevelValue,
         getLog,
-        getLogType
+        getLogType,
+        replica
     }
 
     public ServerPanel() {
@@ -82,7 +84,12 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     @Override
     protected void updateComponentCustom(JPanel comp) {
         try {
-            Mongo svrMongo = getServerNode().getServerMongo();
+            ServerNode node = getServerNode();
+            if (!node.isReplica()) {
+                ((Menu)getBoundUnit(Item.replica)).enabled = false;
+            }
+            
+            Mongo svrMongo = node.getServerMongo();
             ServerAddress addr = getServerNode().getServerAddress();
             setStringFieldValue(Item.host, addr.toString());
             setStringFieldValue(Item.address, addr.getSocketAddress().toString());

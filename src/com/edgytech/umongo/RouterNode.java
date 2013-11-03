@@ -1,21 +1,22 @@
 /**
- *      Copyright (C) 2010 EdgyTech LLC.
+ * Copyright (C) 2010 EdgyTech LLC.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.edgytech.umongo;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -47,9 +48,10 @@ public class RouterNode extends BaseTreeNode {
     protected void populateChildren() {
         CommandResult res = mongo.getDB("admin").command("listShards");
         shards = (BasicDBList) res.get("shards");
-        if (shards == null)
+        if (shards == null) {
             return;
-        
+        }
+
         for (Object obj : shards) {
             try {
                 DBObject shard = (DBObject) obj;
@@ -76,11 +78,30 @@ public class RouterNode extends BaseTreeNode {
                 if (repl != null || addrs.size() > 1) {
                     addChild(new ReplSetNode(id + " (" + repl + ")", addrs, mongo.getMongoOptions()));
                 } else {
-                    addChild(new ServerNode(addrs.get(0), mongo.getMongoOptions()));
+                    addChild(new ServerNode(addrs.get(0), mongo.getMongoOptions(), false, false));
                 }
             } catch (Exception e) {
                 getLogger().log(Level.WARNING, null, e);
             }
+        }
+
+        // add config servers
+        try {
+            res = mongo.getDB("admin").command("getCmdLineOpts");
+            String configStr = (String) ((BasicDBObject) res.get("parsed")).get("configdb");
+            String[] configsvrs = configStr.split(",");
+            for (String host : configsvrs) {
+                int colon = host.indexOf(':');
+                ServerAddress addr;
+                if (colon >= 0) {
+                    addr = new ServerAddress(host.substring(0, colon), Integer.parseInt(host.substring(colon + 1)));
+                } else {
+                    addr = new ServerAddress(host);
+                }
+                addChild(new ServerNode(addr, mongo.getMongoOptions(), false, true));
+            }
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, null, e);
         }
     }
 
@@ -100,11 +121,11 @@ public class RouterNode extends BaseTreeNode {
     @Override
     protected void refreshNode() {
     }
-    
+
     BasicDBList getShards() {
         return shards;
     }
-    
+
     String[] getShardNames() {
         if (!shards.isEmpty()) {
             String[] items = new String[shards.size()];

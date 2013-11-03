@@ -74,7 +74,7 @@ public class ReplSetNode extends BaseTreeNode {
             String host = (String) ((DBObject)members.get(i)).get("host");
             try {
                 // this will create new Mongo instance, catch any exception
-                addChild(new ServerNode(host, mongo.getMongoOptions()));
+                addChild(new ServerNode(host, mongo.getMongoOptions(), true, false));
             } catch (Exception e) {
                 getLogger().log(Level.WARNING, null, e);
             }
