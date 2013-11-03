@@ -9,11 +9,11 @@
 -->
 
 <Div axis="X" gap="false" field="true">
-    <TextArea id="jsonText" field="false" rows="3" columns="20" lineWrap="true" wrapStyleWord="false"/>
+    <TextArea id="jsonText" field="false" save="false" rows="3" columns="20" lineWrap="true" wrapStyleWord="false"/>
     <Button id="expandText" icon="text.png" iconGroup="icons" call="expandText" showDialog="false" toolTipText="Expand the JSON into a text-based window">
         <FormDialog buttons="OK_CANCEL" preferredSize="640;480">
             <Zone>
-                <TextArea id="expandTextArea" field="false" zone="CENTER"/>
+                <TextArea id="expandTextArea" save="false" field="false" zone="CENTER"/>
                 <Div axis="Y" zone="EAST">
                     <Button id="convertFromJS" icon="wand.png" iconGroup="icons" toolTipText="Convert from shell JSON to Java JSON e.g. ObjectId(), ISODate()" call="convertFromJS"/>
                     <Button id="indent" icon="indent.png" iconGroup="icons" toolTipText="Indent the JSON" call="indent"/>
@@ -22,5 +22,5 @@
         </FormDialog>
     </Button>
     <Button id="edit" icon="brick.png" iconGroup="icons" toolTipText="Edit the JSON" call="edit"/>
-    <ToggleButton id="validate" value="true" icon="overlay/check.png" iconGroup="icons" toolTipText="Turn on/off JSON validation"/>
+    <ToggleButton id="validate" save="false" value="true" icon="overlay/check.png" iconGroup="icons" toolTipText="Turn on/off JSON validation"/>
 </Div>

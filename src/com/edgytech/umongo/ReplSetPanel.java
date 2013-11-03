@@ -49,7 +49,11 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         rsStatus,
         rsOplogInfo,
         compareReplicas,
-        crStat
+        crStat,
+        queryOplog,
+        qoStart,
+        qoEnd,
+        qoQuery
     }
 
     public ReplSetPanel() {
@@ -281,4 +285,24 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
+
+    public void queryOplog(ButtonBase button) {
+        final DBCollection oplog = getReplSetNode().getMongo().getDB("local").getCollection("oplog.rs");
+        DBObject start = ((DocBuilderField) getBoundUnit(Item.qoStart)).getDBObject();
+        DBObject end = ((DocBuilderField) getBoundUnit(Item.qoEnd)).getDBObject();
+        DBObject extra = ((DocBuilderField) getBoundUnit(Item.qoQuery)).getDBObject();
+        
+        BasicDBObject query = new BasicDBObject();
+        BasicDBObject range = new BasicDBObject();
+        if (start != null)
+            range.put("$gte", start.get("ts"));
+        if (end != null)
+            range.put("$lte", end.get("ts"));
+        
+        query.put("ts", range);
+        if (extra != null)
+            query.putAll(extra);
+        
+        CollectionPanel.doFind(oplog, query, null, null, 0, 0, 0, false, null, Bytes.QUERYOPTION_OPLOGREPLAY);
+    }
 }

@@ -17,17 +17,11 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.*;
 import com.edgytech.umongo.DocBuilderField.Item;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.logging.Level;
-import javax.swing.JButton;
-import javax.swing.JToggleButton;
 
 /**
  *
@@ -45,6 +39,8 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
     public String dialogId;
     @Serial
     public boolean nonEmpty;
+    @SerialStar
+    public String value;
     DBObject doc;
 
     /**
@@ -83,7 +79,8 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
         }
 
         doc = dialog.getDBObject();
-        setComponentStringFieldValue(Item.jsonText, MongoUtils.getJSON(doc));
+        value = MongoUtils.getJSON(doc);
+        setComponentStringFieldValue(Item.jsonText, value);
         notifyListener(getComponent());
     }
 
@@ -135,12 +132,17 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
     }
 
     @Override
+    protected void updateComponentCustom(BoxPanel old) {
+        setStringFieldValue(Item.jsonText, value);
+    }
+    
+    @Override
     protected void commitComponentCustom(BoxPanel comp) {
         // here we want to commit the string value, but doc is already uptodate
         try {
 //            value = _field.getText();
-            String txt = getComponentStringFieldValue(Item.jsonText);
-            doc = (DBObject) JSON.parse(txt);
+            value = getStringFieldValue(Item.jsonText);
+            doc = (DBObject) JSON.parse(value);
         } catch (Exception e) {
             // this could be because of binary in field
             // in this case the doc already has the correct inner value
@@ -151,8 +153,8 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
     public void setDBObject(DBObject obj) {
         // it's safe to use obj, not a copy, since builder will build its own
         doc = obj;
-        String txt = doc != null ? MongoUtils.getJSON(doc) : "";
-        setStringFieldValue(Item.jsonText, txt);
+        value = doc != null ? MongoUtils.getJSON(doc) : "";
+        setStringFieldValue(Item.jsonText, value);
     }
 
     public DBObject getDBObject() {

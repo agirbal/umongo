@@ -461,16 +461,16 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }
 
     static void doFind(final DBCollection col, final DBObject query) {
-        doFind(col, query, null, null, 0, 0, 0, false, null);
+        doFind(col, query, null, null, 0, 0, 0, false, null, 0);
     }
 
-    static void doFind(final DBCollection col, final DBObject query, final DBObject fields, final DBObject sort, final int skip, final int limit, final int batchSize, final boolean explain, final DBObject hint) {
+    static void doFind(final DBCollection col, final DBObject query, final DBObject fields, final DBObject sort, final int skip, final int limit, final int batchSize, final boolean explain, final DBObject hint, final int options) {
         new DbJob() {
 
             @Override
             public Object doRun() {
                 // this does not actually block, may not need dbjob
-                DBCursor cur = col.find(query, fields, skip, batchSize);
+                DBCursor cur = col.find(query, fields).skip(skip).batchSize(batchSize).addOption(options);
                 if (sort != null) {
                     cur.sort(sort);
                 }

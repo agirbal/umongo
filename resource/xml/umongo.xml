@@ -443,16 +443,16 @@
                                 <TextField id="unwind" value="" nonEmpty="true" toolTipText="the field name to unwind by, e.g. 'data.tags'"/>
                             </com.edgytech.umongo.EditAggUnwindDialog>
                             <com.edgytech.umongo.EditAggProjectDialog id="editAggProjectDialog" op="$project">
-                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{y: '$x'}" toolTipText="parameters in JSON format"/>
+                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{ y: '$x' }" toolTipText="parameters in JSON format"/>
                             </com.edgytech.umongo.EditAggProjectDialog>
                             <com.edgytech.umongo.EditAggMatchDialog id="editAggMatchDialog" op="$match">
-                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{x: 'value'}" toolTipText="parameters in JSON format"/>
+                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{ x: 'value' }" toolTipText="parameters in JSON format"/>
                             </com.edgytech.umongo.EditAggMatchDialog>
                             <com.edgytech.umongo.EditAggGroupDialog id="editAggGroupDialog" op="$group">
                                 <com.edgytech.umongo.DocBuilderField id="parameters" value="{ _id : '$author', docsPerAuthor: { $sum : 1 }, viewsPerAuthor: { $sum : '$pageViews' }}" toolTipText="parameters in JSON format"/>
                             </com.edgytech.umongo.EditAggGroupDialog>
                             <com.edgytech.umongo.EditAggSortDialog id="editAggSortDialog" op="$sort">
-                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{x: 1, _id: 0}" toolTipText="parameters in JSON format"/>
+                                <com.edgytech.umongo.DocBuilderField id="parameters" value="{ x: 1 }" toolTipText="parameters in JSON format"/>
                             </com.edgytech.umongo.EditAggSortDialog>
                             <com.edgytech.umongo.EditAggGeoNearDialog id="editAggGeoNearDialog" op="$geoNear">
                                 <com.edgytech.umongo.DocBuilderField id="near" value="[37.783333, -122.416667]" toolTipText="GeoJSON point or coordinate pair representing the point for which to find the closest documents"/>
@@ -767,6 +767,13 @@
                     <MenuItem id="rsOplogInfo" call="rsOplogInfo" label="Get Oplog Info"/>
                 </Menu>
                 <Menu id="tools">
+                    <MenuItem id="queryOplog" call="queryOplog">
+                        <FormDialog>
+                            <com.edgytech.umongo.DocBuilderField id="qoStart" label="Start Timestamp" value="{ ts: { $timestamp: { t: 0, i: 0 } } }" toolTipText="Optional, The start timestamp inclusive"/>
+                            <com.edgytech.umongo.DocBuilderField id="qoEnd" label="End Timestamp" value="{ ts: { $timestamp: { t: 0, i: 0 } } }" toolTipText="Optional, The end timestamp inclusive"/>
+                            <com.edgytech.umongo.DocBuilderField id="qoQuery" label="Query" toolTipText="Optional, A query predicate to apply"/>
+                        </FormDialog>
+                    </MenuItem>
                     <MenuItem id="compareReplicas" call="compareReplicas">
                         <FormDialog>
                             <Text value="This tool will compare all replicas, stop writing to the db for better accuracy."/>
@@ -845,7 +852,7 @@
             </Zone>
         </com.edgytech.umongo.RouterPanel>
         <com.edgytech.umongo.EditBinaryDialog>
-            <FileSelectorField id="inputFile">
+            <FileSelectorField id="inputFile" toolTipText="The file to read binary data from">
                 <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
             </FileSelectorField>
         </com.edgytech.umongo.EditBinaryDialog>
@@ -853,8 +860,8 @@
             <CheckBox id="value" label="True"/>
         </com.edgytech.umongo.EditBooleanDialog>
         <com.edgytech.umongo.EditCodeDialog>
-            <TextField id="value" label="Code"/>
-            <TextField id="scope"/>
+            <TextField id="value" label="Code" toolTipText="The javascript code"/>
+            <TextField id="scope" toolTipText="The javascript scope"/>
         </com.edgytech.umongo.EditCodeDialog>
         <com.edgytech.umongo.EditDateDialog>
             <DateSpinner id="value" label="Date"/>
@@ -878,17 +885,17 @@
             <TextField id="namespace" toolTipText="Namespace identifying the collection of the reference"/>
         </com.edgytech.umongo.EditObjectIdDialog>
         <com.edgytech.umongo.EditPatternDialog>
-            <TextField id="value"/>
+            <TextField id="value" toolTipText="The regular expression pattern"/>
         </com.edgytech.umongo.EditPatternDialog>
         <com.edgytech.umongo.EditStringDialog>
             <TextField id="value"/>
         </com.edgytech.umongo.EditStringDialog>
         <com.edgytech.umongo.EditTimestampDialog>
-            <IntSpinner id="time"/>
-            <IntSpinner id="increment"/>
+            <IntSpinner id="time" toolTipText="The time in seconds"/>
+            <IntSpinner id="increment" toolTipText="The increment"/>
         </com.edgytech.umongo.EditTimestampDialog>
         <com.edgytech.umongo.EditUuidDialog>
-            <TextField id="value"/>
+            <TextField id="value" toolTipText="The UUID as a string in Java representation"/>
         </com.edgytech.umongo.EditUuidDialog>
         <com.edgytech.umongo.DocBuilderDialog id="docBuilderDialog" buttons="OK_CANCEL">
             <Scroller preferredSize="600;400">
