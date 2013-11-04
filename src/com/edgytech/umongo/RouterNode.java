@@ -55,7 +55,7 @@ public class RouterNode extends BaseTreeNode {
         for (Object obj : shards) {
             try {
                 DBObject shard = (DBObject) obj;
-                String id = (String) shard.get("_id");
+                String shardName = (String) shard.get("_id");
                 String hosts = (String) shard.get("host");
                 String repl = null;
                 int slash = hosts.indexOf('/');
@@ -76,7 +76,7 @@ public class RouterNode extends BaseTreeNode {
                 }
 
                 if (repl != null || addrs.size() > 1) {
-                    addChild(new ReplSetNode(id + " (" + repl + ")", addrs, mongo.getMongoOptions(), true));
+                    addChild(new ReplSetNode(repl, addrs, mongo.getMongoOptions(), shardName));
                 } else {
                     addChild(new ServerNode(addrs.get(0), mongo.getMongoOptions(), false, false));
                 }

@@ -108,7 +108,7 @@ public class ServerNode extends BaseTreeNode {
     @Override
     protected void updateNode() {
         if (isConfig)
-            label = "ConfigDB";
+            label = "Config MongoD";
         else
             label = "MongoD";
         label += ": " + (host != null ? host : serverAddress.toString());

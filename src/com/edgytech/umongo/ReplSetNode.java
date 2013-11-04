@@ -19,7 +19,6 @@ package com.edgytech.umongo;
 import com.mongodb.*;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.ImageIcon;
 
 /**
  *
@@ -29,12 +28,12 @@ public class ReplSetNode extends BaseTreeNode {
 
     Mongo mongo;
     String name;
-    boolean isShard;
+    String shardName;
 
-    public ReplSetNode(String name, Mongo mongo, boolean isShard) {
+    public ReplSetNode(String name, Mongo mongo, String shardName) {
         this.mongo = mongo;
         this.name = name != null ? name : "Replica Set";
-        this.isShard = isShard;
+        this.shardName = shardName;
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.replSetNode, null);
         } catch (Exception ex) {
@@ -43,10 +42,10 @@ public class ReplSetNode extends BaseTreeNode {
         markStructured();
     }
 
-    public ReplSetNode(String name, List<ServerAddress> addrs, MongoOptions opts, boolean isShard) {
+    public ReplSetNode(String name, List<ServerAddress> addrs, MongoOptions opts, String shardName) {
         this.mongo = new Mongo(addrs, opts);
         this.name = name != null ? name : "Replica Set";
-        this.isShard = isShard;
+        this.shardName = shardName;
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.replSetNode, null);
         } catch (Exception ex) {
@@ -92,13 +91,16 @@ public class ReplSetNode extends BaseTreeNode {
         return name;
     }
 
+    public String getShardName() {
+        return shardName;
+    }
+
     @Override
     protected void updateNode() {
-        if (isShard)
-            label = "Shard";
-        else
-            label = "ReplSet";
-        label += ": " + getName();
+        label = "";
+        if (shardName != null)
+            label += "Shard: " + shardName + " / ";
+        label += "ReplSet: " + getName();
     }
 
     @Override

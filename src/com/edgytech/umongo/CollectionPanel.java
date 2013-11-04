@@ -1109,7 +1109,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public String getShortName() {
-                return "ShardDistribution";
+                return "Sharding Distribution";
             }
         }.addJob();
     }

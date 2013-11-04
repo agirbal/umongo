@@ -79,7 +79,7 @@ public class MongoNode extends BaseTreeNode {
             try {
                 CommandResult res = node.getServerDB().command(new BasicDBObject("isMaster", 1), mongo.getOptions());
                 if (res.containsField("setName")) {
-                    addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, false));
+                    addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, null));
                     added = true;
                 }
             } catch (Exception e) {
@@ -89,7 +89,7 @@ public class MongoNode extends BaseTreeNode {
             if (!added)
                 addChild(node);
         } else {
-            addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, false));
+            addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, null));
         }
 
         if (specifiedDb) {

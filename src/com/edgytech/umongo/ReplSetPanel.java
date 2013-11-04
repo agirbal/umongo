@@ -53,7 +53,12 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         queryOplog,
         qoStart,
         qoEnd,
-        qoQuery
+        qoQuery,
+        manageTags,
+        tagList,
+        addTag,
+        atTag,
+        removeTag
     }
 
     public ReplSetPanel() {
@@ -304,5 +309,117 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
             query.putAll(extra);
         
         CollectionPanel.doFind(oplog, query, null, null, 0, 0, 0, false, null, Bytes.QUERYOPTION_OPLOGREPLAY);
+    }
+    
+    void refreshTagList() {
+        String shardName = getReplSetNode().getShardName();
+        if (shardName == null)
+            return;
+        
+        ListArea list = (ListArea) getBoundUnit(Item.tagList);
+        final DB db = ((RouterNode)getReplSetNode().getParentNode()).getMongo().getDB("config");
+        DBObject shard = db.getCollection("shards").findOne(new BasicDBObject("_id", shardName));
+        if (shard.containsField("tags")) {
+            BasicDBList tags = (BasicDBList) shard.get("tags");
+            if (tags.size() > 0) {
+                String[] array = new String[tags.size()];
+                int i = 0;
+                for (Object tag : tags) {
+                    array[i++] = (String) tag;
+                }
+                list.items = array;
+                list.structureComponent();
+                return;
+            }
+        }
+        list.items = null;
+        list.structureComponent();
+    }
+
+    public void manageTags(ButtonBase button) {
+        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.manageTags)).getDialog();
+        refreshTagList();
+        dialog.show();
+    }
+    
+    public void addTag(ButtonBase button) {
+        final DB db = ((RouterNode)getReplSetNode().getParentNode()).getMongo().getDB("config");
+        final DBCollection col = db.getCollection("shards");
+        final String tag = getStringFieldValue(Item.atTag);
+        final DBObject query = new BasicDBObject("_id", getReplSetNode().getShardName());
+        final DBObject update = new BasicDBObject("$addToSet", new BasicDBObject("tags", tag));
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                return col.update(query, update);
+            }
+
+            @Override
+            public String getNS() {
+                return col.getFullName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Add Tag";
+            }
+
+            @Override
+            public DBObject getRoot(Object result) {
+                BasicDBObject obj = new BasicDBObject("query", query);
+                obj.put("update", update);
+                return obj;
+            }
+            
+            @Override
+            public void wrapUp(Object res) {
+                super.wrapUp(res);
+                refreshTagList();
+            }
+        }.addJob();
+    }
+    
+    public void removeTag(ButtonBase button) {
+        final DB db = ((RouterNode)getReplSetNode().getParentNode()).getMongo().getDB("config");
+        final DBCollection col = db.getCollection("shards");
+        final String tag = getComponentStringFieldValue(Item.tagList);
+        if (tag == null)
+            return;
+        
+        final DBObject query = new BasicDBObject("_id", getReplSetNode().getShardName());
+        final DBObject update = new BasicDBObject("$pull", new BasicDBObject("tags", tag));
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                return col.update(query, update);
+            }
+
+            @Override
+            public String getNS() {
+                return col.getFullName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Remove Tag";
+            }
+
+            @Override
+            public DBObject getRoot(Object result) {
+                BasicDBObject obj = new BasicDBObject("query", query);
+                obj.put("update", update);
+                return obj;
+            }
+
+            @Override
+            public void wrapUp(Object res) {
+                super.wrapUp(res);
+                refreshTagList();
+            }
+        }.addJob();
     }
 }

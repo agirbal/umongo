@@ -445,10 +445,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void manageUsers(ButtonBase button) {
         FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.manageUsers)).getDialog();
         refreshUserList();
-
-        if (!dialog.show()) {
-            return;
-        }
+        dialog.show();
     }
 
     public void addUser(ButtonBase button) {

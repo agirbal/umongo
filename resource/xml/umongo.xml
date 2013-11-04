@@ -767,6 +767,25 @@
                     <MenuItem id="rsStatus" call="rsStatus" label="Get Status"/>
                     <MenuItem id="rsOplogInfo" call="rsOplogInfo" label="Get Oplog Info"/>
                 </Menu>
+                <Menu id="sharding">
+                    <MenuItem id="manageTags" call="manageTags" showDialog="false">
+                        <FormDialog buttons="OK" okLabel="Done">
+                            <Zone>
+                                <Scroller zone="CENTER" preferredSize="320;-1">
+                                    <ListArea id="tagList" items=""/>
+                                </Scroller>
+                                <Div axis="Y" zone="EAST">
+                                    <Button id="addTag" icon="add.png" iconGroup="icons" toolTipText="Add a new tag" call="addTag">
+                                        <FormDialog id="addTagDialog">
+                                            <TextField id="atTag" label="Tag"/>
+                                        </FormDialog>
+                                    </Button>
+                                    <Button id="removeTag" icon="dialog-close_16.png" iconGroup="icons" toolTipText="Remove the tag" call="removeTag"/>
+                                </Div>
+                            </Zone>
+                        </FormDialog>
+                    </MenuItem>
+                </Menu>
                 <Menu id="tools">
                     <MenuItem id="queryOplog" call="queryOplog">
                         <FormDialog>
