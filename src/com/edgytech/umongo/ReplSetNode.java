@@ -29,10 +29,12 @@ public class ReplSetNode extends BaseTreeNode {
 
     Mongo mongo;
     String name;
+    boolean isShard;
 
-    public ReplSetNode(String name, Mongo mongo) {
+    public ReplSetNode(String name, Mongo mongo, boolean isShard) {
         this.mongo = mongo;
         this.name = name != null ? name : "Replica Set";
+        this.isShard = isShard;
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.replSetNode, null);
         } catch (Exception ex) {
@@ -41,9 +43,10 @@ public class ReplSetNode extends BaseTreeNode {
         markStructured();
     }
 
-    public ReplSetNode(String name, List<ServerAddress> addrs, MongoOptions opts) {
+    public ReplSetNode(String name, List<ServerAddress> addrs, MongoOptions opts, boolean isShard) {
         this.mongo = new Mongo(addrs, opts);
         this.name = name != null ? name : "Replica Set";
+        this.isShard = isShard;
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.replSetNode, null);
         } catch (Exception ex) {
@@ -91,7 +94,11 @@ public class ReplSetNode extends BaseTreeNode {
 
     @Override
     protected void updateNode() {
-        label = "ReplSet: " + getName();
+        if (isShard)
+            label = "Shard";
+        else
+            label = "ReplSet";
+        label += ": " + getName();
     }
 
     @Override

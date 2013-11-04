@@ -64,7 +64,7 @@ public class MongoNode extends BaseTreeNode {
             // check if mongos
             boolean added = false;
             ServerAddress addr = addrs.get(0);
-            ServerNode node = new ServerNode(mongo, false, true);
+            ServerNode node = new ServerNode(mongo, false, false);
             try {
                 CommandResult res = node.getServerDB().command("isdbgrid");
                 if (res.ok()) {
@@ -79,7 +79,7 @@ public class MongoNode extends BaseTreeNode {
             try {
                 CommandResult res = node.getServerDB().command(new BasicDBObject("isMaster", 1), mongo.getOptions());
                 if (res.containsField("setName")) {
-                    addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo));
+                    addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, false));
                     added = true;
                 }
             } catch (Exception e) {
@@ -89,7 +89,7 @@ public class MongoNode extends BaseTreeNode {
             if (!added)
                 addChild(node);
         } else {
-            addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo));
+            addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, false));
         }
 
         if (specifiedDb) {

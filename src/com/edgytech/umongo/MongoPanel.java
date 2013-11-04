@@ -127,7 +127,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
 
     public void close(ButtonBase button) {
         UMongo.instance.disconnect(getMongoNode());
-        node = null;
     }
 
     public void fsync(ButtonBase button) {
