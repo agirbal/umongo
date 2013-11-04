@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import javax.swing.JPanel;
 import com.edgytech.umongo.CollectionPanel.Item;
 import com.mongodb.BasicDBObjectBuilder;
+import java.util.Map.Entry;
 
 /**
  *
@@ -123,6 +124,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         save,
         saveDoc,
         shardingInfo,
+        shardingDistribution,
         shardCollection,
         shardKeyCombo,
         shardCustomKey,
@@ -173,7 +175,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     public CollectionNode getCollectionNode() {
         return (CollectionNode) getNode();
     }
-    
+
     public BasicDBObject getStats() {
         BasicDBObject cmd = new BasicDBObject("collStats", getCollectionNode().getCollection().getName());
         return getCollectionNode().getCollection().getDB().command(cmd);
@@ -223,7 +225,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             exportToFile(col, query, fields, sort, skip, limit, batchSize);
         } else {
             new DbJob() {
-
                 @Override
                 public Object doRun() {
                     // this does not actually block, may not need dbjob
@@ -240,7 +241,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                     if (explain) {
                         return cur.explain();
                     }
-                    
+
                     // force cursor to start
                     cur.hasNext();
                     return cur;
@@ -318,7 +319,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 //            }
 //        }.addJob();
 //    }
-
     public void rename(ButtonBase button) {
         final CollectionNode colNode = getCollectionNode();
         final DBCollection col = colNode.getCollection();
@@ -329,10 +329,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final boolean dropTarget = getBooleanFieldValue(Item.dropTarget);
 
         DBObject cmd = BasicDBObjectBuilder.start()
-                      .add( "renameCollection" , col.getFullName() )
-                      .add( "to" , col.getDB().getName() + "." + name )
-                      .add( "dropTarget" , dropTarget )
-                      .get();
+                .add("renameCollection", col.getFullName())
+                .add("to", col.getDB().getName() + "." + name)
+                .add("dropTarget", dropTarget)
+                .get();
         new DbJobCmd(col.getDB().getSisterDB("admin"), cmd, null, null).addJob();
     }
 
@@ -393,7 +393,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }
 
         new DbJob() {
-
             MapReduceOutput output;
 
             @Override
@@ -456,7 +455,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             DB getDB() {
                 return col.getDB();
             }
-            
         }.addJob();
     }
 
@@ -466,7 +464,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
     static void doFind(final DBCollection col, final DBObject query, final DBObject fields, final DBObject sort, final int skip, final int limit, final int batchSize, final boolean explain, final DBObject hint, final int options) {
         new DbJob() {
-
             @Override
             public Object doRun() {
                 // this does not actually block, may not need dbjob
@@ -526,7 +523,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final DocumentSerializer ds = dia.getDocumentSerializer();
         final boolean continueOnError = dia.getBooleanFieldValue(ExportDialog.Item.continueOnError);
         new DbJob() {
-
             @Override
             public Object doRun() throws Exception {
                 try {
@@ -598,12 +594,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 //            }
 //        }.addJob();
 //    }
-
     public void dropCollection(ButtonBase button) {
         final CollectionNode colNode = getCollectionNode();
         final DBCollection col = getCollectionNode().getCollection();
         new DbJob() {
-
             @Override
             public Object doRun() {
                 col.drop();
@@ -648,7 +642,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final boolean bulk = getBooleanFieldValue(Item.insertBulk);
 
         new DbJob() {
-
             @Override
             public Object doRun() throws IOException {
                 List<DBObject> list = new ArrayList<DBObject>();
@@ -698,7 +691,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final BasicDBObject doc = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.saveDoc)).getDBObject();
 
         new DbJob() {
-
             @Override
             public Object doRun() throws IOException {
                 return col.save((DBObject) doc.copy());
@@ -739,7 +731,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }
 
         new DbJob() {
-
             @Override
             public Object doRun() throws IOException {
                 return col.remove(doc);
@@ -773,13 +764,12 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         EnsureIndexDialog dia = (EnsureIndexDialog) button.getDialog();
         final DBObject keys = dia.getKeys();
         final DBObject opts = dia.getOptions();
-       
+
         if (!UMongo.instance.getGlobalStore().confirmLockingOperation()) {
             return;
         }
 
         new DbJob() {
-
             @Override
             public Object doRun() throws IOException {
                 col.ensureIndex(keys, opts);
@@ -814,15 +804,17 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final DBObject query = ((DocBuilderField) getBoundUnit(Item.countQuery)).getDBObject();
         final int skip = getIntFieldValue(Item.countSkip);
         final int limit = getIntFieldValue(Item.countLimit);
-        
+
         BasicDBObject cmd = new BasicDBObject();
         cmd.put("count", col.getName());
         cmd.put("query", query);
 
-        if ( limit > 0 )
-            cmd.put( "limit" , limit );
-        if ( skip > 0 )
-            cmd.put( "skip" , skip );
+        if (limit > 0) {
+            cmd.put("limit", limit);
+        }
+        if (skip > 0) {
+            cmd.put("skip", skip);
+        }
         new DbJobCmd(col.getDB(), cmd, null, button).addJob();
     }
 
@@ -835,29 +827,35 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final boolean remove = getBooleanFieldValue(Item.famRemove);
         final boolean returnNew = getBooleanFieldValue(Item.famReturnNew);
         final boolean upsert = getBooleanFieldValue(Item.famUpsert);
-        
-        BasicDBObject cmd = new BasicDBObject( "findandmodify", col.getName());
-        if (query != null && !query.keySet().isEmpty())
-            cmd.append( "query", query );
-        if (fields != null && !fields.keySet().isEmpty())
-            cmd.append( "fields", fields );
-        if (sort != null && !sort.keySet().isEmpty())
-            cmd.append( "sort", sort );
 
-        if (remove)
-            cmd.append( "remove", remove );
-        else {
+        BasicDBObject cmd = new BasicDBObject("findandmodify", col.getName());
+        if (query != null && !query.keySet().isEmpty()) {
+            cmd.append("query", query);
+        }
+        if (fields != null && !fields.keySet().isEmpty()) {
+            cmd.append("fields", fields);
+        }
+        if (sort != null && !sort.keySet().isEmpty()) {
+            cmd.append("sort", sort);
+        }
+
+        if (remove) {
+            cmd.append("remove", remove);
+        } else {
             if (update != null && !update.keySet().isEmpty()) {
                 // if 1st key doesn't start with $, then object will be inserted as is, need to check it
                 String key = update.keySet().iterator().next();
-                if (key.charAt(0) != '$')
+                if (key.charAt(0) != '$') {
                     MongoUtils.checkObject(update, false, false);
-                cmd.append( "update", (DBObject) update.copy() );
+                }
+                cmd.append("update", (DBObject) update.copy());
             }
-            if (returnNew)
-                cmd.append( "new", returnNew );
-            if (upsert)
-                cmd.append( "upsert", upsert );
+            if (returnNew) {
+                cmd.append("new", returnNew);
+            }
+            if (upsert) {
+                cmd.append("upsert", upsert);
+            }
         }
 
         new DbJobCmd(col.getDB(), cmd, null, button).addJob();
@@ -873,7 +871,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         col.setWriteConcern(WriteConcern.SAFE);
 
         new DbJob() {
-
             @Override
             public Object doRun() {
                 if (safe) {
@@ -937,7 +934,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final DBCollection col = getCollectionNode().getCollection();
 
         new DbJob() {
-
             @Override
             public Object doRun() throws Exception {
                 try {
@@ -1055,6 +1051,67 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
         final DBCollection col = config.getCollection("collections");
         CollectionPanel.doFind(col, new BasicDBObject("_id", getCollectionNode().getCollection().getFullName()));
+    }
+
+    public void shardingDistribution(ButtonBase button) {
+        final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
+
+        new DbJob() {
+            @Override
+            public Object doRun() throws Exception {
+                BasicDBObject result = new BasicDBObject();
+                BasicDBList shardList = new BasicDBList();
+                BasicDBObject stats = getStats();
+                BasicDBObject shards = (BasicDBObject) stats.get("shards");
+                long totalChunks = 0;
+                long totalSize = stats.getLong("size");
+                long totalCount = stats.getLong("count");
+
+                for (Entry shard : shards.entrySet()) {
+                    String shardName = (String) shard.getKey();
+                    BasicDBObject shardStats = (BasicDBObject) shard.getValue();
+
+                    BasicDBObject query = new BasicDBObject("ns", getCollectionNode().getCollection().getFullName());
+                    query.put("shard", shardName);
+                    long numChunks = config.getCollection("chunks").count(query);
+                    totalChunks += numChunks;
+
+                    double estChunkData = shardStats.getLong("size") / numChunks;
+                    long estChunkCount = (long) Math.floor(shardStats.getLong("count") / numChunks);
+
+                    BasicDBObject shardDetails = new BasicDBObject("shard", shardName);
+                    shardDetails.put("data", shardStats.getLong("size"));
+                    shardDetails.put("pctData", (shardStats.getLong("size") * 100.0) / totalSize);
+                    shardDetails.put("docs", shardStats.getLong("count"));
+                    shardDetails.put("pctDocs", (shardStats.getLong("count") * 100.0) / totalCount);
+                    shardDetails.put("chunks", numChunks);
+                    if (shardStats.containsField("avgObjSize"))
+                    shardDetails.put("avgDocSize", shardStats.getDouble("avgObjSize"));
+                    shardDetails.put("estimatedDataPerChunk", estChunkData);
+                    shardDetails.put("estimatedDocsPerChunk", estChunkCount);
+                    shardList.add(shardDetails);
+                }
+                result.put("shards", shardList);
+
+                BasicDBObject total = new BasicDBObject();
+                total.put("data", totalSize);
+                total.put("docs", totalCount);
+                total.put("chunks", totalChunks);
+                total.put("avgDocSize", stats.getDouble("avgObjSize"));
+                result.put("total", total);
+                return result;
+            }
+
+            @Override
+            public String getNS() {
+                return getCollectionNode().getCollection().getFullName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "ShardDistribution";
+            }
+        }.addJob();
     }
 
     public void findChunks(ButtonBase button) {
@@ -1238,7 +1295,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }
 
         new DbJob() {
-
             @Override
             public Object doRun() {
                 DBCursor cur = srcCol.find();
@@ -1275,14 +1331,14 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             }
         }.addJob();
     }
-    
+
     public void fullTextSearch(final ButtonBase button) {
         final String search = getStringFieldValue(Item.ftsSearch);
         final DBObject filter = ((DocBuilderField) getBoundUnit(Item.ftsFilter)).getDBObject();
         final DBObject project = ((DocBuilderField) getBoundUnit(Item.ftsProject)).getDBObject();
         int limit = getIntFieldValue(Item.ftsLimit);
         final String language = getStringFieldValue(Item.ftsLanguage);
-        
+
         BasicDBObject cmd = new BasicDBObject("text", getCollectionNode().getCollection().getName());
         cmd.put("search", search);
         cmd.put("filter", filter);
@@ -1290,7 +1346,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         cmd.put("limit", limit);
         cmd.put("language", language);
 
-        new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd, null, button).addJob();        
+        new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd, null, button).addJob();
     }
 
     public void aggregate(ButtonBase button) {
@@ -1300,7 +1356,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         if (!dialog.show()) {
             return;
         }
-        
+
         BasicDBObject cmd = dialog.getAggregateCommand(getCollectionNode().getCollection().getName());
         new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd, null, button).addJob();
     }
@@ -1311,9 +1367,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         boolean pwr2 = stats.getBoolean("userFlags", false);
 
         setBooleanFieldValue(Item.usePowerOf2Sizes, pwr2);
-        if (!dialog.show())
+        if (!dialog.show()) {
             return;
-        
+        }
+
         boolean newPwr2 = getBooleanFieldValue(Item.usePowerOf2Sizes);
         if (newPwr2 != pwr2) {
             BasicDBObject cmd = new BasicDBObject("collMod", getCollectionNode().getCollection().getName());

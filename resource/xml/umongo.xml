@@ -578,6 +578,7 @@
                 </Menu>
                 <Menu id="sharding">
                     <MenuItem id="shardingInfo" call="shardingInfo"/>
+                    <MenuItem id="shardingDistribution" call="shardingDistribution"/>
                     <MenuSeparator/>
                     <MenuItem id="shardCollection" call="shardCollection" showDialog="false">
                         <FormDialog>
