@@ -134,6 +134,9 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
     @Override
     protected void updateComponentCustom(BoxPanel old) {
         setStringFieldValue(Item.jsonText, value);
+        ((TextArea)getComponentBoundUnit(Item.jsonText)).editable = enabled;
+        getComponentBoundUnit(Item.edit).enabled = enabled;
+        getComponentBoundUnit(Item.expandText).enabled = enabled;
     }
     
     @Override

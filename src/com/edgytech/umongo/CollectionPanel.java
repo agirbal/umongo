@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import javax.swing.JPanel;
 import com.edgytech.umongo.CollectionPanel.Item;
 import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.util.JSON;
 import java.util.Map.Entry;
 
 /**
@@ -129,7 +130,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         shardKeyCombo,
         shardCustomKey,
         shardUniqueIndex,
-        findChunks,
+        listChunks,
         validate,
         validateFull,
         touch,
@@ -165,7 +166,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         ftsLanguage,
         aggregate,
         settings,
-        usePowerOf2Sizes
+        usePowerOf2Sizes,
+        manageTagRanges,
+        tagRangeList,
+        tagRangeDialog,
+        addTagRange,
+        editTagRange,
+        removeTagRange
     }
 
     public CollectionPanel() {
@@ -676,7 +683,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public DBObject getRoot(Object result) {
-                return doc;
+                BasicDBObject root = new BasicDBObject("doc", doc);
+                root.put("count", count);
+                root.put("bulk", bulk);
+                return root;
             }
 
             @Override
@@ -1114,7 +1124,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void findChunks(ButtonBase button) {
+    public void listChunks(ButtonBase button) {
         final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
         final DBCollection col = config.getCollection("chunks");
         CollectionPanel.doFind(col, new BasicDBObject("ns", getCollectionNode().getCollection().getFullName()));
@@ -1377,5 +1387,159 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             cmd.put("usePowerOf2Sizes", newPwr2);
             new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd).addJob();
         }
+    }
+    
+    void refreshTagRangeList() {
+        String ns = getCollectionNode().getCollection().getFullName();
+        ListArea list = (ListArea) getBoundUnit(Item.tagRangeList);
+        final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
+        final DBCollection col = config.getCollection("tags");
+        DBCursor cur = col.find(new BasicDBObject("ns", ns));
+        
+        ArrayList<String> ranges = new ArrayList<String>();
+        while (cur.hasNext()) {
+            BasicDBObject range = (BasicDBObject) cur.next();
+            ranges.add(MongoUtils.getJSON(range));
+        }
+        list.items = ranges.toArray(new String[ranges.size()]);
+        list.structureComponent();
+    }
+
+    public void manageTagRanges(ButtonBase button) {
+        FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.manageTagRanges)).getDialog();
+        refreshTagRangeList();
+        dialog.show();
+    }
+    
+    public void addTagRange(ButtonBase button) {
+        final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
+        final DBCollection col = config.getCollection("tags");
+        final String ns = getCollectionNode().getCollection().getFullName();
+
+        TagRangeDialog dia = (TagRangeDialog) getBoundUnit(Item.tagRangeDialog);
+        dia.resetForNew(config, ns);
+        if (!dia.show()) {
+            return;
+        }
+        
+        final BasicDBObject doc = dia.getRange(ns);
+        
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                return col.insert(doc);
+            }
+
+            @Override
+            public String getNS() {
+                return ns;
+            }
+
+            @Override
+            public String getShortName() {
+                return "Add Tag Range";
+            }
+
+            @Override
+            public DBObject getRoot(Object result) {
+                BasicDBObject root = new BasicDBObject("doc", doc);
+                return root;
+            }
+            
+            @Override
+            public void wrapUp(Object res) {
+                super.wrapUp(res);
+                refreshTagRangeList();
+            }
+        }.addJob();
+    }
+    
+    public void editTagRange(ButtonBase button) {
+        final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
+        final DBCollection col = config.getCollection("tags");
+        final String ns = getCollectionNode().getCollection().getFullName();
+
+        TagRangeDialog dia = (TagRangeDialog) getBoundUnit(Item.tagRangeDialog);
+        String value = getComponentStringFieldValue(Item.tagRangeList);
+        BasicDBObject range = (BasicDBObject) JSON.parse(value);
+        dia.resetForEdit(config, range);
+        if (!dia.show()) {
+            return;
+        }
+        
+        final BasicDBObject doc = dia.getRange(ns);
+        
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                return col.save(doc);
+            }
+
+            @Override
+            public String getNS() {
+                return ns;
+            }
+
+            @Override
+            public String getShortName() {
+                return "Edit Tag Range";
+            }
+
+            @Override
+            public DBObject getRoot(Object result) {
+                BasicDBObject root = new BasicDBObject("doc", doc);
+                return root;
+            }
+            
+            @Override
+            public void wrapUp(Object res) {
+                super.wrapUp(res);
+                refreshTagRangeList();
+            }
+        }.addJob();
+    }
+    
+    public void removeTagRange(ButtonBase button) {
+        final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
+        final DBCollection col = config.getCollection("tags");
+
+        final String ns = getCollectionNode().getCollection().getFullName();
+        String value = getComponentStringFieldValue(Item.tagRangeList);
+        BasicDBObject range = (BasicDBObject) JSON.parse(value);
+        final DBObject min = (DBObject) range.get("min");
+
+        final DBObject doc = new BasicDBObject("_id", new BasicDBObject("ns", ns).append("min", min));
+
+        new DbJob() {
+
+            @Override
+            public Object doRun() {
+                return col.remove(doc);
+            }
+
+            @Override
+            public String getNS() {
+                return ns;
+            }
+
+            @Override
+            public String getShortName() {
+                return "Remove Tag Range";
+            }
+
+            @Override
+            public DBObject getRoot(Object result) {
+                BasicDBObject root = new BasicDBObject("doc", doc);
+                return root;
+            }
+            
+            @Override
+            public void wrapUp(Object res) {
+                super.wrapUp(res);
+                refreshTagRangeList();
+            }
+        }.addJob();
     }
 }

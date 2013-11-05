@@ -24,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 
 import com.mongodb.util.Util;
 import java.io.IOException;
-import org.bson.BasicBSONObject;
 
 /**
  *

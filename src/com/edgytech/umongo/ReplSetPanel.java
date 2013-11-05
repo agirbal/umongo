@@ -54,6 +54,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         qoStart,
         qoEnd,
         qoQuery,
+        sharding,
         manageTags,
         tagList,
         addTag,
@@ -72,6 +73,10 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     @Override
     protected void updateComponentCustom(JPanel comp) {
         try {
+            if (getReplSetNode().getShardName() == null) {
+                ((Menu)getBoundUnit(Item.sharding)).enabled = false;
+            }
+            
             setStringFieldValue(Item.name, getReplSetNode().getName());
             String replicas = "";
             for (String replica : getReplSetNode().getReplicaNames()) {
@@ -343,8 +348,13 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }
     
     public void addTag(ButtonBase button) {
-        final DB db = ((RouterNode)getReplSetNode().getParentNode()).getMongo().getDB("config");
-        final DBCollection col = db.getCollection("shards");
+        final DB config = ((RouterNode)getReplSetNode().getParentNode()).getMongo().getDB("config");
+        final DBCollection col = config.getCollection("shards");
+        
+        ((DynamicComboBox)getBoundUnit(Item.atTag)).items = TagRangeDialog.getExistingTags(config);
+        FormDialog dia = (FormDialog) button.getDialog();
+        if (!dia.show())
+            return;
         final String tag = getStringFieldValue(Item.atTag);
         final DBObject query = new BasicDBObject("_id", getReplSetNode().getShardName());
         final DBObject update = new BasicDBObject("$addToSet", new BasicDBObject("tags", tag));

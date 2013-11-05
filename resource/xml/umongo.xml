@@ -590,7 +590,7 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
-                    <MenuItem id="findChunks" call="findChunks"/>
+                    <MenuItem id="listChunks" call="listChunks"/>
                     <MenuItem id="moveChunk" call="moveChunk" showDialog="false">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="mvckQuery" label="Chunk Query" toolTipText="Query to find the chunk by" nonEmpty="true"/>
@@ -602,6 +602,26 @@
                             <com.edgytech.umongo.DocBuilderField id="spckQuery" label="Chunk Query" toolTipText="Query to find the chunk by" nonEmpty="true"/>
                             <CheckBox id="spckOnValue" label="Split on Value" value="false" toolTipText="If true, split chunk on provided query value, otherwise split chunk in the middle"/>
                         </FormDialog>
+                    </MenuItem>
+                    <MenuSeparator/>
+                    <MenuItem id="manageTagRanges" call="manageTagRanges" showDialog="false">
+                        <FormDialog buttons="OK" okLabel="Done">
+                            <Zone>
+                                <Scroller zone="CENTER" preferredSize="320;-1">
+                                    <ListArea id="tagRangeList" items=""/>
+                                </Scroller>
+                                <Div axis="Y" zone="EAST">
+                                    <Button id="editTagRange" icon="edit.png" iconGroup="icons" toolTipText="Edit the tag range" call="editTagRange"/>
+                                    <Button id="addTagRange" icon="add.png" iconGroup="icons" toolTipText="Add a new tag range" call="addTagRange"/>
+                                    <Button id="removeTagRange" icon="dialog-close_16.png" iconGroup="icons" toolTipText="Remove the tag range" call="removeTagRange"/>
+                                </Div>
+                            </Zone>
+                        </FormDialog>
+                        <com.edgytech.umongo.TagRangeDialog id="tagRangeDialog">
+                            <com.edgytech.umongo.DocBuilderField id="min" label="Lower Bound" toolTipText="Lower bound value of the shard key. The shard key must be fully included." nonEmpty="true"/>
+                            <com.edgytech.umongo.DocBuilderField id="max" label="Upper Bound" toolTipText="Upper bound value of the shard key. The shard key must be fully included." nonEmpty="true"/>
+                            <DynamicComboBox id="tag" label="Tag" items="" value="0" editable="true" toolTipText="Tag name to associate the range with."/>
+                        </com.edgytech.umongo.TagRangeDialog>
                     </MenuItem>
                 </Menu>
                 <Menu id="tools">
@@ -775,9 +795,9 @@
                                     <ListArea id="tagList" items=""/>
                                 </Scroller>
                                 <Div axis="Y" zone="EAST">
-                                    <Button id="addTag" icon="add.png" iconGroup="icons" toolTipText="Add a new tag" call="addTag">
+                                    <Button id="addTag" icon="add.png" iconGroup="icons" toolTipText="Add a new tag" call="addTag" showDialog="false">
                                         <FormDialog id="addTagDialog">
-                                            <TextField id="atTag" label="Tag"/>
+                                            <DynamicComboBox id="atTag" label="Tag" value="0" editable="true" nonEmpty="true" toolTipText="A string representing the tag"/>
                                         </FormDialog>
                                     </Button>
                                     <Button id="removeTag" icon="dialog-close_16.png" iconGroup="icons" toolTipText="Remove the tag" call="removeTag"/>
