@@ -49,7 +49,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         saveBinaryOutputFile,
         decodeBinary,
         decodeBinaryText,
-        copyField,
+        copyKey,
         copyValue
     }
     
@@ -163,7 +163,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         }.addJob();
     }
     
-    public void copyField(ButtonBase button) {
+    public void copyKey(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
         StringSelection data = new StringSelection(node.getKey().toString());

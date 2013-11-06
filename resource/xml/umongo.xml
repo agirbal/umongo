@@ -27,6 +27,9 @@
             <MenuItem id="set" call="set"/>
             <MenuItem id="unset" call="unset"/>
             <MenuSeparator/>
+            <MenuItem id="copyKey" call="copyKey"/>
+            <MenuItem id="copyValue" call="copyValue"/>
+            <MenuSeparator/>
             <MenuItem id="compressionStats" call="compressionStats" showDialog="false" buttons="OK">
                 <FormDialog>
                     <Text id="compressionStatsOriginal" label="Original" field="true"/>
@@ -46,9 +49,6 @@
                     <TextArea id="decodeBinaryText" field="false" zone="CENTER" editable="false"/>
                 </FormDialog>
             </MenuItem>
-            <MenuSeparator/>
-            <MenuItem id="copyField" call="copyField"/>
-            <MenuItem id="copyValue" call="copyValue"/>
         </com.edgytech.umongo.DocumentFieldMenu>
         <com.edgytech.umongo.OptionDialog id="optionDialog">
             <TabbedDiv>
