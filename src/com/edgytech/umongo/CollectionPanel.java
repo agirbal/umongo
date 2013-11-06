@@ -172,7 +172,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         tagRangeDialog,
         addTagRange,
         editTagRange,
-        removeTagRange
+        removeTagRange,
+        distinct,
+        distinctKey,
+        distinctQuery
     }
 
     public CollectionPanel() {
@@ -354,6 +357,16 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 //        new DocView(null, "Group", col.getDB(), cmd.toDBObject()).addToTabbedDiv();
 
         new DbJobCmd(col.getDB(), cmd.toDBObject(), null, button).addJob();
+    }
+    
+    public void distinct(final ButtonBase button) {
+        final DBCollection col = getCollectionNode().getCollection();
+        final BasicDBObject cmd = new BasicDBObject("distinct", col.getName());
+        cmd.put("key", getStringFieldValue(Item.distinctKey));
+        DBObject query = ((DocBuilderField) getBoundUnit(Item.distinctQuery)).getDBObject();
+        if (query != null)
+            cmd.put("query", query);
+        new DbJobCmd(col.getDB(), cmd, null, button).addJob();
     }
 
     public void mapReduce(final ButtonBase button) {

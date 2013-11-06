@@ -407,6 +407,12 @@
                 <Menu id="command">
                     <MenuItem id="statsCmd" label="Stats" call="stats"/>
                     <MenuSeparator/>
+                    <MenuItem id="distinct" call="distinct">
+                        <FormDialog>
+                            <TextField id="distinctKey" label="Key" toolTipText="Name of the distinct key" nonEmpty="true" value=""/>
+                            <com.edgytech.umongo.DocBuilderField id="distinctQuery" label="Query" toolTipText="Query to filter the input, in JSON format"/>
+                        </FormDialog>
+                    </MenuItem>
                     <MenuItem id="group" call="group">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="grpKeys" label="Keys" toolTipText="Keys to group by, in JSON format" nonEmpty="true"/>
