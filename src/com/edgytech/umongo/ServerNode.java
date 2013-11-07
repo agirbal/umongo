@@ -107,13 +107,13 @@ public class ServerNode extends BaseTreeNode {
 
     @Override
     protected void updateNode() {
-        if (isConfig)
-            label = "Config MongoD";
-        else
-            label = "MongoD";
-        label += ": " + (host != null ? host : serverAddress.toString());
-        
+        boolean isArbiter = false;
         if (stats != null) {
+            isArbiter = stats.getBoolean("arbiterOnly", false);
+            if (isArbiter) {
+                icon = "a.png";
+            }
+            
             if (stats.getBoolean("ismaster", false)) {
                 if (!isConfig)
                     addOverlay("overlay/tick_circle_tiny.png");
@@ -130,6 +130,13 @@ public class ServerNode extends BaseTreeNode {
     //        }        
         }
         
+        if (isConfig)
+            label = "ConfigDB";
+        else if (isArbiter)
+            label = "Arbiter";
+        else
+            label = "MongoD";
+        label += ": " + (host != null ? host : serverAddress.toString());        
     }
 
     @Override

@@ -14,7 +14,5 @@
         <MenuItem id="close" bind="globalStore.mongoPanel.menu.close"/>
         <MenuSeparator/>
         <MenuItem id="createDB" label="Create DB" bind="globalStore.mongoPanel.menu.createDB"/>
-        <MenuSeparator/>
-        <MenuItem id="options" bind="globalStore.mongoPanel.menu.options"/>
     </PopUpMenu>
 </TreeNodeLabel>

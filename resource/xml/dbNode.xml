@@ -18,7 +18,6 @@
         <MenuItem id="authenticate" bind="globalStore.dbPanel.menu.authenticate"/>
         <MenuSeparator/>
         <MenuItem id="command" bind="globalStore.dbPanel.menu.commandCmd"/>
-        <MenuItem id="eval" bind="globalStore.dbPanel.eval"/>
-        <MenuItem id="options" bind="globalStore.dbPanel.menu.options"/>
+        <MenuItem id="eval" bind="globalStore.dbPanel.menu.eval"/>
     </PopUpMenu>
 </TreeNodeLabel>

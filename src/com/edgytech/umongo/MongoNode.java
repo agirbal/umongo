@@ -75,15 +75,17 @@ public class MongoNode extends BaseTreeNode {
                 getLogger().log(Level.INFO, e.getMessage(), e);
             }
 
-            // could be replset of 1, check
-            try {
-                CommandResult res = node.getServerDB().command(new BasicDBObject("isMaster", 1), mongo.getOptions());
-                if (res.containsField("setName")) {
-                    addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, null));
-                    added = true;
+            if (mongo.getReplicaSetStatus() != null) {
+                // could be replset of 1, check
+                try {
+                    CommandResult res = node.getServerDB().command(new BasicDBObject("isMaster", 1), mongo.getOptions());
+                    if (res.containsField("setName")) {
+                        addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, null));
+                        added = true;
+                    }
+                } catch (Exception e) {
+                    getLogger().log(Level.INFO, e.getMessage(), e);
                 }
-            } catch (Exception e) {
-                getLogger().log(Level.INFO, e.getMessage(), e);
             }
             
             if (!added)

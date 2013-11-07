@@ -37,6 +37,10 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     public enum Item {
 
         connect,
+        connectPointsList,
+        connectDialog,
+        useConnectPoint,
+        removeConnectPoint,
         connectProgressDialog,
         exit,
         preferences,
@@ -86,9 +90,55 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         }.addJob();
     }
 
+    void refreshConnectPointsList() {
+        ListArea list = ((ListArea) getBoundUnit(Item.connectPointsList));
+        list.items = list.xmlGetLocalCopiesIds();
+        if (list.items == null || list.items.length == 0) {
+            list.items = new String[1];
+            list.items[0] = "Default";
+        }
+        list.structureComponent();
+    }
+    
     public void connect(ButtonBase button) {
+        refreshConnectPointsList();
+        FormDialog dia = (FormDialog) button.getDialog();
+        dia.show();
+    }
+    
+    public void useConnectPoint(ButtonBase button) {
+        ListArea list = ((ListArea) getBoundUnit(Item.connectPointsList));
+        ConnectDialog dialog = (ConnectDialog) getBoundUnit(Item.connectDialog);
+        String id = getComponentStringFieldValue(Item.connectPointsList);
+        dialog.setId(id);
+        list.xmlLoadLocalCopy(dialog, null, null);
+        dialog.setId(Item.connectDialog.name());
+        dialog.setName(id);
+        
+        if (dialog.show()) {
+            connect();
+            // the name may have changed
+            String newId = dialog.getName();
+            dialog.setId(newId);
+            list.xmlSaveLocalCopy(dialog, null, null);
+            dialog.setId(Item.connectDialog.name());        
+            // we're done
+            ((FormDialog)((MenuItem)getBoundUnit(Item.connect)).getDialog()).getOkButton().doClick();
+        }
+    }
+
+    public void removeConnectPoint(ButtonBase button) {
+        ListArea list = ((ListArea) getBoundUnit(Item.connectPointsList));
+        String id = getComponentStringFieldValue(Item.connectPointsList);
+        if (id != null) {
+            list.xmlRemoveLocalCopy(id);
+            refreshConnectPointsList();
+        }
+    }
+    
+    public void connect() {
         try {
-            ConnectDialog dialog = (ConnectDialog) ((MenuItem) getBoundUnit(Item.connect)).getDialog();
+            ConnectDialog dialog = (ConnectDialog) getBoundUnit(Item.connectDialog);
             ProgressDialog progress = (ProgressDialog) getBoundUnit(Item.connectProgressDialog);
             Mongo mongo = null;
             List<String> dbs = new ArrayList<String>();

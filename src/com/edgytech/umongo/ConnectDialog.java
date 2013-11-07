@@ -17,6 +17,7 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.FormDialog;
 import com.mongodb.MongoOptions;
+import com.mongodb.ReadPreference;
 import java.io.IOException;
 import java.net.*;
 import javax.net.SocketFactory;
@@ -32,7 +33,7 @@ import javax.net.ssl.X509TrustManager;
 public class ConnectDialog extends FormDialog {
 
     enum Item {
-
+        name,
         uri,
         servers,
         databases,
@@ -75,7 +76,10 @@ public class ConnectDialog extends FormDialog {
         moptions.socketTimeout = getIntFieldValue(Item.socketTimeout);
 //        moptions.autoConnectRetry = getBooleanFieldValue(Item.autoConnectRetry);
         moptions.safe = getBooleanFieldValue(Item.safeWrites);
-        moptions.slaveOk = getBooleanFieldValue(Item.secondaryReads);
+//        moptions.slaveOk = getBooleanFieldValue(Item.secondaryReads);
+        if (!getBooleanFieldValue(Item.secondaryReads)) {
+            moptions.readPreference = ReadPreference.secondaryPreferred();
+        }
 
         int stype = getIntFieldValue(Item.socketType);
         int proxy = getIntFieldValue(Item.proxyType);
@@ -167,5 +171,13 @@ public class ConnectDialog extends FormDialog {
         }
 
         return moptions;
+    }
+    
+    void setName(String name) {
+        setStringFieldValue(Item.name, name);
+    }
+    
+    String getName() {
+        return getStringFieldValue(Item.name);
     }
 }

@@ -963,8 +963,20 @@
     <Frame id="frame" title="UMongo" masterFrame="true" menuId="mainmenu" icon="mongo_leaf_32.png" iconGroup="icons" contexts="default;Connect" preferredSize="1100;700" bgColor="255;255;255">
         <com.edgytech.umongo.MainMenu id="mainMenu" start="start">
             <Menu id="file" alt="f">
-                <MenuItem id="connect" alt="c" key="k" keyMod="cmd" call="connect">
+                <MenuItem id="connect" alt="c" key="k" keyMod="cmd" call="connect" showDialog="false">
+                    <FormDialog buttons="OK" okLabel="Done">
+                        <Zone>
+                            <Scroller zone="CENTER" preferredSize="320;-1">
+                                <ListArea id="connectPointsList" items=""/>
+                            </Scroller>
+                            <Div axis="Y" zone="EAST">
+                                <Button id="useConnectPoint" icon="right.png" iconGroup="icons" toolTipText="Use the connect point" call="useConnectPoint"/>
+                                <Button id="removeConnectPoint" icon="dialog-close_16.png" iconGroup="icons" toolTipText="Remove the connect point" call="removeConnectPoint"/>
+                            </Div>
+                        </Zone>
+                    </FormDialog>
                     <com.edgytech.umongo.ConnectDialog id="connectDialog" helpFile="/html/connectHelp.html">
+                        <TextField id="name" value="" toolTipText="Name this Connect Point should be saved under"/>
                         <Text value="Either provide a URI ..."/>
                         <DynamicComboBox id="uri" label="URI" toolTipText="the MongoDB URI like 'mongodb://...'" items="" value="0" editable="true" recordItems="true"/>
                         <Text value="Or the settings below"/>
