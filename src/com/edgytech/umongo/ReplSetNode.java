@@ -26,11 +26,11 @@ import java.util.logging.Level;
  */
 public class ReplSetNode extends BaseTreeNode {
 
-    Mongo mongo;
+    MongoClient mongo;
     String name;
     String shardName;
 
-    public ReplSetNode(String name, Mongo mongo, String shardName) {
+    public ReplSetNode(String name, MongoClient mongo, String shardName) {
         this.mongo = mongo;
         this.name = name != null ? name : "Replica Set";
         this.shardName = shardName;
@@ -42,8 +42,8 @@ public class ReplSetNode extends BaseTreeNode {
         markStructured();
     }
 
-    public ReplSetNode(String name, List<ServerAddress> addrs, MongoOptions opts, String shardName) {
-        this.mongo = new Mongo(addrs, opts);
+    public ReplSetNode(String name, List<ServerAddress> addrs, MongoClientOptions opts, String shardName) {
+        this.mongo = new MongoClient(addrs, opts);
         this.name = name != null ? name : "Replica Set";
         this.shardName = shardName;
         try {
@@ -75,15 +75,15 @@ public class ReplSetNode extends BaseTreeNode {
         for (int i = 0; i < members.size(); ++i) {
             String host = (String) ((DBObject)members.get(i)).get("host");
             try {
-                // this will create new Mongo instance, catch any exception
-                addChild(new ServerNode(host, mongo.getMongoOptions(), true, false));
+                // this will create new MongoClient instance, catch any exception
+                addChild(new ServerNode(host, mongo.getMongoClientOptions(), true, false));
             } catch (Exception e) {
                 getLogger().log(Level.WARNING, null, e);
             }
         }
     }
 
-    public Mongo getMongo() {
+    public MongoClient getMongoClient() {
         return mongo;
     }
 

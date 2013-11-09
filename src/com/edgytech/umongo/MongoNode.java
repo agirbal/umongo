@@ -27,11 +27,11 @@ import javax.swing.ImageIcon;
  */
 public class MongoNode extends BaseTreeNode {
 
-    Mongo mongo;
+    MongoClient mongo;
     boolean specifiedDb;
     List<String> dbs;
 
-    public MongoNode(Mongo mongo, List<String> dbs) {
+    public MongoNode(MongoClient mongo, List<String> dbs) {
         this.mongo = mongo;
         this.dbs = dbs;
         this.specifiedDb = dbs != null;
@@ -44,7 +44,7 @@ public class MongoNode extends BaseTreeNode {
         markStructured();
     }
 
-    public Mongo getMongo() {
+    public MongoClient getMongoClient() {
         return mongo;
     }
 

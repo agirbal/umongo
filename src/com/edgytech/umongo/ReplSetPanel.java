@@ -94,12 +94,12 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void rsConfig(ButtonBase button) {
-        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
+        final DBCollection col = getReplSetNode().getMongoClient().getDB("local").getCollection("system.replset");
         CollectionPanel.doFind(col, null);
     }
     
     public void rsStatus(ButtonBase button) {
-        new DbJobCmd(getReplSetNode().getMongo().getDB("admin"), "replSetGetStatus").addJob();
+        new DbJobCmd(getReplSetNode().getMongoClient().getDB("admin"), "replSetGetStatus").addJob();
     }
     
     public void rsOplogInfo(ButtonBase button) {
@@ -107,7 +107,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public Object doRun() {
-                return MongoUtils.getReplicaSetInfo(getReplSetNode().getMongo());
+                return MongoUtils.getReplicaSetInfo(getReplSetNode().getMongoClient());
             }
 
             @Override
@@ -125,12 +125,12 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     public void initiate(ButtonBase button) {
         DBObject config = ((DocBuilderField)getBoundUnit(Item.initConfig)).getDBObject();
         DBObject cmd = new BasicDBObject("replSetInitiate", config);
-        DB admin = getReplSetNode().getMongo().getDB("admin");
+        DB admin = getReplSetNode().getMongoClient().getDB("admin");
         new DbJobCmd(admin, cmd, this, null).addJob();
     }
     
     public void reconfigure(ButtonBase button) {
-        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
+        final DBCollection col = getReplSetNode().getMongoClient().getDB("local").getCollection("system.replset");
         DBObject oldConf = col.findOne();
         if (oldConf == null) {
             new InfoDialog(null, "reconfig error", null, "No existing replica set configuration").show();
@@ -145,14 +145,14 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }
 
     static public void reconfigure(final ReplSetNode rsNode, DBObject config) {
-        final DBCollection col = rsNode.getMongo().getDB("local").getCollection("system.replset");
+        final DBCollection col = rsNode.getMongoClient().getDB("local").getCollection("system.replset");
         DBObject oldConf = col.findOne();
         int version = ((Integer) oldConf.get("version")) + 1;
         config.put("version", version);
         
         // reconfig usually triggers an error as connections are bounced.. try to absorb it
         final DBObject cmd = new BasicDBObject("replSetReconfig", config);
-        final DB admin = rsNode.getMongo().getDB("admin");
+        final DB admin = rsNode.getMongoClient().getDB("admin");
 
         new DbJob() {
 
@@ -199,7 +199,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void addReplica(ButtonBase button) {
-        final DBCollection col = getReplSetNode().getMongo().getDB("local").getCollection("system.replset");
+        final DBCollection col = getReplSetNode().getMongoClient().getDB("local").getCollection("system.replset");
         DBObject config = col.findOne();
         if (config == null) {
             new InfoDialog(null, "reconfig error", null, "No existing replica set configuration").show();
@@ -232,10 +232,10 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
                 if (!node.hasChildren())
                     return null;
 
-                ArrayList<Mongo> svrs = new ArrayList<Mongo>();
+                ArrayList<MongoClient> svrs = new ArrayList<MongoClient>();
                 for (XmlUnit unit : node.getChildren()) {
                     ServerNode svr = (ServerNode) unit;
-                    Mongo svrm = svr.getServerMongo();
+                    MongoClient svrm = svr.getServerMongoClient();
                     try {
                         svrm.getDatabaseNames();
                     } catch (Exception e) {
@@ -245,7 +245,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
                 }
 
                 BasicDBObject res = new BasicDBObject();
-                Mongo m = getReplSetNode().getMongo();
+                MongoClient m = getReplSetNode().getMongoClient();
                 for (String dbname : m.getDatabaseNames()) {
                     DB db = m.getDB(dbname);
                     BasicDBObject dbres = new BasicDBObject();
@@ -255,7 +255,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
                         BasicDBObject values = new BasicDBObject();
                         boolean same = true;
                         long ref = -1;
-                        for (Mongo svrm : svrs) {
+                        for (MongoClient svrm : svrs) {
                             DBCollection svrcol = svrm.getDB(dbname).getCollection(colname);
                             long value = 0;
                             if (stat.startsWith("Count")) {
@@ -297,7 +297,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
 
 
     public void queryOplog(ButtonBase button) {
-        final DBCollection oplog = getReplSetNode().getMongo().getDB("local").getCollection("oplog.rs");
+        final DBCollection oplog = getReplSetNode().getMongoClient().getDB("local").getCollection("oplog.rs");
         DBObject start = ((DocBuilderField) getBoundUnit(Item.qoStart)).getDBObject();
         DBObject end = ((DocBuilderField) getBoundUnit(Item.qoEnd)).getDBObject();
         DBObject extra = ((DocBuilderField) getBoundUnit(Item.qoQuery)).getDBObject();
@@ -322,7 +322,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
             return;
         
         ListArea list = (ListArea) getBoundUnit(Item.tagList);
-        final DB db = ((RouterNode)getReplSetNode().getParentNode()).getMongo().getDB("config");
+        final DB db = ((RouterNode)getReplSetNode().getParentNode()).getMongoClient().getDB("config");
         DBObject shard = db.getCollection("shards").findOne(new BasicDBObject("_id", shardName));
         if (shard.containsField("tags")) {
             BasicDBList tags = (BasicDBList) shard.get("tags");
@@ -348,7 +348,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }
     
     public void addTag(ButtonBase button) {
-        final DB config = ((RouterNode)getReplSetNode().getParentNode()).getMongo().getDB("config");
+        final DB config = ((RouterNode)getReplSetNode().getParentNode()).getMongoClient().getDB("config");
         final DBCollection col = config.getCollection("shards");
         
         ((DynamicComboBox)getBoundUnit(Item.atTag)).items = TagRangeDialog.getExistingTags(config);
@@ -392,7 +392,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }
     
     public void removeTag(ButtonBase button) {
-        final DB db = ((RouterNode)getReplSetNode().getParentNode()).getMongo().getDB("config");
+        final DB db = ((RouterNode)getReplSetNode().getParentNode()).getMongoClient().getDB("config");
         final DBCollection col = db.getCollection("shards");
         final String tag = getComponentStringFieldValue(Item.tagList);
         if (tag == null)

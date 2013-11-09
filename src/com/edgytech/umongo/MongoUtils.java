@@ -118,7 +118,7 @@ public class MongoUtils {
         return getSerializer().serialize(value);
     }
     
-    public static DBObject getReplicaSetInfo(Mongo mongo) {
+    public static DBObject getReplicaSetInfo(MongoClient mongo) {
         DB db = mongo.getDB("local");
         DBObject result = new BasicDBObject();
         DBCollection namespaces = db.getCollection("system.namespaces");
@@ -166,7 +166,7 @@ public class MongoUtils {
         return result;
     }
 
-    public static boolean isBalancerOn(Mongo mongo) {
+    public static boolean isBalancerOn(MongoClient mongo) {
         final DB config = mongo.getDB("config");
         final DBCollection settings = config.getCollection("settings");
         BasicDBObject res = (BasicDBObject) settings.findOne(new BasicDBObject("_id", "balancer"));

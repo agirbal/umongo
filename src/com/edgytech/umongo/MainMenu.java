@@ -16,13 +16,14 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.*;
-import com.mongodb.Mongo;
-import com.mongodb.MongoURI;
 import com.mongodb.ServerAddress;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import com.edgytech.umongo.MainMenu.Item;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.MongoURI;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -146,15 +147,15 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         try {
             ConnectDialog dialog = (ConnectDialog) getBoundUnit(Item.connectDialog);
             ProgressDialog progress = (ProgressDialog) getBoundUnit(Item.connectProgressDialog);
-            Mongo mongo = null;
+            MongoClient mongo = null;
             List<String> dbs = new ArrayList<String>();
             String uri = dialog.getStringFieldValue(ConnectDialog.Item.uri);
             if (!uri.trim().isEmpty()) {
                 if (!uri.startsWith(MongoURI.MONGODB_PREFIX)) {
                     uri = MongoURI.MONGODB_PREFIX + uri;
                 }
-                MongoURI muri = new MongoURI(uri);
-                mongo = new Mongo(muri);
+                MongoClientURI muri = new MongoClientURI(uri);
+                mongo = new MongoClient(muri);
                 String db = muri.getDatabase();
                 if (db != null && !db.trim().isEmpty()) {
                     dbs.add(db.trim());
@@ -174,8 +175,8 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
                         addrs.add(new ServerAddress(tmp[0]));
                     }
                 }
-                mongo = new Mongo(addrs, dialog.getMongoOptions());
-//                mongo = new MongoClient(addrs, dialog.getMongoOptions());
+                mongo = new MongoClient(addrs, dialog.getMongoClientOptions());
+//                mongo = new MongoClient(addrs, dialog.getMongoClientOptions());
                 String sdbs = dialog.getStringFieldValue(ConnectDialog.Item.databases);
                 if (!sdbs.trim().isEmpty()) {
                     for (String db : sdbs.split(",")) {
@@ -201,7 +202,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
                 }
             }
 
-            final Mongo fmongo = mongo;
+            final MongoClient fmongo = mongo;
             final List<String> fdbs = dbs;
             // doing in background can mean concurrent modification, but dialog is modal so unlikely
             progress.show(new ProgressDialogWorker(progress) {
@@ -211,7 +212,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
 
                 @Override
                 protected Object doInBackground() throws Exception {
-                    UMongo.instance.addMongo(fmongo, fdbs);
+                    UMongo.instance.addMongoClient(fmongo, fdbs);
                     return null;
                 }
             });

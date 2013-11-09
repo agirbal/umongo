@@ -94,7 +94,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
                 ((Menu)getBoundUnit(Item.replica)).enabled = false;
             }
             
-            Mongo svrMongo = node.getServerMongo();
+            MongoClient svrMongo = node.getServerMongoClient();
             ServerAddress addr = getServerNode().getServerAddress();
             setStringFieldValue(Item.host, addr.toString());
             setStringFieldValue(Item.address, addr.getSocketAddress().toString());
@@ -125,7 +125,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
 
     public void rsStepDown(ButtonBase button) {
         final DBObject cmd = new BasicDBObject("replSetStepDown", 1);
-        final DB admin = getServerNode().getServerMongo().getDB("admin");
+        final DB admin = getServerNode().getServerMongoClient().getDB("admin");
 
         new DbJob() {
 
@@ -167,11 +167,11 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     public void rsFreeze(ButtonBase button) {
         int sec = getIntFieldValue(Item.rsFreezeTime);
         DBObject cmd = new BasicDBObject("replSetFreeze", sec);
-        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
     }
 
     public void getLog(ButtonBase button) {
-        final DB db = getServerNode().getServerMongo().getDB("admin");
+        final DB db = getServerNode().getServerMongoClient().getDB("admin");
         final String type = getStringFieldValue(Item.getLogType);
         final DBObject cmd = new BasicDBObject("getLog", type);
         new DbJob() {
@@ -203,35 +203,35 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void serverStatus(ButtonBase button) {
-        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "serverStatus").addJob();
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "serverStatus").addJob();
     }
 
     public void serverBuildInfo(ButtonBase button) {
-        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "buildinfo").addJob();
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "buildinfo").addJob();
     }
 
     public void isMaster(ButtonBase button) {
-        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "isMaster").addJob();
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "isMaster").addJob();
     }
 
     public void rsConfig(ButtonBase button) {
-        final DBCollection col = getServerNode().getServerMongo().getDB("local").getCollection("system.replset");
+        final DBCollection col = getServerNode().getServerMongoClient().getDB("local").getCollection("system.replset");
         CollectionPanel.doFind(col, null);
     }
 
     public void rsStatus(ButtonBase button) {
-        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), "replSetGetStatus").addJob();
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "replSetGetStatus").addJob();
     }
 
     public void rsOplogInfo(ButtonBase button) {
-        new DocView(null, "Oplog Info", null, "Oplog of " + getServerNode().getServerAddress(), MongoUtils.getReplicaSetInfo(getServerNode().getServerMongo())).addToTabbedDiv();
+        new DocView(null, "Oplog Info", null, "Oplog of " + getServerNode().getServerAddress(), MongoUtils.getReplicaSetInfo(getServerNode().getServerMongoClient())).addToTabbedDiv();
     }
 
     public void setParameter(ButtonBase button) {
         BasicDBObject cmd = new BasicDBObject("setParameter", 1);
         DBObject param = ((DocBuilderField) getBoundUnit(Item.setParameterValue)).getDBObject();
         cmd.putAll(param);
-        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
     }
 
     public void getParameter(ButtonBase button) {
@@ -241,24 +241,24 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
             cmd.put("getParameter", "*");
         else
             cmd.put(param, 1);
-        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
     }
 
     public void setLogLevel(ButtonBase button) {
         BasicDBObject cmd = new BasicDBObject("setParameter", 1);
         int level = getIntFieldValue(Item.setLogLevelValue);
         cmd.put("logLevel", level);
-        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
     }
 
     public void currentOps(ButtonBase button) {
-        final Mongo mongo = getServerNode().getServerMongo();
+        final MongoClient mongo = getServerNode().getServerMongoClient();
         final DBObject query = ((DocBuilderField) getBoundUnit(Item.currentOpsQuery)).getDBObject();
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.inprog"), query);
     }
 
     public void killOp(ButtonBase button) {
-        final Mongo mongo = getServerNode().getServerMongo();
+        final MongoClient mongo = getServerNode().getServerMongoClient();
         final int opid = getIntFieldValue(Item.killOpId);
         final DBObject query = new BasicDBObject("op", opid);
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query);
@@ -266,7 +266,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     
     public void rsRemove(ButtonBase button) throws Exception {
         ReplSetNode replset = (ReplSetNode) getServerNode().getParentNode();
-        final DBCollection col = replset.getMongo().getDB("local").getCollection("system.replset");
+        final DBCollection col = replset.getMongoClient().getDB("local").getCollection("system.replset");
         DBObject config = col.findOne();
         
         BasicDBList members = (BasicDBList) config.get("members");
@@ -287,7 +287,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     
     public void rsReconfigure(ButtonBase button) throws Exception {
         ReplSetNode replset = (ReplSetNode) getServerNode().getParentNode();
-        final DBCollection col = replset.getMongo().getDB("local").getCollection("system.replset");
+        final DBCollection col = replset.getMongoClient().getDB("local").getCollection("system.replset");
         DBObject config = col.findOne();
         
         BasicDBList members = (BasicDBList) config.get("members");
@@ -324,6 +324,6 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         ConfirmDialog dia = (ConfirmDialog) getBoundUnit(Item.shutdownConfirm);
         if (!dia.show())
             return;
-        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
     }
 }

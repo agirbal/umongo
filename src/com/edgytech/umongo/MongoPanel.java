@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.swing.JPanel;
 import com.edgytech.umongo.MongoPanel.Item;
+import com.mongodb.MongoClient;
 
 /**
  *
@@ -87,7 +88,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     @Override
     protected void updateComponentCustom(JPanel old) {
         try {
-            Mongo mongo = getMongoNode().getMongo();
+            MongoClient mongo = getMongoNode().getMongoClient();
             setStringFieldValue(Item.version, mongo.getVersion());
 
             ServerAddress master = mongo.getAddress();
@@ -134,7 +135,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         if (false) {
             cmd.put("async", 1);
         }
-        DB admin = getMongoNode().getMongo().getDB("admin");
+        DB admin = getMongoNode().getMongoClient().getDB("admin");
         new DbJobCmd(admin, cmd).addJob();
     }
 
@@ -143,7 +144,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
 
             @Override
             public Object doRun() throws IOException {
-                Mongo mongo = getMongoNode().getMongo();
+                MongoClient mongo = getMongoNode().getMongoClient();
                 boolean locked = mongo.isLocked();
                 if (locked) {
                     return mongo.unlock();
@@ -176,7 +177,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void readWriteOptions(ButtonBase button) {
-        Mongo mongo = getMongoNode().getMongo();
+        MongoClient mongo = getMongoNode().getMongoClient();
         OptionDialog od = UMongo.instance.getGlobalStore().getOptionDialog();
         od.update(mongo.getOptions(), mongo.getWriteConcern(), mongo.getReadPreference());
         if (!od.show()) {
@@ -190,7 +191,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
 
     public void createDB(ButtonBase button) {
         final String name = getStringFieldValue(Item.createDbName);
-        final Mongo mongo = getMongoNode().getMongo();
+        final MongoClient mongo = getMongoNode().getMongoClient();
         // need to do a command to actually create on server
         final DB db = mongo.getDB(name);
 
@@ -222,7 +223,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void authenticate(final ButtonBase button) {
-        final Mongo mongo = getMongoNode().getMongo();
+        final MongoClient mongo = getMongoNode().getMongoClient();
         final String user = getStringFieldValue(Item.authUser);
         final String passwd = getStringFieldValue(Item.authPassword);
 
@@ -262,23 +263,23 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void serverStatus(ButtonBase button) {
-        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), "serverStatus").addJob();
+        new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "serverStatus").addJob();
     }
 
     public void logRotate(ButtonBase button) {
-        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), "logRotate").addJob();
+        new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "logRotate").addJob();
     }
 
     public void showLog(ButtonBase button) {
-        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), new BasicDBObject("getLog", "global")).addJob();
+        new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), new BasicDBObject("getLog", "global")).addJob();
     }
 
     public void shutdown(ButtonBase button) {
-        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), "shutdown").addJob();
+        new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "shutdown").addJob();
     }
 
     public void cloneDB(ButtonBase button) {
-        final Mongo mongo = getMongoNode().getMongo();
+        final MongoClient mongo = getMongoNode().getMongoClient();
         final String host = getStringFieldValue(Item.cloneDBHost);
         final String from = getStringFieldValue(Item.cloneDBFrom);
         final String to = getStringFieldValue(Item.cloneDBTo);
@@ -297,20 +298,20 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void currentOps(ButtonBase button) {
-        final Mongo mongo = getMongoNode().getMongo();
+        final MongoClient mongo = getMongoNode().getMongoClient();
         final DBObject query = ((DocBuilderField) getBoundUnit(Item.currentOpsQuery)).getDBObject();
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.inprog"), query);
     }
 
     public void killOp(ButtonBase button) {
-        final Mongo mongo = getMongoNode().getMongo();
+        final MongoClient mongo = getMongoNode().getMongoClient();
         final int opid = getIntFieldValue(Item.killOpId);
         final DBObject query = new BasicDBObject("op", opid);
         CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query);
     }
 
     public void isMaster(ButtonBase button) {
-        new DbJobCmd(getMongoNode().getMongo().getDB("admin"), "isMaster").addJob();
+        new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "isMaster").addJob();
     }
 
 }

@@ -121,7 +121,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
             cmd.put("name", shardName);
         if (maxsize > 0)
             cmd.put("maxSize", maxsize);
-        final DB db = router.getMongo().getDB("admin");
+        final DB db = router.getMongoClient().getDB("admin");
         new DbJobCmd(db, cmd, this, null).addJob();
     }
 
@@ -136,20 +136,20 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
             return;
         
         final BasicDBObject cmd = new BasicDBObject("removeshard", getStringFieldValue(Item.rsShard));
-        final DB db = getRouterNode().getMongo().getDB("admin");
+        final DB db = getRouterNode().getMongoClient().getDB("admin");
         new DbJobCmd(db, cmd, this, null).addJob();
     }
 
     public void listShards(ButtonBase button) {
-        new DbJobCmd(getRouterNode().getMongo().getDB("admin"), "listShards").addJob();
+        new DbJobCmd(getRouterNode().getMongoClient().getDB("admin"), "listShards").addJob();
     }
 
     public void flushConfiguration(ButtonBase button) {
-        new DbJobCmd(getRouterNode().getMongo().getDB("admin"), "flushRouterConfig").addJob();
+        new DbJobCmd(getRouterNode().getMongoClient().getDB("admin"), "flushRouterConfig").addJob();
     }
 
     public void balancer(ButtonBase button) {
-        final Mongo mongo = getRouterNode().getMongo();
+        final MongoClient mongo = getRouterNode().getMongoClient();
         final DB config = mongo.getDB("config");
         final DBCollection settings = config.getCollection("settings");
 
@@ -220,7 +220,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void regenConfigDB(ButtonBase button) throws UnknownHostException {
-        Mongo cmongo = getRouterNode().getMongo();
+        MongoClient cmongo = getRouterNode().getMongoClient();
         String servers = getStringFieldValue(Item.regenServers);
         final String db = getStringFieldValue(Item.regenDB);
         final String col = getStringFieldValue(Item.regenCollection);
@@ -238,7 +238,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
         String txt = "";
         String primaryShard = null;
         final BasicDBObject shardList = new BasicDBObject();
-        HashMap<Mongo, String> mongoToShard = new HashMap<Mongo, String>();
+        HashMap<MongoClient, String> mongoToShard = new HashMap<MongoClient, String>();
         sLoop:
         for (String server : serverList) {
             server = server.trim();
@@ -255,7 +255,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
             ServerAddress addr = new ServerAddress(server);
 
             // filter out if replset already exists
-            for (Mongo replset : mongoToShard.keySet()) {
+            for (MongoClient replset : mongoToShard.keySet()) {
                 if (replset.getServerAddressList().contains(addr)) {
                     continue sLoop;
                 }
@@ -263,8 +263,8 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
 
             list.clear();
             list.add(addr);
-            Mongo mongo = new Mongo(list);
-//            UMongo.instance.addMongo(mongo, null);
+            MongoClient mongo = new MongoClient(list);
+//            UMongo.instance.addMongoClient(mongo, null);
             // make request to force server detection
             mongo.getDatabaseNames();
             mongoToShard.put(mongo, shard);
@@ -355,8 +355,8 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
 
         // now fetch all records from each shard
         final AtomicInteger todo = new AtomicInteger(mongoToShard.size());
-        for (Map.Entry<Mongo, String> entry : mongoToShard.entrySet()) {
-            final Mongo mongo = entry.getKey();
+        for (Map.Entry<MongoClient, String> entry : mongoToShard.entrySet()) {
+            final MongoClient mongo = entry.getKey();
             final String shard = entry.getValue();
             new DbJob() {
 

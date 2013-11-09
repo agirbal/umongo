@@ -24,28 +24,21 @@ import com.edgytech.swingfast.TabbedDiv;
 import com.edgytech.swingfast.Tree;
 import com.edgytech.swingfast.XmlJComponentUnit;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
-import com.mongodb.util.JSON;
 import java.awt.event.WindowEvent;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
 import javax.swing.SwingUtilities;
 import org.xml.sax.SAXException;
 
@@ -171,7 +164,7 @@ public class UMongo extends Application implements Runnable {
         return (GlobalStore) getBoundUnit(Item.globalStore);
     }
 
-    void addMongo(Mongo mongo, List<String> dbs) throws MongoException, UnknownHostException {
+    void addMongoClient(MongoClient mongo, List<String> dbs) throws MongoException, UnknownHostException {
         MongoNode node = new MongoNode(mongo, dbs);
         getTree().addChild(node);
         mongos.add(node);
@@ -184,7 +177,7 @@ public class UMongo extends Application implements Runnable {
         mongos.remove(node);
 
         node.removeNode();
-        Mongo mongo = ((MongoNode) node).getMongo();
+        MongoClient mongo = ((MongoNode) node).getMongoClient();
         mongo.close();
 
         if (mongos.size() > 0) {

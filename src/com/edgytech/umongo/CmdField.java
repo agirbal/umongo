@@ -21,7 +21,7 @@ import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 /**
  *
@@ -63,7 +63,7 @@ public class CmdField extends DocField {
         setDoc(res);
     }
 
-    void updateFromCmd(Mongo mongo) {
+    void updateFromCmd(MongoClient mongo) {
         if (db == null) {
             return;
         }

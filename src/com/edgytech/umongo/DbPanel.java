@@ -627,7 +627,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void enableSharding(ButtonBase button) {
-        Mongo m = getDbNode().getMongoNode().getMongo();
+        MongoClient m = getDbNode().getMongoNode().getMongoClient();
         DB admin = m.getDB("admin");
         DBObject cmd = new BasicDBObject("enableSharding", getDbNode().getDb().getName());
         new DbJobCmd(admin, cmd, this, null).addJob();
@@ -740,7 +740,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             return;
         }
 
-        Mongo m = getDbNode().getMongoNode().getMongo();
+        MongoClient m = getDbNode().getMongoNode().getMongoClient();
         DB admin = m.getDB("admin");
         String shard = getStringFieldValue(Item.mvpToShard);
         DBObject cmd = new BasicDBObject("movePrimary", getDbNode().getDb().getName());

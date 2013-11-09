@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import javax.swing.JPanel;
 import com.edgytech.umongo.CollectionPanel.Item;
 import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 import java.util.Map.Entry;
 
@@ -1280,13 +1281,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public void fixCollection(ButtonBase button) {
-        final Mongo m = getCollectionNode().getDbNode().getMongoNode().getMongo();
+        final MongoClient m = getCollectionNode().getDbNode().getMongoNode().getMongoClient();
         ArrayList<MongoNode> mongoNodes = UMongo.instance.getMongos();
         String[] mongonames = new String[mongoNodes.size() - 1];
-        Mongo[] mongos = new Mongo[mongonames.length];
+        MongoClient[] mongos = new MongoClient[mongonames.length];
         int i = 0;
         for (MongoNode node : mongoNodes) {
-            Mongo m2 = node.getMongo();
+            MongoClient m2 = node.getMongoClient();
             if (m == m2) {
                 continue;
             }
@@ -1303,7 +1304,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }
 
         final DBCollection dstCol = getCollectionNode().getCollection();
-        final Mongo srcMongo = mongos[src.getIntValue()];
+        final MongoClient srcMongo = mongos[src.getIntValue()];
         final boolean upsert = getBooleanFieldValue(Item.fcUpsert);
 
         final String dbname = dstCol.getDB().getName();

@@ -20,7 +20,8 @@ import com.mongodb.Bytes;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
-import com.mongodb.MongoOptions;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
@@ -33,12 +34,12 @@ public class ServerNode extends BaseTreeNode {
 
     String host;
     ServerAddress serverAddress;
-    Mongo serverMongo;
+    MongoClient serverMongo;
     BasicDBObject stats;
     boolean isReplica = false;
     boolean isConfig = false;
 
-    public ServerNode(Mongo mongo, boolean isReplica, boolean isConfig) {
+    public ServerNode(MongoClient mongo, boolean isReplica, boolean isConfig) {
         serverMongo = mongo;
         serverAddress = mongo.getAddress();
         setLabel(serverAddress.toString());
@@ -54,10 +55,10 @@ public class ServerNode extends BaseTreeNode {
         markStructured();
     }
     
-    public ServerNode(ServerAddress serverAddress, MongoOptions opts, boolean isReplica, boolean isConfig) {
+    public ServerNode(ServerAddress serverAddress, MongoClientOptions opts, boolean isReplica, boolean isConfig) {
         setLabel(serverAddress.toString());
         this.serverAddress = serverAddress;
-        serverMongo = new Mongo(serverAddress, opts);
+        serverMongo = new MongoClient(serverAddress, opts);
         serverMongo.addOption( Bytes.QUERYOPTION_SLAVEOK );
         this.isReplica = isReplica;
         this.isConfig = isConfig;
@@ -71,11 +72,11 @@ public class ServerNode extends BaseTreeNode {
         markStructured();
     }
     
-    public ServerNode(String host, MongoOptions opts, boolean isReplica, boolean isConfig) throws UnknownHostException {
+    public ServerNode(String host, MongoClientOptions opts, boolean isReplica, boolean isConfig) throws UnknownHostException {
         setLabel(host);
         this.host = host;
         this.serverAddress = new ServerAddress(host);
-        serverMongo = new Mongo(serverAddress, opts);
+        serverMongo = new MongoClient(serverAddress, opts);
         serverMongo.addOption( Bytes.QUERYOPTION_SLAVEOK );
         this.isReplica = isReplica;
         this.isConfig = isConfig;
@@ -93,7 +94,7 @@ public class ServerNode extends BaseTreeNode {
         return serverAddress;
     }
 
-    public Mongo getServerMongo() {
+    public MongoClient getServerMongoClient() {
         return serverMongo;
     }
 
@@ -112,9 +113,7 @@ public class ServerNode extends BaseTreeNode {
             isArbiter = stats.getBoolean("arbiterOnly", false);
             if (isArbiter) {
                 icon = "a.png";
-            }
-            
-            if (stats.getBoolean("ismaster", false)) {
+            } else if (stats.getBoolean("ismaster", false)) {
                 if (!isConfig)
                     addOverlay("overlay/tick_circle_tiny.png");
             } else if (!stats.getBoolean("secondary")) {
@@ -141,7 +140,7 @@ public class ServerNode extends BaseTreeNode {
 
     @Override
     protected void refreshNode() {
-        CommandResult res = getServerMongo().getDB("local").command("isMaster");
+        CommandResult res = getServerMongoClient().getDB("local").command("isMaster");
         res.throwOnError();
         stats = res;
     }

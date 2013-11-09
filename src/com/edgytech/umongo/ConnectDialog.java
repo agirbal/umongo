@@ -16,8 +16,10 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.FormDialog;
-import com.mongodb.MongoOptions;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import java.io.IOException;
 import java.net.*;
 import javax.net.SocketFactory;
@@ -58,36 +60,30 @@ public class ConnectDialog extends FormDialog {
         setEnumBinding(Item.values(), null);
     }
 
-//    void update(MongoOptions moptions) {
-//        setIntFieldValue(Item.connectionsPerHost, moptions.connectionsPerHost);
-//        setIntFieldValue(Item.blockingThreadMultiplier, moptions.threadsAllowedToBlockForConnectionMultiplier);
-//        setIntFieldValue(Item.maxWaitTime, moptions.maxWaitTime);
-//        setIntFieldValue(Item.connectTimeout, moptions.connectTimeout);
-//        setIntFieldValue(Item.socketTimeout, moptions.socketTimeout);
-//        setBooleanFieldValue(Item.autoConnectRetry, moptions.autoConnectRetry);
-//        setBooleanFieldValue(Item.safe, moptions.safe);
-//    }
-    MongoOptions getMongoOptions() {
-        MongoOptions moptions = new MongoOptions();
+    MongoClientOptions getMongoClientOptions() {
+        MongoClientOptions.Builder builder = MongoClientOptions.builder();
 //        moptions.connectionsPerHost = getIntFieldValue(Item.connectionsPerHost);
 //        moptions.threadsAllowedToBlockForConnectionMultiplier = getIntFieldValue(Item.blockingThreadMultiplier);
 //        moptions.maxWaitTime = getIntFieldValue(Item.maxWaitTime);
-        moptions.connectTimeout = getIntFieldValue(Item.connectTimeout);
-        moptions.socketTimeout = getIntFieldValue(Item.socketTimeout);
+        builder.connectTimeout(getIntFieldValue(Item.connectTimeout));
+        builder.socketTimeout(getIntFieldValue(Item.socketTimeout));
 //        moptions.autoConnectRetry = getBooleanFieldValue(Item.autoConnectRetry);
-        moptions.safe = getBooleanFieldValue(Item.safeWrites);
-//        moptions.slaveOk = getBooleanFieldValue(Item.secondaryReads);
-        if (!getBooleanFieldValue(Item.secondaryReads)) {
-            moptions.readPreference = ReadPreference.secondaryPreferred();
+        if (!getBooleanFieldValue(Item.safeWrites)) {
+            builder.writeConcern(WriteConcern.NONE);
         }
-
+        
+//        moptions.slaveOk = getBooleanFieldValue(Item.secondaryReads);
+        if (getBooleanFieldValue(Item.secondaryReads)) {
+            builder.readPreference(ReadPreference.secondaryPreferred());
+        }
+        
         int stype = getIntFieldValue(Item.socketType);
         int proxy = getIntFieldValue(Item.proxyType);
         if (proxy == 1) {
             // SOCKS proxy
             final String host = getStringFieldValue(Item.proxyHost);
             final int port = getIntFieldValue(Item.proxyPort);
-            moptions.socketFactory = new SocketFactory() {
+            builder.socketFactory(new SocketFactory() {
 
                 @Override
                 public Socket createSocket() throws IOException {
@@ -126,7 +122,7 @@ public class ConnectDialog extends FormDialog {
                 public Socket createSocket(InetAddress ia, int i, InetAddress ia1, int i1) throws IOException {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
-            };
+            });
 
 //            // authentication.. only supports 1 global for all proxies :(
 //            final String user = getStringFieldValue(Item.proxyUser);
@@ -143,7 +139,7 @@ public class ConnectDialog extends FormDialog {
         }
 
         if (stype == 1) {
-            moptions.socketFactory = SSLSocketFactory.getDefault();
+            builder.socketFactory(SSLSocketFactory.getDefault());
         } else if (stype == 2) {
             // Create a trust manager that does not validate certificate chains
             TrustManager[] trustAllCerts = new TrustManager[]{
@@ -165,12 +161,12 @@ public class ConnectDialog extends FormDialog {
             try {
                 SSLContext sc = SSLContext.getInstance("SSL");
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
-                moptions.socketFactory = sc.getSocketFactory();
+                builder.socketFactory(sc.getSocketFactory());
             } catch (Exception e) {
             }
         }
 
-        return moptions;
+        return builder.build();
     }
     
     void setName(String name) {

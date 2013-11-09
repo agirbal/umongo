@@ -20,6 +20,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,11 +35,11 @@ import org.xml.sax.SAXException;
  */
 public class RouterNode extends BaseTreeNode {
 
-    Mongo mongo;
+    MongoClient mongo;
     ServerAddress addr;
     BasicDBList shards;
 
-    public RouterNode(ServerAddress addr, Mongo mongo) throws IOException, SAXException {
+    public RouterNode(ServerAddress addr, MongoClient mongo) throws IOException, SAXException {
         this.addr = addr;
         this.mongo = mongo;
         xmlLoad(Resource.getXmlDir(), Resource.File.routerNode, null);
@@ -76,9 +77,9 @@ public class RouterNode extends BaseTreeNode {
                 }
 
                 if (repl != null || addrs.size() > 1) {
-                    addChild(new ReplSetNode(repl, addrs, mongo.getMongoOptions(), shardName));
+                    addChild(new ReplSetNode(repl, addrs, mongo.getMongoClientOptions(), shardName));
                 } else {
-                    addChild(new ServerNode(addrs.get(0), mongo.getMongoOptions(), false, false));
+                    addChild(new ServerNode(addrs.get(0), mongo.getMongoClientOptions(), false, false));
                 }
             } catch (Exception e) {
                 getLogger().log(Level.WARNING, null, e);
@@ -98,7 +99,7 @@ public class RouterNode extends BaseTreeNode {
                 } else {
                     addr = new ServerAddress(host);
                 }
-                addChild(new ServerNode(addr, mongo.getMongoOptions(), false, true));
+                addChild(new ServerNode(addr, mongo.getMongoClientOptions(), false, true));
             }
         } catch (Exception e) {
             getLogger().log(Level.WARNING, null, e);
@@ -109,7 +110,7 @@ public class RouterNode extends BaseTreeNode {
         return addr;
     }
 
-    public Mongo getMongo() {
+    public MongoClient getMongoClient() {
         return mongo;
     }
 
