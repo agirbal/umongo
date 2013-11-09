@@ -972,13 +972,13 @@
         <com.edgytech.umongo.MainMenu id="mainMenu" start="start">
             <Menu id="file" alt="f">
                 <MenuItem id="connect" alt="c" key="k" keyMod="cmd" call="connect" showDialog="false">
-                    <FormDialog buttons="OK" okLabel="Done">
+                    <FormDialog buttons="OK" okLabel="Connect">
                         <Zone>
                             <Scroller zone="CENTER" preferredSize="320;-1">
                                 <ListArea id="connectPointsList" items=""/>
                             </Scroller>
                             <Div axis="Y" zone="EAST">
-                                <Button id="useConnectPoint" icon="right.png" iconGroup="icons" toolTipText="Use the connect point" call="useConnectPoint"/>
+                                <Button id="editConnectPoint" icon="edit.png" iconGroup="icons" toolTipText="Edit the connect point" call="editConnectPoint"/>
                                 <Button id="removeConnectPoint" icon="dialog-close_16.png" iconGroup="icons" toolTipText="Remove the connect point" call="removeConnectPoint"/>
                             </Div>
                         </Zone>

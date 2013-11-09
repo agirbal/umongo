@@ -39,7 +39,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         connect,
         connectPointsList,
         connectDialog,
-        useConnectPoint,
+        editConnectPoint,
         removeConnectPoint,
         connectProgressDialog,
         exit,
@@ -103,10 +103,19 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     public void connect(ButtonBase button) {
         refreshConnectPointsList();
         FormDialog dia = (FormDialog) button.getDialog();
-        dia.show();
+        if (dia.show()) {
+            ListArea list = ((ListArea) getBoundUnit(Item.connectPointsList));
+            ConnectDialog dialog = (ConnectDialog) getBoundUnit(Item.connectDialog);
+            String id = getComponentStringFieldValue(Item.connectPointsList);
+            dialog.setId(id);
+            list.xmlLoadLocalCopy(dialog, null, null);
+            dialog.setId(Item.connectDialog.name());
+            dialog.setName(id);
+            connect();
+        }
     }
     
-    public void useConnectPoint(ButtonBase button) {
+    public void editConnectPoint(ButtonBase button) {
         ListArea list = ((ListArea) getBoundUnit(Item.connectPointsList));
         ConnectDialog dialog = (ConnectDialog) getBoundUnit(Item.connectDialog);
         String id = getComponentStringFieldValue(Item.connectPointsList);
@@ -116,14 +125,11 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         dialog.setName(id);
         
         if (dialog.show()) {
-            connect();
             // the name may have changed
             String newId = dialog.getName();
             dialog.setId(newId);
             list.xmlSaveLocalCopy(dialog, null, null);
-            dialog.setId(Item.connectDialog.name());        
-            // we're done
-            ((FormDialog)((MenuItem)getBoundUnit(Item.connect)).getDialog()).getOkButton().doClick();
+            dialog.setId(Item.connectDialog.name());
         }
     }
 
