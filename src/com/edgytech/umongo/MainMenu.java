@@ -175,8 +175,11 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
                         addrs.add(new ServerAddress(tmp[0]));
                     }
                 }
-                mongo = new MongoClient(addrs, dialog.getMongoClientOptions());
-//                mongo = new MongoClient(addrs, dialog.getMongoClientOptions());
+                if ("Direct".equals(dialog.getStringFieldValue(ConnectDialog.Item.connectionMode)))
+                    mongo = new MongoClient(addrs.get(0), dialog.getMongoClientOptions());
+                else
+                    mongo = new MongoClient(addrs, dialog.getMongoClientOptions());
+
                 String sdbs = dialog.getStringFieldValue(ConnectDialog.Item.databases);
                 if (!sdbs.trim().isEmpty()) {
                     for (String db : sdbs.split(",")) {

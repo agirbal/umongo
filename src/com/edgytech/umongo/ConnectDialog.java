@@ -38,6 +38,7 @@ public class ConnectDialog extends FormDialog {
         name,
         uri,
         servers,
+        connectionMode,
         databases,
         user,
         password,

@@ -989,6 +989,7 @@
                         <DynamicComboBox id="uri" label="URI" toolTipText="the MongoDB URI like 'mongodb://...'" items="" value="0" editable="true" recordItems="true"/>
                         <Text value="Or the settings below"/>
                         <DynamicComboBox id="servers" toolTipText="Comma separated list of servers to connect to" items="localhost:27017" value="0" editable="true" recordItems="true"/>
+                        <ComboBox id="connectionMode" value="0" items="Automatic;Direct" toolTipText="The connection mode. Use 'direct' to connect to a secondary server."/>
                         <TextField id="databases" toolTipText="Optional, a comma separated list of databases to use"/>
                         <TextField id="user" toolTipText="Optional, the user name for authentication"/>
                         <PasswordField id="password" toolTipText="Optional, the password for authentication"/>
