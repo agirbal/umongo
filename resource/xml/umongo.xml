@@ -1024,7 +1024,7 @@
                                     <IntSpinner id="inlineDocumentLength" minValue="1" value="200" toolTipText="Number of characters to display for the document inline preview"/>
                                 </Div>
                                 <Div id="querying" gap="true" titled="true">
-                                    <IntSpinner id="getMoreSize" minValue="1" value="50" toolTipText="Number of documents to fetch when getting more results from a cursor"/>
+                                    <IntSpinner id="getMoreSize" minValue="1" value="100" toolTipText="Number of documents to fetch when getting more results from a cursor"/>
                                 </Div>
                             </Div>
                             <Div id="logging" gap="true">
