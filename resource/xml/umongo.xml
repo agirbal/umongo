@@ -704,6 +704,14 @@
                 <Text id="icon" icon="server.png" iconGroup="icons" toolTipText="Server"/>
                 <Menu id="server">
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>
+                    <MenuSeparator/>
+                    <MenuItem id="shutdown" call="shutdown">
+                        <FormDialog>
+                            <CheckBox id="shutdownForce" label="Force" value="false" toolTipText="Forces the server to shutdown even if secondaries are delayed on replication"/>
+                        <IntSpinner id="shutdownTimeout" label="Timeout Seconds" value="0" toolTipText="Optional, the number of seconds to wait for other members of the replica set to catch up"/>
+                    </FormDialog>
+                    <ConfirmDialog id="shutdownConfirm" text="Are you sure that you want to shut down this server?"/>
+                </MenuItem>
                 </Menu>
                 <Menu id="command">
                     <MenuItem id="serverStatus" call="serverStatus"/>

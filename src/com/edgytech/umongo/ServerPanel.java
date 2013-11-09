@@ -16,6 +16,7 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.ButtonBase;
+import com.edgytech.swingfast.ConfirmDialog;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.InfoDialog;
 import com.edgytech.swingfast.Menu;
@@ -70,7 +71,11 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         setLogLevelValue,
         getLog,
         getLogType,
-        replica
+        replica,
+        shutdown,
+        shutdownForce,
+        shutdownTimeout,
+        shutdownConfirm,
     }
 
     public ServerPanel() {
@@ -306,5 +311,19 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         members.put(i, conf);
 
         ReplSetPanel.reconfigure(replset, config);
+    }
+
+    public void shutdown(ButtonBase button) {
+        BasicDBObject cmd = new BasicDBObject("shutdown", 1);
+        boolean force = getBooleanFieldValue(Item.shutdownForce);
+        if (force)
+            cmd.put("force", force);
+        int timeout = getIntFieldValue(Item.shutdownTimeout);
+        if (timeout > 0)
+            cmd.put("timeoutSecs", timeout);
+        ConfirmDialog dia = (ConfirmDialog) getBoundUnit(Item.shutdownConfirm);
+        if (!dia.show())
+            return;
+        new DbJobCmd(getServerNode().getServerMongo().getDB("admin"), cmd).addJob();
     }
 }
