@@ -8,7 +8,7 @@
         Purpose of the document follows.
 -->
 
-<Div axis="X" gap="false" field="true">
+<DocBuilderField axis="X" gap="false" field="true" value="">
     <TextArea id="jsonText" field="false" save="false" rows="3" columns="20" lineWrap="true" wrapStyleWord="false"/>
     <Button id="expandText" icon="text.png" iconGroup="icons" call="expandText" showDialog="false" toolTipText="Expand the JSON into a text-based window">
         <FormDialog buttons="OK_CANCEL" preferredSize="640;480">
@@ -23,4 +23,4 @@
     </Button>
     <Button id="edit" icon="brick.png" iconGroup="icons" toolTipText="Edit the JSON" call="edit"/>
     <ToggleButton id="validate" save="false" value="true" icon="overlay/check.png" iconGroup="icons" toolTipText="Turn on/off JSON validation"/>
-</Div>
+</DocBuilderField>

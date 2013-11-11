@@ -972,7 +972,7 @@
         <com.edgytech.umongo.MainMenu id="mainMenu" start="start">
             <Menu id="file" alt="f">
                 <MenuItem id="connect" alt="c" key="k" keyMod="cmd" call="connect" showDialog="false">
-                    <FormDialog buttons="OK" okLabel="Connect">
+                    <FormDialog buttons="OK_CANCEL" okLabel="Connect">
                         <Zone>
                             <Scroller zone="CENTER" preferredSize="320;-1">
                                 <ListArea id="connectPointsList" items=""/>

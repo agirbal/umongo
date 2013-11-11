@@ -16,6 +16,7 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.FormDialog;
+import com.edgytech.swingfast.TextField;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -42,6 +43,7 @@ public class ReplicaDialog extends FormDialog {
     public void updateFromReplicaConfig(BasicDBObject member) {
         // reset
         xmlLoadCheckpoint();
+        ((TextField)getBoundUnit(Item.host)).editable = false;
         
         setStringFieldValue(Item.host, member.getString("host"));
         setBooleanFieldValue(Item.arbiterOnly, member.getBoolean("arbiterOnly", false));

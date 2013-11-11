@@ -52,7 +52,7 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
         try {
             xmlLoad(Resource.getXmlDir(), Resource.File.docBuilderField, null);
             // need to still load fields from other config
-            setState(State.NORMAL);
+            setState(State.STRUCTURE);
         } catch (Exception ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }

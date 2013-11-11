@@ -6,10 +6,11 @@
     <h2>Options</h2>
     The following options are supported:<ul>
         <li>URI: the MongoDB URI like 'mongodb://...'. See specifications at <a href="http://docs.mongodb.org/manual/reference/connection-string/">http://docs.mongodb.org/manual/reference/connection-string/</a></li>
-        <li>servers: Comma separated list of servers to connect to. Typically a single mongod or mongos server is required.</li>
-        <li>databases: Optional, a comma separated list of databases to use. If empty, all databases will be detected.</li>
-        <li>user: Optional, the user name for authentication. The authentication will be used for either the provided databases or 'admin'.</li>
-        <li>password: Optional, the password for authentication</li>
+        <li>Servers: Comma separated list of servers to connect to. Typically a single mongod or mongos server is required.</li>
+        <li>Connection Mode: the default is "Automatic" and should be used for a replica set or a sharded cluster. The "Direct" mode is used to connect directly to a single server.</li>
+        <li>Databases: Optional, a comma separated list of databases to use. If empty, all databases will be detected.</li>
+        <li>User: Optional, the user name for authentication. The authentication will be used for either the provided databases or 'admin'.</li>
+        <li>Password: Optional, the password for authentication</li>
     </ul>
     <h2>Advanced options</h2>
     The following options are supported:<ul>
@@ -28,5 +29,10 @@
     If MongoDB is not accessible from your local machine, but you can SSH to a server that can connect, do the following:<ul>
         <li>create a SOCKS proxy from your terminal by using 'ssh -D LocalPort hostWithDBAccess -N'. An example port is 9000</li>
         <li>when connecting, set proxyType to 'SOCKS', proxyHost to 'localhost' and proxyPort to 9000.</li>
+    </ul>
+    <h2>Examples</h2>
+    Following are possible connections:
+    <ul>
+        <li>To connect directly to a single secondary server: input the server name in "servers", select "direct" connection mode, check "secondary reads" box</li>
     </ul>
 </html>

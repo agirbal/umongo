@@ -38,7 +38,7 @@ public class TagRangeDialog extends FormDialog {
     }
     
     public TagRangeDialog() {
-        setEnumBinding(Item.values(), null);
+            setEnumBinding(Item.values(), null);
     }
     
     void resetForEdit(DB config, BasicDBObject range) {
