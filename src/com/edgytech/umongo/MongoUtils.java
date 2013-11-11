@@ -89,6 +89,9 @@ public class MongoUtils {
         } else if (obj instanceof Double) {
             // get rid of annoying scientific format
             str = String.format("%f", obj);
+        } else if (obj instanceof String) {
+            // should show quotes to be JSON like
+            str = "\"" + obj + "\"";
         } else {
             str = obj.toString();
         }

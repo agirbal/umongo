@@ -18,6 +18,7 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.PopUpMenu;
 import com.edgytech.swingfast.TreeNodeLabel;
+import com.mongodb.DBObject;
 
 /**
  *
@@ -36,8 +37,13 @@ public class TreeNodeDocumentField extends TreeNodeLabel {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (key != null)
-            sb.append(key).append(": ");
+        if (key != null) {
+            sb.append(key);
+            if (value != null && !DBObject.class.isInstance(value)) {
+                sb.append(" (").append(value.getClass().getSimpleName()).append(")");
+            }
+            sb.append(": ");
+        }
         sb.append(MongoUtils.getObjectString(value));
         return sb.toString();
     }
