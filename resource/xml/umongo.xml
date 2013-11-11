@@ -24,8 +24,8 @@
             <MenuItem id="copyValue" call="copyValue"/>
         </com.edgytech.umongo.DocumentMenu>
         <com.edgytech.umongo.DocumentFieldMenu id="documentFieldMenu">
-            <MenuItem id="set" call="set"/>
-            <MenuItem id="unset" call="unset"/>
+            <MenuItem id="setValue" call="setValue"/>
+            <MenuItem id="unsetValue" call="unsetValue"/>
             <MenuSeparator/>
             <MenuItem id="copyKey" call="copyKey"/>
             <MenuItem id="copyValue" call="copyValue"/>
@@ -114,7 +114,7 @@
                 <com.edgytech.umongo.DocBuilderField id="template" toolTipText="Optional, the document template"/>
             </Div>
         </com.edgytech.umongo.ImportDialog>
-        <com.edgytech.umongo.ReplicaDialog id="replicaDialog" helpFile="/html/replicaHelp.html">
+        <com.edgytech.umongo.ReplicaDialog id="replicaDialog">
             <TextField id="host" label="Host" toolTipText="Name of host, in the same form as the current configuration's hosts" nonEmpty="true"/>
             <CheckBox id="arbiterOnly" label="Arbiter only" toolTipText="Whether this replica should be an arbiter only, with no data" value="false"/>
             <CheckBox id="hidden" toolTipText="If true, the replica will not be seen by the client applications (e.g. backup only server)" value="false"/>

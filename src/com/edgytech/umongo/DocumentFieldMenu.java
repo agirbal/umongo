@@ -39,8 +39,8 @@ import org.bson.types.Binary;
 public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  {
 
     enum Item {
-        set,
-        unset,
+        setValue,
+        unsetValue,
         compressionStats,
         compressionStatsOriginal,
         compressionStatsDeflate,
@@ -61,20 +61,21 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
     }
     
-    public void set(ButtonBase button) {
+    public void setValue(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
+        if (dv.getDBCursor() == null) {
+            // local data
+            new InfoDialog(null, null, null, "Cannot do in-place update on local data.").show();
+            return;
+        }
+        
         TreeNodeDocumentField field = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
         DBObject doc = dv.getSelectedDocument();
         String path = dv.getSelectedDocumentPath();
         Object newValue = UMongo.instance.getGlobalStore().editValue(field.getKey(), field.getValue());
 
         if (newValue == null) {
-            new InfoDialog(null, null, null, "Cannot edit this type of data.").show();
-            return;
-        }
-        if (dv.getDBCursor() == null) {
-            // local data
-            new InfoDialog(null, null, null, "Cannot do in-place update on local data.").show();
+//            new InfoDialog(null, null, null, "Cannot edit this type of data.").show();
             return;
         }
         
@@ -115,7 +116,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
         }.addJob();
     }
     
-    public void unset(ButtonBase button) {
+    public void unsetValue(ButtonBase button) {
         final DocView dv = (DocView) (UMongo.instance.getTabbedResult().getSelectedUnit());
         DBObject doc = dv.getSelectedDocument();
         String path = dv.getSelectedDocumentPath();

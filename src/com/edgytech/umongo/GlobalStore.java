@@ -160,7 +160,7 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
         editor.setValue(value);
 
         if (!editor.show()) {
-            return value;
+            return null;
         }
 
         return editor.getValue();
