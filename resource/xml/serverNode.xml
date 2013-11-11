@@ -12,6 +12,10 @@
     <PopUpMenu>
         <MenuItem id="refresh" bind="globalStore.serverPanel.menu.refresh"/>
         <MenuSeparator/>
-        <MenuItem id="serverStatus" bind="globalStore.serverPanel.menu.serverStatusCmd"/>
+        <MenuItem id="serverStatus" bind="globalStore.serverPanel.menu.serverStatus"/>
+        <MenuItem id="isMaster" bind="globalStore.serverPanel.menu.isMaster"/>
+        <MenuSeparator/>
+        <MenuItem id="currentOps" bind="globalStore.serverPanel.menu.currentOps"/>
+        <MenuItem id="killOp" bind="globalStore.serverPanel.menu.killOp"/>
     </PopUpMenu>
 </TreeNodeLabel>

@@ -17,6 +17,7 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.XmlUnit;
 import com.mongodb.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.ImageIcon;
@@ -51,7 +52,7 @@ public class MongoNode extends BaseTreeNode {
     @Override
     protected void populateChildren() {
         // first ask list of db, will also trigger discovery of nodes
-        List<String> dbnames = null;
+        List<String> dbnames = new ArrayList<String>();
         try {
             dbnames = mongo.getDatabaseNames();
         } catch (Exception e) {
@@ -99,8 +100,7 @@ public class MongoNode extends BaseTreeNode {
             dbnames = dbs;
         } else {
             dbs = dbnames;
-            
-            if (dbnames.size() == 0) {
+            if (dbnames.isEmpty()) {
                 // could not get any dbs, add test at least
                 dbnames.add("test");
             }

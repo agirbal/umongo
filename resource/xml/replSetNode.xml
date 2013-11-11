@@ -11,5 +11,8 @@
 <TreeNodeLabel icon="replSet.png" iconGroup="icons" toolTipText="Replica Set">
     <PopUpMenu>
         <MenuItem id="refresh" bind="globalStore.replSetPanel.menu.replSet.refresh"/>
+        <MenuSeparator/>
+        <MenuItem id="getConfiguration" bind="globalStore.replSetPanel.menu.rsConfig"/>
+        <MenuItem id="getStatus" bind="globalStore.replSetPanel.menu.rsStatus"/>
     </PopUpMenu>
 </TreeNodeLabel>

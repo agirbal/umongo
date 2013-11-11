@@ -54,6 +54,8 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         rsStepDown,
         rsFreeze,
         rsFreezeTime,
+        initiate,
+        initConfig,
         rsRemove,
         rsReconfigure,
         isMaster,
@@ -90,14 +92,16 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     protected void updateComponentCustom(JPanel comp) {
         try {
             ServerNode node = getServerNode();
-            if (!node.isReplica()) {
+            if (node.isConfig) {
                 ((Menu)getBoundUnit(Item.replica)).enabled = false;
             }
             
             MongoClient svrMongo = node.getServerMongoClient();
             ServerAddress addr = getServerNode().getServerAddress();
-            setStringFieldValue(Item.host, addr.toString());
-            setStringFieldValue(Item.address, addr.getSocketAddress().toString());
+            if (addr != null) {
+                setStringFieldValue(Item.host, addr.toString());
+                setStringFieldValue(Item.address, addr.getSocketAddress().toString());
+            }
 
             CommandResult res = svrMongo.getDB("local").command("isMaster");
             boolean master = res.getBoolean("ismaster");
@@ -283,6 +287,13 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         
         members.remove(i);
         ReplSetPanel.reconfigure(replset, config);
+    }
+    
+    public void initiate(ButtonBase button) {
+        DBObject config = ((DocBuilderField)getBoundUnit(Item.initConfig)).getDBObject();
+        DBObject cmd = new BasicDBObject("replSetInitiate", config);
+        DB admin = getServerNode().getServerMongoClient().getDB("admin");
+        new DbJobCmd(admin, cmd, this, null).addJob();
     }
     
     public void rsReconfigure(ButtonBase button) throws Exception {

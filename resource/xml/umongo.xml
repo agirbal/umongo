@@ -763,6 +763,9 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
+                    <MenuItem id="initiate" call="initiate">
+                        <com.edgytech.umongo.DocBuilderField id="initConfig" label="Config" toolTipText="An object representing the configuration. Leave empty to start with a single server."/>
+                    </MenuItem>
                     <MenuItem id="rsReconfigure" call="rsReconfigure" label="Reconfigure" toolTipText="Reconfigure this server in the replica set"/>
                     <MenuItem id="rsRemove" call="rsRemove" label="Remove" toolTipText="Remove this server from the replica set">
                         <ConfirmDialog id="rsRemoveConfirm" text="Are you sure that you want to remove this server from the replica set?"/>
@@ -788,9 +791,6 @@
                     <MenuItem id="addReplica" call="addReplica"/>
                 </Menu>
                 <Menu id="command">
-                    <MenuItem id="initiate" call="initiate">
-                        <com.edgytech.umongo.DocBuilderField id="initConfig" label="Config" toolTipText="An object representing the configuration. Leave empty to start with a single server."/>
-                    </MenuItem>
                     <MenuItem id="reconfigure" call="reconfigure" showDialog="false">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="reconfConfig" label="Config" toolTipText="An object representing the new configuration." nonEmpty="true"/>

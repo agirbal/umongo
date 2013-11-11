@@ -40,8 +40,6 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
         refresh,
         name,
         replicas,
-        initiate,
-        initConfig,
         reconfigure,
         reconfConfig,
         addReplica,
@@ -121,14 +119,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
             }
         }.addJob();
     }
-    
-    public void initiate(ButtonBase button) {
-        DBObject config = ((DocBuilderField)getBoundUnit(Item.initConfig)).getDBObject();
-        DBObject cmd = new BasicDBObject("replSetInitiate", config);
-        DB admin = getReplSetNode().getMongoClient().getDB("admin");
-        new DbJobCmd(admin, cmd, this, null).addJob();
-    }
-    
+        
     public void reconfigure(ButtonBase button) {
         final DBCollection col = getReplSetNode().getMongoClient().getDB("local").getCollection("system.replset");
         DBObject oldConf = col.findOne();

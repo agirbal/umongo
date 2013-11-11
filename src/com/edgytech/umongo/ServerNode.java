@@ -42,7 +42,7 @@ public class ServerNode extends BaseTreeNode {
     public ServerNode(MongoClient mongo, boolean isReplica, boolean isConfig) {
         serverMongo = mongo;
         serverAddress = mongo.getAddress();
-        setLabel(serverAddress.toString());
+        setLabel(serverAddress != null ? serverAddress.toString() : "?");
         this.isReplica = isReplica;
         this.isConfig = isConfig;
 
@@ -135,7 +135,14 @@ public class ServerNode extends BaseTreeNode {
             label = "Arbiter";
         else
             label = "MongoD";
-        label += ": " + (host != null ? host : serverAddress.toString());        
+
+        label += ": ";
+        if (host != null)
+            label += host;
+        else if (serverAddress != null)
+            label += serverAddress.toString();
+        else
+            label += "?";
     }
 
     @Override
