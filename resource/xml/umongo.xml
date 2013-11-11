@@ -984,7 +984,7 @@
                         </Zone>
                     </FormDialog>
                     <com.edgytech.umongo.ConnectDialog id="connectDialog" helpFile="/html/connectHelp.html">
-                        <TextField id="name" value="" toolTipText="Name this Connect Point should be saved under"/>
+                        <TextField id="name" value="Default" toolTipText="Name this Connect Point should be saved under"/>
                         <Text value="Either provide a URI ..."/>
                         <DynamicComboBox id="uri" label="URI" toolTipText="the MongoDB URI like 'mongodb://...'" items="" value="0" editable="true" recordItems="true"/>
                         <Text value="Or the settings below"/>

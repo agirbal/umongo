@@ -23,7 +23,7 @@ Mac OSX:
 - extract the archive (double-click the file)
 - open the extracted folder and double-click umongo.app
 
-If you Mac tells you that the application is damaged, you can try a few things:
+If your Mac tells you that the application is damaged, you can try a few things:
 
 - go to "system preferences / security and privacy / General"
 Make sure that "allow applications downloaded from" is set to "anywhere".

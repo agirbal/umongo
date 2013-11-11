@@ -91,18 +91,20 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         }.addJob();
     }
 
-    void refreshConnectPointsList() {
+    void refreshConnectPointsList(String select) {
         ListArea list = ((ListArea) getBoundUnit(Item.connectPointsList));
         list.items = list.xmlGetLocalCopiesIds();
         if (list.items == null || list.items.length == 0) {
             list.items = new String[1];
             list.items[0] = "Default";
         }
+        if (select != null)
+            setStringFieldValue(Item.connectPointsList, select);
         list.structureComponent();
     }
     
     public void connect(ButtonBase button) {
-        refreshConnectPointsList();
+        refreshConnectPointsList(null);
         FormDialog dia = (FormDialog) button.getDialog();
         if (dia.show()) {
             ListArea list = ((ListArea) getBoundUnit(Item.connectPointsList));
@@ -131,6 +133,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
             dialog.setId(newId);
             list.xmlSaveLocalCopy(dialog, null, null);
             dialog.setId(Item.connectDialog.name());
+            refreshConnectPointsList(newId);
         }
     }
 
@@ -139,7 +142,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         String id = getComponentStringFieldValue(Item.connectPointsList);
         if (id != null) {
             list.xmlRemoveLocalCopy(id);
-            refreshConnectPointsList();
+            refreshConnectPointsList(null);
         }
     }
     
