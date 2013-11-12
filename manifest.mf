@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-Name: UMongo
-Bundle-Version: 1.6.0
+Bundle-Version: 1.6.1
 Bundle-Vendor: EdgyTech, LLC
 Bundle-ContactAddress: http://www.edgytech.com/umongo
 Bundle-SymbolicName: com.edgytech.umongo

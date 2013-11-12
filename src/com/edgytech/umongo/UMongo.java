@@ -232,7 +232,8 @@ public class UMongo extends Application implements Runnable {
         }
 
         panel.setNode(node);
-        panel.xmlLoadCheckpoint();
+        // cant load checkpoint here, means all dialogs get reset
+//        panel.xmlLoadCheckpoint();
         displayElement(panel);
     }
 
