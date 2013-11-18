@@ -28,7 +28,7 @@ function package_build {
     mkdir -p $app/Contents/Resources/Java/lib
 	cp ../lib/*.jar $app/Contents/Resources/Java/lib
     cp ./common-files/* $app/Contents/Resources/Java/
-    cp ../README $appdir/
+    cp ../README.rst $appdir/
     mkdir $appdir/plugins
 
 	zip -r ${appdir}.zip $appdir
