@@ -47,8 +47,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         writeConcern,
         readPreference,
         serverStatus,
-        fsync,
-        fsyncAndLock,
         readWriteOptions,
         refresh,
         close,
@@ -58,9 +56,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         authUser,
         authPassword,
         maxObjectSize,
-        logRotate,
-        showLog,
-        shutdown,
         cloneDB,
         cloneDBHost,
         cloneDBFrom,
@@ -128,52 +123,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
 
     public void close(ButtonBase button) {
         UMongo.instance.disconnect(getMongoNode());
-    }
-
-    public void fsync(ButtonBase button) {
-        DBObject cmd = new BasicDBObject("fsync", 1);
-        if (false) {
-            cmd.put("async", 1);
-        }
-        DB admin = getMongoNode().getMongoClient().getDB("admin");
-        new DbJobCmd(admin, cmd).addJob();
-    }
-
-    public void fsyncAndLock(ButtonBase button) {
-        new DbJob() {
-
-            @Override
-            public Object doRun() throws IOException {
-                MongoClient mongo = getMongoNode().getMongoClient();
-                boolean locked = mongo.isLocked();
-                if (locked) {
-                    return mongo.unlock();
-                }
-
-                return mongo.fsyncAndLock();
-            }
-
-            @Override
-            public String getNS() {
-                return null;
-            }
-
-            @Override
-            public String getShortName() {
-                return "FSync And Lock";
-            }
-
-            @Override
-            public void wrapUp(Object res) {
-                try {
-                    // looks like the unlock doesnt take effect right away
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                }
-
-                super.wrapUp(res);
-            }
-        }.addJob();
     }
 
     public void readWriteOptions(ButtonBase button) {
@@ -266,16 +215,8 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "serverStatus").addJob();
     }
 
-    public void logRotate(ButtonBase button) {
-        new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "logRotate").addJob();
-    }
-
     public void showLog(ButtonBase button) {
         new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), new BasicDBObject("getLog", "global")).addJob();
-    }
-
-    public void shutdown(ButtonBase button) {
-        new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "shutdown").addJob();
     }
 
     public void cloneDB(ButtonBase button) {

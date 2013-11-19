@@ -30,6 +30,7 @@ import com.mongodb.ServerAddress;
 import javax.swing.JPanel;
 import com.edgytech.umongo.ServerPanel.Item;
 import com.mongodb.*;
+import java.io.IOException;
 import java.util.logging.Level;
 
 /**
@@ -73,11 +74,14 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
         setLogLevelValue,
         getLog,
         getLogType,
+        logRotate,
         replica,
         shutdown,
         shutdownForce,
         shutdownTimeout,
         shutdownConfirm,
+        fsync,
+        fsyncAndLock,
     }
 
     public ServerPanel() {
@@ -337,4 +341,58 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
             return;
         new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
     }
+
+    public void logRotate(ButtonBase button) {
+        new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "logRotate").addJob();
+    }
+
+    public void fsync(ButtonBase button) {
+        DBObject cmd = new BasicDBObject("fsync", 1);
+        if (false) {
+            cmd.put("async", 1);
+        }
+        DB admin = getServerNode().getServerMongoClient().getDB("admin");
+        new DbJobCmd(admin, cmd).addJob();
+    }
+
+    public void fsyncAndLock(ButtonBase button) {
+        if (!UMongo.instance.getGlobalStore().confirmLockingOperation()) {
+            return;
+        }
+        
+        new DbJob() {
+
+            @Override
+            public Object doRun() throws IOException {
+                MongoClient mongo = getServerNode().getServerMongoClient();
+                boolean locked = mongo.isLocked();
+                if (locked) {
+                    return mongo.unlock();
+                }
+
+                return mongo.fsyncAndLock();
+            }
+
+            @Override
+            public String getNS() {
+                return null;
+            }
+
+            @Override
+            public String getShortName() {
+                return "FSync And Lock";
+            }
+
+            @Override
+            public void wrapUp(Object res) {
+                try {
+                    // looks like the unlock doesnt take effect right away
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                }
+
+                super.wrapUp(res);
+            }
+        }.addJob();
+    }    
 }

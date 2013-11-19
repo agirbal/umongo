@@ -161,19 +161,9 @@
                             <PasswordField id="authPassword" toolTipText="The password to authenticate with admin database." nonEmpty="true"/>
                         </FormDialog>
                     </MenuItem>
-                    <MenuSeparator/>
-                    <MenuItem id="shutdown" call="shutdown">
-                        <ConfirmDialog text="Are you sure you want to shutdown this mongo server?"/>
-                    </MenuItem>
                 </Menu>
                 <Menu id="tools">
                     <MenuItem id="readWriteOptions" call="readWriteOptions"/>
-                    <MenuSeparator/>
-                    <MenuItem id="fsync" call="fsync"/>
-                    <CheckBoxMenuItem id="fsyncAndLock" call="fsyncAndLock"/>
-                    <MenuSeparator/>
-                    <MenuItem id="showLog" call="showLog"/>
-                    <MenuItem id="logRotate" call="logRotate"/>
                     <MenuSeparator/>
                     <MenuItem id="cloneDB" label="Clone DB" call="cloneDB">
                         <FormDialog>
@@ -728,7 +718,28 @@
                             <IntField id="killOpId" label="opid" toolTipText="ID of the operation to kill, should be visible from Current Ops"/>
                         </FormDialog>
                     </MenuItem>
+                </Menu>
+                <Menu id="replica">
+                    <MenuItem id="rsConfig" call="rsConfig" label="Config"/>
+                    <MenuItem id="rsStatus" call="rsStatus" label="Status"/>
+                    <MenuItem id="rsOplogInfo" call="rsOplogInfo" label="Oplog Info"/>
                     <MenuSeparator/>
+                    <MenuItem id="rsStepDown" call="rsStepDown" label="Step Down" toolTipText="If primary, the server will step down to secondary to let another server be elected."/>
+                    <MenuItem id="rsFreeze" call="rsFreeze" label="Freeze" toolTipText="This server will not attempt to become primary for next N seconds">
+                        <FormDialog>
+                            <IntField id="rsFreezeTime" label="Freeze Time (Sec)" toolTipText="Time to freeze for, in seconds. If 0, it will unfreeze the server." value="60"/>
+                        </FormDialog>
+                    </MenuItem>
+                    <MenuSeparator/>
+                    <MenuItem id="initiate" call="initiate">
+                        <com.edgytech.umongo.DocBuilderField id="initConfig" label="Config" toolTipText="An object representing the configuration. Leave empty to start with a single server."/>
+                    </MenuItem>
+                    <MenuItem id="rsReconfigure" call="rsReconfigure" label="Reconfigure" toolTipText="Reconfigure this server in the replica set"/>
+                    <MenuItem id="rsRemove" call="rsRemove" label="Remove" toolTipText="Remove this server from the replica set">
+                        <ConfirmDialog id="rsRemoveConfirm" text="Are you sure that you want to remove this server from the replica set?"/>
+                    </MenuItem>
+                </Menu>
+                <Menu id="tools">
                     <MenuItem id="getParameter" call="getParameter">
                         <FormDialog>
                             <TextField id="getParameterValue" label="Parameter" nonEmpty="true" toolTipText="Get the parameter value. Use '*' to see all parameters"/>
@@ -750,26 +761,10 @@
                             <ComboBox id="getLogType" label="Log Type" value="0" items="global;startupWarnings;rs" toolTipText="The log type, 'global' means all."/>
                         </FormDialog>
                     </MenuItem>
-                </Menu>
-                <Menu id="replica">
-                    <MenuItem id="rsConfig" call="rsConfig" label="Config"/>
-                    <MenuItem id="rsStatus" call="rsStatus" label="Status"/>
-                    <MenuItem id="rsOplogInfo" call="rsOplogInfo" label="Oplog Info"/>
+                    <MenuItem id="logRotate" call="logRotate"/>
                     <MenuSeparator/>
-                    <MenuItem id="rsStepDown" call="rsStepDown" label="Step Down" toolTipText="If primary, the server will step down to secondary to let another server be elected."/>
-                    <MenuItem id="rsFreeze" call="rsFreeze" label="Freeze" toolTipText="This server will not attempt to become primary for next N seconds">
-                        <FormDialog>
-                            <IntField id="rsFreezeTime" label="Freeze Time (Sec)" toolTipText="Time to freeze for, in seconds. If 0, it will unfreeze the server." value="60"/>
-                        </FormDialog>
-                    </MenuItem>
-                    <MenuSeparator/>
-                    <MenuItem id="initiate" call="initiate">
-                        <com.edgytech.umongo.DocBuilderField id="initConfig" label="Config" toolTipText="An object representing the configuration. Leave empty to start with a single server."/>
-                    </MenuItem>
-                    <MenuItem id="rsReconfigure" call="rsReconfigure" label="Reconfigure" toolTipText="Reconfigure this server in the replica set"/>
-                    <MenuItem id="rsRemove" call="rsRemove" label="Remove" toolTipText="Remove this server from the replica set">
-                        <ConfirmDialog id="rsRemoveConfirm" text="Are you sure that you want to remove this server from the replica set?"/>
-                    </MenuItem>
+                    <MenuItem id="fsync" call="fsync"/>
+                    <CheckBoxMenuItem id="fsyncAndLock" call="fsyncAndLock"/>
                 </Menu>
             </MenuBar>
             <Zone zone="CENTER">
