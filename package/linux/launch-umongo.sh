@@ -1,5 +1,9 @@
 #!/bin/sh
-dir=`dirname $0`
+if [[ -L $0 ]]; then
+	dir="$(dirname "$(readlink -f "$0")")"
+else
+	dir=`dirname $0`
+fi
 cd $dir
 
 if [ -z $minHeap ]; then minHeap=64; fi
