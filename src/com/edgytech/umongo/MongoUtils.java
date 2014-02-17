@@ -15,6 +15,9 @@
  */
 package com.edgytech.umongo;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.mongodb.*;
 import com.mongodb.util.JSONSerializers;
 import com.mongodb.util.ObjectSerializer;
@@ -249,4 +252,20 @@ public class MongoUtils {
             throw new IllegalArgumentException( "fields stored in the db can't start with '$' (Bad Key: '" + s + "')" );
     }
 
+    
+    private static JsonParser jsonParser;
+    public static JsonParser getJsonParser() {
+        if (jsonParser == null) {
+            jsonParser = new JsonParser();        
+        }
+        return jsonParser;
+    }
+    
+    private static Gson gson;
+    public static Gson getGson() {
+        if (gson == null) {
+            gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        }
+        return gson;
+    }
 }

@@ -17,6 +17,7 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.SwingFast;
 import com.mongodb.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.ImageIcon;
@@ -84,4 +85,12 @@ public class DbNode extends BaseTreeNode {
 //        db.getCollection("foo").save(new BasicDBObject("a", 1));
     }
 
+    List<DBObject> summarizeData() {
+        List<DBObject> global = new ArrayList<DBObject>();
+        for (CollectionNode node : getChildrenOfClass(CollectionNode.class)) {
+            DBObject res = node.summarizeData();
+            global.add(res);
+        }
+        return global;
+    }
 }

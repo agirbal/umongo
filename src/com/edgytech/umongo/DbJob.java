@@ -25,6 +25,7 @@ import com.edgytech.umongo.DbJob.Item;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import java.awt.Component;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractButton;
 import javax.swing.JMenuItem;
@@ -180,6 +181,12 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
             new DocView(null, title, this, sroot, (Iterator) res).addToTabbedDiv();
             if (logRes && res instanceof DBCursor) {
                 logObj.put("firstResult", ((DBCursor)res).curr());
+            }
+        } else if (res instanceof List) {
+            List list = (List) res;
+            new DocView(null, title, this, sroot, list.iterator()).addToTabbedDiv();
+            if (logRes && list.size() > 0) {
+                logObj.put("firstResult", list.get(0));
             }
         } else if (res instanceof DBObject) {
             new DocView(null, title, this, sroot, (DBObject) res).addToTabbedDiv();

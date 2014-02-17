@@ -17,6 +17,11 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.*;
 import com.edgytech.umongo.DocBuilderField.Item;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import java.awt.event.FocusEvent;
@@ -118,9 +123,12 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
         if (!getComponentBooleanFieldValue(Item.validate)) {
             return true;
         }
-
+        
         try {
-            JSON.parse(txt);
+            // 1st parse with GSON to check, since our parser has bugs
+            MongoUtils.getJsonParser().parse(txt);
+            
+            DBObject doc = (DBObject) JSON.parse(txt);
             return true;
         } catch (Exception e) {
             // this could be because of binary in field

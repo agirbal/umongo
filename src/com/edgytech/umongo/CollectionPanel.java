@@ -176,7 +176,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         removeTagRange,
         distinct,
         distinctKey,
-        distinctQuery
+        distinctQuery,
+        summarizeData
     }
 
     public CollectionPanel() {
@@ -188,8 +189,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }
 
     public BasicDBObject getStats() {
-        BasicDBObject cmd = new BasicDBObject("collStats", getCollectionNode().getCollection().getName());
-        return getCollectionNode().getCollection().getDB().command(cmd);
+        return getCollectionNode().getStats();
     }
 
     @Override
@@ -1555,5 +1555,27 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 refreshTagRangeList();
             }
         }.addJob();
+    }
+
+    public void summarizeData(final ButtonBase button) {
+        final CollectionNode cnode = getCollectionNode();
+        
+        new DbJob() {
+            @Override
+            public Object doRun() throws IOException {
+                return cnode.summarizeData();
+            }
+
+            @Override
+            public String getNS() {
+                return cnode.getCollection().getFullName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Summarize Data";
+            }
+        }.addJob();
+
     }
 }

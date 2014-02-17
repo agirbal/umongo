@@ -140,4 +140,13 @@ public class MongoNode extends BaseTreeNode {
         }
         return null;        
     }
+
+    List<DBObject> summarizeData() {
+        List<DBObject> global = new ArrayList<DBObject>();
+        for (DbNode node : getChildrenOfClass(DbNode.class)) {
+            List<DBObject> res = node.summarizeData();
+            global.addAll(res);
+        }
+        return global;
+    }
 }

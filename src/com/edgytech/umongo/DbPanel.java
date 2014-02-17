@@ -33,6 +33,7 @@ import com.edgytech.umongo.DbPanel.Item;
 import com.edgytech.swingfast.*;
 import com.mongodb.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -104,7 +105,8 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         addJSFunctionName,
         addJSFunctionCode,
         findJSFunction,
-        findJSFunctionName
+        findJSFunctionName,
+        summarizeData
     }
     GridFS gridFS;
 
@@ -791,4 +793,27 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
             }
         }.addJob();
     }
+
+    public void summarizeData(final ButtonBase button) {
+        final DbNode dbnode = getDbNode();
+        
+        new DbJob() {
+            @Override
+            public Object doRun() throws IOException {
+                return dbnode.summarizeData();
+            }
+
+            @Override
+            public String getNS() {
+                return dbnode.getDb().getName();
+            }
+
+            @Override
+            public String getShortName() {
+                return "Summarize Data";
+            }
+        }.addJob();
+
+    }
+
 }

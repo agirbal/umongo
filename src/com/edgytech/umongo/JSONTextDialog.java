@@ -60,10 +60,8 @@ public class JSONTextDialog extends FormDialog implements EnumListener<JSONTextD
     
     public void indent(ButtonBase button) {
         String txt = getComponentStringFieldValue(Item.expandTextArea);
-        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-        JsonParser jp = new JsonParser();
-        JsonElement je = jp.parse(txt);
-        String prettyJsonString = gson.toJson(je);
+        JsonElement je = MongoUtils.getJsonParser().parse(txt);
+        String prettyJsonString = MongoUtils.getGson().toJson(je);
         setComponentStringFieldValue(Item.expandTextArea, prettyJsonString);        
     }
 

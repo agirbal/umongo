@@ -1,17 +1,17 @@
 /**
- *      Copyright (C) 2010 EdgyTech LLC.
+ * Copyright (C) 2010 EdgyTech LLC.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.edgytech.umongo;
 
@@ -28,6 +28,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import com.edgytech.umongo.MongoPanel.Item;
 import com.mongodb.MongoClient;
+import java.util.ArrayList;
 
 /**
  *
@@ -66,6 +67,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         killOp,
         killOpId,
         isMaster,
+        summarizeData
     }
 
     public MongoPanel() {
@@ -145,7 +147,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         final DB db = mongo.getDB(name);
 
         new DbJob() {
-
             @Override
             public Object doRun() throws IOException {
                 db.getStats();
@@ -167,7 +168,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
                 super.wrapUp(res);
                 getMongoNode().structureComponent();
             }
-
         }.addJob();
     }
 
@@ -177,7 +177,6 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
         final String passwd = getStringFieldValue(Item.authPassword);
 
         new DbJob() {
-
             @Override
             public Object doRun() throws IOException {
                 mongo.getDB("admin").authenticateCommand(user, passwd.toCharArray());
@@ -253,6 +252,28 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
 
     public void isMaster(ButtonBase button) {
         new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "isMaster").addJob();
+    }
+
+    public void summarizeData(final ButtonBase button) {
+        final MongoNode mnode = getMongoNode();
+        
+        new DbJob() {
+            @Override
+            public Object doRun() throws IOException {
+                return mnode.summarizeData();
+            }
+
+            @Override
+            public String getNS() {
+                return "Mongo";
+            }
+
+            @Override
+            public String getShortName() {
+                return "Summarize Data";
+            }
+        }.addJob();
+
     }
 
 }

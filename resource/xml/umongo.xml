@@ -165,6 +165,8 @@
                 <Menu id="tools">
                     <MenuItem id="readWriteOptions" call="readWriteOptions"/>
                     <MenuSeparator/>
+                    <MenuItem id="summarizeData" call="summarizeData"/>
+                    <MenuSeparator/>
                     <MenuItem id="cloneDB" label="Clone DB" call="cloneDB">
                         <FormDialog>
                             <TextField id="cloneDBHost" label="From Host" toolTipText="Host to copy DB from" nonEmpty="true"/>
@@ -315,6 +317,8 @@
                 </Menu>
                 <Menu id="tools">
                     <MenuItem id="readWriteOptions" call="readWriteOptions"/>
+                    <MenuSeparator/>
+                    <MenuItem id="summarizeData" call="summarizeData"/>
                     <MenuSeparator/>
                     <MenuItem id="profile" call="profile">
                         <FormDialog>
@@ -622,6 +626,8 @@
                 </Menu>
                 <Menu id="tools">
                     <MenuItem id="readWriteOptions" call="readWriteOptions"/>
+                    <MenuSeparator/>
+                    <MenuItem id="summarizeData" call="summarizeData"/>
                     <MenuSeparator/>
                     <MenuItem id="validate" call="validate">
                         <FormDialog>

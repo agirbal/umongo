@@ -73,5 +73,16 @@ public class CollectionNode extends BaseTreeNode {
         res.throwOnError();
         stats = res;
     }
-
+    
+    public BasicDBObject getStats() {
+        BasicDBObject cmd = new BasicDBObject("collStats", getCollection().getName());
+        return getCollection().getDB().command(cmd);
+    }
+    
+    DBObject summarizeData() {
+        BasicDBObject sum = new BasicDBObject("ns", getCollection().getFullName());
+        sum.put("sampleDoc", getCollection().findOne());
+        sum.put("stats", getStats());
+        return sum;
+    }
 }
