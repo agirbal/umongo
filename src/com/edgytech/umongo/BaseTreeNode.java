@@ -64,8 +64,12 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
 
     @Override
     protected void updateComponentCustom(JComponent comp) {
-        updateNode();
-
+        try {
+            updateNode();
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, e.getMessage(), e);
+        }
+        
         cachedIcon = SwingFast.createIcon(icon, iconGroup);
         if (overlays.size() > 0) {
             List<ImageIcon> icons = new ArrayList<ImageIcon>();

@@ -56,7 +56,7 @@ public class MongoNode extends BaseTreeNode {
         try {
             dbnames = mongo.getDatabaseNames();
         } catch (Exception e) {
-            getLogger().log(Level.INFO, e.getMessage(), e);
+            getLogger().log(Level.WARNING, e.getMessage(), e);
         }
 
         List<ServerAddress> addrs = mongo.getServerAddressList();
@@ -116,6 +116,8 @@ public class MongoNode extends BaseTreeNode {
 
     @Override
     protected void updateNode() {
+        label = "Mongo: ?";
+        // following op may fail, e.g. if SSL is broken
         label = "Mongo: " + mongo.getConnectPoint();
     }
 
