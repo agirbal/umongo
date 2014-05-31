@@ -28,7 +28,10 @@ import java.util.List;
 import javax.swing.JPanel;
 import com.edgytech.umongo.MongoPanel.Item;
 import com.mongodb.MongoClient;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -79,7 +82,13 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     }
 
     private String getServerAddressString(ServerAddress addr) {
-        return addr.getHost() + ":" + addr.getPort() + " (" + addr.getSocketAddress().getAddress().toString() + ")";
+        String ip = "unknown";
+        try {
+            ip = addr.getSocketAddress().getAddress().toString();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(MongoPanel.class.getName()).log(Level.WARNING, null, ex);
+        }
+        return addr.getHost() + ":" + addr.getPort() + " (" + ip + ")";
     }
 
     @Override
