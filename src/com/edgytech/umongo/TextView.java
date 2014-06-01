@@ -266,7 +266,7 @@ public class TextView extends Zone implements EnumListener, TabInterface, Runnab
         updateComponent();
 
         // scroll resets, set it back if not to close to the end
-        System.out.println(val + " " + max + " " + vis);
+//        System.out.println(val + " " + max + " " + vis);
         if (val < max - vis)
             ta.getComponent().getVerticalScrollBar().setValue(val);
     }

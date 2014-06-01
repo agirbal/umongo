@@ -45,7 +45,6 @@ public class ImportDialog extends FormDialog {
     }
 
     public DocumentDeserializer getDocumentDeserializer() {
-        System.out.println(getIntFieldValue(Item.format) + " " + getComponentIntFieldValue(Item.format));
         DocumentDeserializer dd = new DocumentDeserializer(Format.values()[getIntFieldValue(Item.format)], null);
         dd.setFile(new File(getStringFieldValue(Item.inputFile)));
         dd.setDelimiter(getStringFieldValue(Item.delimiter));
