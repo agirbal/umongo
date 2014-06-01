@@ -392,8 +392,8 @@
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
-                    <MenuItem id="doImport" label="Import" call="doImport"/>
-                    <MenuItem id="export" call="export"/>
+                    <MenuItem id="doImport" label="Import File" call="doImport"/>
+                    <MenuItem id="export" label="Export to File" call="export"/>
                     <MenuSeparator/>
                     <MenuItem id="dropCollection" label="Drop Collection" call="dropCollection" icon="stock_delete.png" iconGroup="icons">
                         <ConfirmDialog text="Are you sure you want to drop this collection?"/>

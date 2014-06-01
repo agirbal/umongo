@@ -138,21 +138,34 @@ public class DocumentDeserializer {
         Matcher m = pattern.matcher(s);
         int pos = 0;
         boolean quoteMode = false;
+        boolean wasQuoted = false;
         while (m.find()) {
             String sep = m.group();
             if (quote.equals(sep)) {
                 int qpos = m.start();
-                // only turn on quote mode if previous char was the delimiter
-                if (qpos == pos) {
-                    quoteMode = !quoteMode;
+                if (!quoteMode) {
+                    // only turn on quote mode if previous char was the delimiter
+                    if (qpos == pos) {
+                        quoteMode = true;
+                        wasQuoted = true;
+                    }
+                } else {
+                    quoteMode = false;
                 }
             } else if (!quoteMode && delimiter.equals(sep)) {
                 int toPos = m.start();
-                list.add(s.substring(pos, toPos));
+                String token = s.substring(pos, toPos);
+                if (wasQuoted) {
+                    token = token.substring(quote.length(), token.length() - quote.length());
+                }
+                list.add(token);
                 pos = m.end();
+                wasQuoted = false;
             }
         }
-        if (pos < s.length()) {
+        
+        // previous loop always finishes on last limiter, need to add last token
+        if (pos <= s.length()) {
             list.add(s.substring(pos));
         }
         return list;
@@ -311,22 +324,26 @@ public class DocumentDeserializer {
                     }
                     String value = values.get(index);
 
-                    if (type == null || "JSON".equals(type)) {
-                        // this is typically used for quoted Strings
-                        obj.put(field, JSON.parse(value));
-                    } else if ("String".equals(type)) {
-                        obj.put(field, value);
-                    } else if ("Date".equals(type)) {
-                        Long time = Long.valueOf(value);
-                        obj.put(field, new Date(time));
-                    } else if ("Boolean".equals(type)) {
-                        obj.put(field, Boolean.valueOf(value));
-                    } else if ("Integer".equals(type)) {
-                        obj.put(field, Integer.valueOf(value));
-                    } else if ("Long".equals(type)) {
-                        obj.put(field, Long.valueOf(value));
-                    } else if ("Double".equals(type)) {
-                        obj.put(field, Double.valueOf(value));
+                    try {
+                        if (type == null || "JSON".equals(type)) {
+                            // this is typically used for quoted Strings
+                            obj.put(field, JSON.parse(value));
+                        } else if ("String".equals(type)) {
+                            obj.put(field, value);
+                        } else if ("Date".equals(type)) {
+                            Long time = Long.valueOf(value);
+                            obj.put(field, new Date(time));
+                        } else if ("Boolean".equals(type)) {
+                            obj.put(field, Boolean.valueOf(value));
+                        } else if ("Integer".equals(type)) {
+                            obj.put(field, Integer.valueOf(value));
+                        } else if ("Long".equals(type)) {
+                            obj.put(field, Long.valueOf(value));
+                        } else if ("Double".equals(type)) {
+                            obj.put(field, Double.valueOf(value));
+                        }
+                    } catch (Exception ex) {
+                        Logger.getLogger(DocumentDeserializer.class.getName()).log(Level.WARNING, null, ex);
                     }
                 } else {
                     // this is a static value
