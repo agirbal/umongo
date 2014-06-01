@@ -222,7 +222,7 @@
                     </MenuItem>
                     <MenuItem id="listCommands" call="listCommands"/>
                     <MenuSeparator/>
-                    <MenuItem id="statsCmd" label="Stats" call="stats"/>
+                    <MenuItem id="getStats" call="getStats"/>
                     <MenuSeparator/>
                     <MenuItem id="eval" label="Execute JavaScript" call="eval" toolTipText="Evaluate Javascript code on the database side">
                         <FormDialog>
@@ -400,7 +400,8 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="command">
-                    <MenuItem id="statsCmd" label="Stats" call="stats"/>
+                    <MenuItem id="getStats" call="getStats"/>
+                    <MenuItem id="getIndexes" call="getIndexes"/>
                     <MenuSeparator/>
                     <MenuItem id="distinct" call="distinct">
                         <FormDialog>
@@ -684,7 +685,7 @@
                     </MenuItem>
                 </Menu>
                 <Menu id="command">
-                    <MenuItem id="stats" call="stats"/>
+                    <MenuItem id="getStats" call="getStats"/>
                 </Menu>
             </MenuBar>
             <Zone zone="CENTER">

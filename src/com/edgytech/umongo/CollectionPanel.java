@@ -57,7 +57,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         writeConcern,
         readPreference,
         stats,
-        statsCmd,
+        getStats,
+        getIndexes,
         refresh,
         dropCollection,
         rename,
@@ -1033,8 +1034,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         exportToFile(getCollectionNode().getCollection(), null, null, null, 0, 0, 0);
     }
 
-    public void stats(ButtonBase button) {
+    public void getStats(ButtonBase button) {
         new DbJobCmd(getCollectionNode().getCollection(), "collstats").addJob();
+    }
+
+    public void getIndexes(ButtonBase button) {
+        final DBCollection col = getCollectionNode().getCollection().getDB().getCollection("system.indexes");
+        CollectionPanel.doFind(col, new BasicDBObject("ns", getCollectionNode().getCollection().getFullName()));
     }
 
     public void validate(ButtonBase button) {

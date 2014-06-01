@@ -49,7 +49,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         writeConcern,
         readPreference,
         stats,
-        statsCmd,
+        getStats,
         refresh,
         dropDatabase,
         uploadFile,
@@ -620,7 +620,7 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
 
     }
 
-    public void stats(ButtonBase button) {
+    public void getStats(ButtonBase button) {
         new DbJobCmd(getDbNode().getDb(), "dbstats").addJob();
     }
 

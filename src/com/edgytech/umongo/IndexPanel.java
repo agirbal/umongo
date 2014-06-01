@@ -39,7 +39,7 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
         ns,
         key,
         info,
-        stats,
+        getStats,
         refresh,
         drop,
         settings,
@@ -110,7 +110,7 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void stats(ButtonBase button) {
+    public void getStats(ButtonBase button) {
         new DbJobCmd(getIndexNode().getStatsCollection(), "collstats").addJob();
     }
 
