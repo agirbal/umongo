@@ -492,7 +492,7 @@
                     <MenuItem id="geoNear" call="geoNear">
                         <FormDialog>
                             <com.edgytech.umongo.DocBuilderField id="gnOrigin" label="Origin" toolTipText="Point of origin, in JSON format"/>
-                            <IntSpinner id="gnNum" label="Limit" toolTipText="Maximum number of entries to return" minValue="0" value="100"/>
+                            <IntSpinner id="gnLimit" label="Limit" toolTipText="Maximum number of entries to return" minValue="0" value="100"/>
                             <DoubleSpinner id="gnMaxDistance" label="Max Distance" toolTipText="Maximum distance from the point of origin" minValue="0"/>
                             <DoubleSpinner id="gnDistanceMultiplier" label="Distance Multiplier" toolTipText="Distance multiplier" minValue="0"/>
                             <com.edgytech.umongo.DocBuilderField id="gnQuery" label="Query" toolTipText="Query to filter the results by, in JSON format"/>

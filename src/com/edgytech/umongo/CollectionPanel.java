@@ -148,7 +148,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         spckOnValue,
         geoNear,
         gnOrigin,
-        gnNum,
+        gnLimit,
         gnMaxDistance,
         gnDistanceMultiplier,
         gnQuery,
@@ -1263,6 +1263,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         cmd.put("near", origin);
         double distance = getDoubleFieldValue(Item.gnMaxDistance);
         cmd.put("maxDistance", distance);
+        int limit = getIntFieldValue(Item.gnLimit);
+        cmd.put("limit", limit);
         double distanceMult = getDoubleFieldValue(Item.gnDistanceMultiplier);
         if (distanceMult > 0) {
             cmd.put("distanceMultiplier", distanceMult);
