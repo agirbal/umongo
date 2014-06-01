@@ -1087,6 +1087,9 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                 BasicDBList shardList = new BasicDBList();
                 BasicDBObject stats = getStats();
                 BasicDBObject shards = (BasicDBObject) stats.get("shards");
+                if (shards == null || shards.isEmpty())
+                    return null;
+                    
                 long totalChunks = 0;
                 long totalSize = stats.getLong("size");
                 long totalCount = stats.getLong("count");
@@ -1100,14 +1103,14 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
                     long numChunks = config.getCollection("chunks").count(query);
                     totalChunks += numChunks;
 
-                    double estChunkData = shardStats.getLong("size") / numChunks;
-                    long estChunkCount = (long) Math.floor(shardStats.getLong("count") / numChunks);
+                    double estChunkData = numChunks <= 0 ? 0 : shardStats.getLong("size") / numChunks;
+                    long estChunkCount = numChunks <= 0 ? 0 : (long) Math.floor(shardStats.getLong("count") / numChunks);
 
                     BasicDBObject shardDetails = new BasicDBObject("shard", shardName);
                     shardDetails.put("data", shardStats.getLong("size"));
-                    shardDetails.put("pctData", (shardStats.getLong("size") * 100.0) / totalSize);
+                    shardDetails.put("pctData", totalSize <= 0 ? 0 : (shardStats.getLong("size") * 100.0) / totalSize);
                     shardDetails.put("docs", shardStats.getLong("count"));
-                    shardDetails.put("pctDocs", (shardStats.getLong("count") * 100.0) / totalCount);
+                    shardDetails.put("pctDocs", totalCount <= 0 ? 0 : (shardStats.getLong("count") * 100.0) / totalCount);
                     shardDetails.put("chunks", numChunks);
                     if (shardStats.containsField("avgObjSize"))
                     shardDetails.put("avgDocSize", shardStats.getDouble("avgObjSize"));
