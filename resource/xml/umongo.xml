@@ -125,6 +125,7 @@
             <CheckBox id="ignoreIndexes" toolTipText="If true, the replica will not build indexes (e.g. backup only server)" value="false"/>
         </com.edgytech.umongo.ReplicaDialog>
         <ConfirmDialog id="lockingOperationDialog" text="Are you sure you want to run this command? It can potentially lock the db for a long time."/>
+        <ConfirmDialog id="dataLossDialog" text="Are you sure you want to run this command? It can potentially lead to data loss."/>
         <com.edgytech.umongo.MongoPanel id="mongoPanel">
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="mongo_leaf_16.png" iconGroup="icons" toolTipText="Mongo"/>

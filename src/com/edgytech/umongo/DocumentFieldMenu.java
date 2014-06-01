@@ -127,6 +127,9 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item>  
             return;
         }
         
+        if (!UMongo.instance.getGlobalStore().confirmDataLossOperation())
+            return;
+        
         final DBObject query = doc.containsField("_id") ? new BasicDBObject("_id", doc.get("_id")) : doc;
         DBObject setValue = new BasicDBObject(path, 1);
         final DBObject update = new BasicDBObject("$unset", setValue);
