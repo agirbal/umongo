@@ -14,7 +14,7 @@
         <MenuItem id="rename" bind="globalStore.collectionPanel.menu.rename"/>
         <MenuItem id="dropCollection" bind="globalStore.collectionPanel.menu.dropCollection"/>
         <MenuSeparator/>
-        <MenuItem id="ensureIndex" bind="globalStore.collectionPanel.menu.ensureIndex"/>
+        <MenuItem id="createIndex" bind="globalStore.collectionPanel.menu.createIndex"/>
         <MenuSeparator/>
         <MenuItem id="find" bind="globalStore.collectionPanel.menu.find"/>
         <!--<MenuItem id="findOne" bind="globalStore.collectionPanel.menu.findOne"/>-->

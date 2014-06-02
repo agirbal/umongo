@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import com.edgytech.umongo.CollectionPanel.Item;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.MongoClient;
+import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 import java.util.Map.Entry;
 
@@ -666,24 +667,25 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         new DbJob() {
             @Override
             public Object doRun() throws IOException {
+                WriteResult res = null;
                 List<DBObject> list = new ArrayList<DBObject>();
                 for (int i = 0; i < count; ++i) {
                     BasicDBObject newdoc = (BasicDBObject) doc.copy();
                     handleSpecialFields(newdoc);
                     if (bulk) {
-                        if (list.size() > 1000) {
-                            col.insert(list);
+                        list.add(newdoc);
+                        if (list.size() >= 1000) {
+                            res = col.insert(list);
                             list.clear();
                         }
-                        list.add(newdoc);
                     } else {
-                        col.insert(newdoc);
+                        res = col.insert(newdoc);
                     }
                 }
-                if (bulk) {
+                if (bulk && !list.isEmpty()) {
                     return col.insert(list);
                 }
-                return null;
+                return res;
             }
 
             @Override
