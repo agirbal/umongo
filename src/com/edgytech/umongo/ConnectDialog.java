@@ -54,8 +54,7 @@ public class ConnectDialog extends FormDialog {
         proxyHost,
         proxyPort,
         proxyUser,
-        proxyPassword,
-        clientSSLCertFile
+        proxyPassword
     }
 
     public ConnectDialog() {
@@ -139,9 +138,6 @@ public class ConnectDialog extends FormDialog {
 //                });
 //            }
         }
-
-        String sslCertPath = getStringFieldValue(Item.clientSSLCertFile);
-        
         
         if (stype == 1) {
             builder.socketFactory(SSLSocketFactory.getDefault());
