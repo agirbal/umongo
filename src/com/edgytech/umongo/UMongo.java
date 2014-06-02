@@ -207,6 +207,12 @@ public class UMongo extends Application implements Runnable {
     TabbedDiv getTabbedResult() {
         return (TabbedDiv) getBoundUnit(Item.tabbedResult);
     }
+    
+    void removeAllTabs() {
+        TabbedDiv tabs = getTabbedResult();
+        tabs.removeAllChildren();
+        tabs.structureComponent();
+    }
 
     JobBar getJobBar() {
         return (JobBar) getBoundUnit(Item.jobBar);
@@ -249,6 +255,7 @@ public class UMongo extends Application implements Runnable {
     public void removeJob(DbJob job) {
         getJobBar().removeJob(job);
     }
+    
     long _nextTreeUpdate = System.currentTimeMillis();
     ConcurrentLinkedQueue<BaseTreeNode> nodesToRefresh = new ConcurrentLinkedQueue<BaseTreeNode>();
 

@@ -1028,6 +1028,9 @@
                 <MenuSeparator/>
                 <MenuItem id="exit" label="Quit" alt="q" key="q" keyMod="cmd" call="exit"/>
             </Menu>
+            <Menu id="view" alt="v">
+                <MenuItem id="closeAllTabs" alt="c" call="closeAllTabs"/>                
+            </Menu>
             <Menu id="tools" alt="o">
                 <MenuItem id="importFile" alt="i" call="importFile"/>
                 <MenuSeparator/>

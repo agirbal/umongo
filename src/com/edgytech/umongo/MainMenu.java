@@ -48,7 +48,8 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         prefDialog,
         importFile,
         about,
-        aboutTextArea
+        aboutTextArea,
+        closeAllTabs
     }
 
     public MainMenu() {
@@ -232,6 +233,10 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         UMongo.instance.windowClosing(null);
     }
 
+    public void closeAllTabs(ButtonBase button) {
+        UMongo.instance.removeAllTabs();
+    }
+        
     public void about(ButtonBase button) throws IOException {
         FormDialog dia = (FormDialog) button.getDialog();
 
