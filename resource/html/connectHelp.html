@@ -20,7 +20,32 @@
         <li>safeWrites: Sets the global WriteConcern as SAFE, which means that writes are acknowledged by the server</li>
         <li>secondaryReads: Allows the read operations to go to secondary servers</li>
     </ul>
-    <h2>Proxy options</h2>    
+    <h2>Connecting with SSL</h2>
+    
+    To connect using SSL, use the 'SSL' socketType in the Connect Dialog.<br/>
+    If using self-signed certificates (for either client or server), use the 'SSL no validation' socketType.<br/>
+    <br/>
+    UMongo relies on Java's SSL utilities, for more information please refer to Java and Keytool documentation.<br/>
+    Paths to the keyStore and trustStore can be entered under the Security tab in the Preferences Dialog.<br/>
+    UMongo will prompt for a password, but it will not store it on disk.
+    
+    <h3>Setting up the client SSL certificate</h3>
+    The client certificate can be added through the Java Keystore.
+    Assuming you have a ".pem" certificate file, convert it to pkcs12 using:
+    <pre>
+    openssl pkcs12 -export -in client-cert.pem -out client-cert.p12
+    </pre>
+    From the p12 file you can create the keystore:
+    <pre>
+    keytool -importkeystore -srckeystore client-cert.p12 -srcstoretype PKCS12 -destkeystore keystore.jks
+    </pre>
+    
+    <h3>Adding a Certificate Authority file</h3>
+    Adding a CA file is done using keytool
+    <pre>
+    keytool -import -trustcacerts -alias root -file Thawte.crt -keystore keystore.jks
+    </pre>
+    <h2>Proxy options</h2>
     The following options are supported:<ul>
         <li>proxyType: Type of proxy. Currently 'None' and 'SOCKS' are supported</li>        
         <li>proxyHost: The proxy host</li>        

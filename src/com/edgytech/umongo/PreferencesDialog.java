@@ -16,16 +16,13 @@
 package com.edgytech.umongo;
 
 import com.edgytech.swingfast.CheckBox;
-import com.edgytech.swingfast.FileSelectorField;
 import com.edgytech.swingfast.FormDialog;
 import com.edgytech.swingfast.FormDialogListener;
 import com.edgytech.swingfast.IntFieldInterface;
-import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.XMLFormatter;
 
@@ -33,7 +30,7 @@ import java.util.logging.XMLFormatter;
  *
  * @author antoine
  */
-public class AppPreferences extends FormDialog implements FormDialogListener {
+public class PreferencesDialog extends FormDialog implements FormDialogListener {
 
     enum Item {
         getMoreSize,
@@ -52,10 +49,15 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
         applicationLogFormat,
         applicationLogLevel,
         pluginFolder,
-        allowPlugins
+        allowPlugins,
+        trustStoreFile,
+        keyStoreFile
     }
 
-    public AppPreferences() {
+    String trustStorePassword;
+    String keyStorePassword;
+    
+    public PreferencesDialog() {
         setEnumBinding(Item.values(), null);
         setFormDialogListener(this);
     }
@@ -68,6 +70,7 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
     public void formOkCbk() {
         UMongo.instance.updateLogging();
         UMongo.instance.updatePlugins();
+        updateSSL();        
     }
 
     public void formCancelCbk() {
@@ -150,4 +153,28 @@ public class AppPreferences extends FormDialog implements FormDialogListener {
         }
         return null;
     }
+
+    private void updateSSL() {
+        trustStorePassword = updateSSLStore(getStringFieldValue(Item.trustStoreFile), "javax.net.ssl.trustStore", "javax.net.ssl.trustStorePassword", trustStorePassword);
+        keyStorePassword = updateSSLStore(getStringFieldValue(Item.keyStoreFile), "javax.net.ssl.keyStore", "javax.net.ssl.keyStorePassword", keyStorePassword);
+    }
+
+    private String updateSSLStore(String resource, String prop, String propPwd, String oldPwd) {
+        if (resource != null && !resource.isEmpty()) {
+            resource = resource.trim();
+            System.setProperty(prop, resource);
+            if (oldPwd == null) {
+                String pwd = UMongo.instance.getGlobalStore().promptPassword(resource);
+                if (pwd != null)
+                    System.setProperty(propPwd, pwd);
+                return pwd;
+            }
+        } else {
+            System.clearProperty(prop);
+            System.clearProperty(propPwd);
+            return null;
+        }
+        return oldPwd;
+    }
+    
 }

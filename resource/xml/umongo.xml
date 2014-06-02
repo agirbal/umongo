@@ -970,6 +970,10 @@
                 </Div>
             </Zone>
         </com.edgytech.umongo.JSONTextDialog>
+        <com.edgytech.umongo.PasswordPromptDialog id="passwordPromptDialog">
+            <Text id="resource" field="true"/>
+            <PasswordField id="password"/>
+        </com.edgytech.umongo.PasswordPromptDialog>
     </com.edgytech.umongo.GlobalStore>
     <Frame id="frame" title="UMongo" masterFrame="true" menuId="mainmenu" icon="mongo_leaf_32.png" iconGroup="icons" contexts="default;Connect" preferredSize="1100;700" bgColor="255;255;255">
         <com.edgytech.umongo.MainMenu id="mainMenu" start="start">
@@ -1028,7 +1032,7 @@
                 <MenuItem id="importFile" alt="i" call="importFile"/>
                 <MenuSeparator/>
                 <MenuItem id="preferences" alt="p" key="comma" keyMod="cmd">
-                    <com.edgytech.umongo.AppPreferences id="prefDialog" start="start">
+                    <com.edgytech.umongo.PreferencesDialog id="prefDialog" label="Preferences" start="start">
                         <TabbedDiv id="optionTabs">
                             <Div id="general" gap="true">
                                 <Div id="view" gap="true" titled="true">
@@ -1037,6 +1041,16 @@
                                 </Div>
                                 <Div id="querying" gap="true" titled="true">
                                     <IntSpinner id="getMoreSize" minValue="1" value="100" toolTipText="Number of documents to fetch when getting more results from a cursor"/>
+                                </Div>
+                            </Div>
+                            <Div id="security" gap="true">
+                                <Div id="ssl" label="SSL" gap="true" titled="true">
+                                    <FileSelectorField id="trustStoreFile" path="">
+                                        <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
+                                    </FileSelectorField>
+                                    <FileSelectorField id="keyStoreFile" path="">
+                                        <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
+                                    </FileSelectorField>
                                 </Div>
                             </Div>
                             <Div id="logging" gap="true">
@@ -1073,7 +1087,7 @@
                             </Div>
                         </TabbedDiv>
                         <Text value="* setting requires an application restart."/>
-                    </com.edgytech.umongo.AppPreferences>
+                    </com.edgytech.umongo.PreferencesDialog>
                 </MenuItem>
             </Menu>
             <Menu id="help" alt="h">

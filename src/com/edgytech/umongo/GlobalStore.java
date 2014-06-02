@@ -49,7 +49,8 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
         documentMenu,
         documentFieldMenu,
         jsonTextDialog,
-        replicaDialog
+        replicaDialog,
+        passwordPromptDialog
     }
 
     public GlobalStore() {
@@ -175,5 +176,14 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
         }
 
         return editor.getValue();
+    }
+    
+    String promptPassword(String resource) {
+        PasswordPromptDialog dia = (PasswordPromptDialog) getBoundUnit(Item.passwordPromptDialog);
+        dia.xmlLoadCheckpoint();
+        dia.setResource(resource);
+        if (!dia.show())
+            return null;
+        return dia.getPassword();
     }
 }

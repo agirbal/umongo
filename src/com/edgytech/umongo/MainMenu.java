@@ -55,8 +55,8 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
         setEnumBinding(Item.values(), this);
     }
 
-    AppPreferences getPreferences() {
-        return (AppPreferences) getBoundUnit(Item.prefDialog);
+    PreferencesDialog getPreferences() {
+        return (PreferencesDialog) getBoundUnit(Item.prefDialog);
     }
 
     public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {

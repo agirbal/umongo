@@ -98,7 +98,7 @@ public class UMongo extends Application implements Runnable {
         return (MainMenu) getBoundUnit(Item.mainMenu);
     }
 
-    AppPreferences getPreferences() {
+    PreferencesDialog getPreferences() {
         return getMainMenu().getPreferences();
     }
 
