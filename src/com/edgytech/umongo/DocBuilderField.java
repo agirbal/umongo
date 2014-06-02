@@ -17,11 +17,6 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.*;
 import com.edgytech.umongo.DocBuilderField.Item;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import java.awt.event.FocusEvent;

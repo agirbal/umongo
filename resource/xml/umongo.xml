@@ -358,8 +358,8 @@
             <MenuBar id="menu" zone="NORTH" minHeight="50" prefHeight="50">
                 <Text id="icon" icon="folder.png" iconGroup="icons" toolTipText="Collection"/>
                 <Menu id="collection">
-                    <MenuItem id="ensureIndex" label="Ensure Index" call="ensureIndex" icon="index.png" iconGroup="icons">
-                        <com.edgytech.umongo.EnsureIndexDialog>
+                    <MenuItem id="createIndex" label="Create Index" call="createIndex" icon="index.png" iconGroup="icons">
+                        <com.edgytech.umongo.CreateIndexDialog>
                             <com.edgytech.umongo.DocBuilderField id="keys" toolTipText="keys to index by, in JSON format" nonEmpty="true"/>
                             <CheckBox id="unique" value="false" toolTipText="If checked, index will be unique"/>
                             <CheckBox id="dropDuplicates" value="false" toolTipText="If creating a unique index, remove documents with duplicate keys"/>
@@ -376,7 +376,7 @@
                                 <TextField id="languageOverride" toolTipText="For a text index, specify the name of the field in the document that contains, for that document, the language to override the default language"/>
                             </Div>
                             <com.edgytech.umongo.DocBuilderField id="extra" toolTipText="Extra options for the index creation"/>
-                        </com.edgytech.umongo.EnsureIndexDialog>
+                        </com.edgytech.umongo.CreateIndexDialog>
                     </MenuItem>
                     <MenuSeparator/>
                     <MenuItem id="refresh" label="Refresh" call="refresh" icon="stock_refresh.png" iconGroup="icons" key="r" keyMod="cmd+shift"/>

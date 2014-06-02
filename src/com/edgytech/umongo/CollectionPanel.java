@@ -109,7 +109,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         insertDoc,
         insertCount,
         insertBulk,
-        ensureIndex,
+        createIndex,
         findAndModify,
         famQuery,
         famFields,
@@ -783,10 +783,10 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }.addJob();
     }
 
-    public void ensureIndex(final ButtonBase button) {
+    public void createIndex(final ButtonBase button) {
         final CollectionNode node = getCollectionNode();
         final DBCollection col = getCollectionNode().getCollection();
-        EnsureIndexDialog dia = (EnsureIndexDialog) button.getDialog();
+        CreateIndexDialog dia = (CreateIndexDialog) button.getDialog();
         final DBObject keys = dia.getKeys();
         final DBObject opts = dia.getOptions();
 
@@ -797,8 +797,11 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         new DbJob() {
             @Override
             public Object doRun() throws IOException {
-                col.ensureIndex(keys, opts);
-                return null;
+//                opts.put("key", keys);
+//                return col.getDB().getCollection("system.indexes").insert(opts);
+//                col.ensureIndex(keys, opts);
+                col.createIndex(keys, opts);
+                return new BasicDBObject("ok", 1);
             }
 
             @Override
@@ -820,6 +823,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
             @Override
             public ButtonBase getButton() {
                 return button;
+            }
+            
+            @Override
+            public DBObject getRoot(Object result) {
+                BasicDBObject obj = new BasicDBObject("keys", keys);
+                obj.put("options", opts);
+                return obj;
             }
         }.addJob();
     }

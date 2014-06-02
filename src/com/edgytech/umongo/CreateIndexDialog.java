@@ -23,7 +23,7 @@ import com.mongodb.DBObject;
  *
  * @author antoine
  */
-public class EnsureIndexDialog extends FormDialog {
+public class CreateIndexDialog extends FormDialog {
 
     enum Item {
         keys,
@@ -40,7 +40,7 @@ public class EnsureIndexDialog extends FormDialog {
         extra
     }
 
-    public EnsureIndexDialog() {
+    public CreateIndexDialog() {
         setEnumBinding(Item.values(), null);
     }
     
