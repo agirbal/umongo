@@ -908,28 +908,28 @@
                 </Div>
             </Zone>
         </com.edgytech.umongo.RouterPanel>
-        <com.edgytech.umongo.EditBinaryDialog>
+        <com.edgytech.umongo.EditBinaryDialog id="editBinaryDialog">
             <FileSelectorField id="inputFile" toolTipText="The file to read binary data from">
                 <FileSelectorDialog type="OPEN" mode="FILES_ONLY"/>
             </FileSelectorField>
         </com.edgytech.umongo.EditBinaryDialog>
-        <com.edgytech.umongo.EditBooleanDialog>
+        <com.edgytech.umongo.EditBooleanDialog id="editBooleanDialog">
             <CheckBox id="value" label="True"/>
         </com.edgytech.umongo.EditBooleanDialog>
-        <com.edgytech.umongo.EditCodeDialog>
+        <com.edgytech.umongo.EditCodeDialog id="editCodeDialog">
             <TextField id="value" label="Code" toolTipText="The javascript code"/>
             <TextField id="scope" toolTipText="The javascript scope"/>
         </com.edgytech.umongo.EditCodeDialog>
-        <com.edgytech.umongo.EditDateDialog>
+        <com.edgytech.umongo.EditDateDialog id="editDateDialog">
             <DateSpinner id="value" label="Date"/>
         </com.edgytech.umongo.EditDateDialog>
-        <com.edgytech.umongo.EditDoubleDialog>
+        <com.edgytech.umongo.EditDoubleDialog id="editDoubleDialog">
             <DoubleSpinner id="value"/>
         </com.edgytech.umongo.EditDoubleDialog>
-        <com.edgytech.umongo.EditLongDialog>
+        <com.edgytech.umongo.EditLongDialog id="editLongDialog">
             <LongSpinner id="value"/>
         </com.edgytech.umongo.EditLongDialog>
-        <com.edgytech.umongo.EditObjectIdDialog>
+        <com.edgytech.umongo.EditObjectIdDialog id="editObjectIdDialog">
             <Text value="Fill in either a String, or values, or leave blank to auto-generate"/>
             <TextField id="string" toolTipText="A 24 character string describing the id"/>
             <IntSpinner id="time" toolTipText="Creation time in second"/>
@@ -941,17 +941,17 @@
             <Text value="Add a namespace to make a DBRef"/>
             <TextField id="namespace" toolTipText="Namespace identifying the collection of the reference"/>
         </com.edgytech.umongo.EditObjectIdDialog>
-        <com.edgytech.umongo.EditPatternDialog>
+        <com.edgytech.umongo.EditPatternDialog id="editPatternDialog">
             <TextField id="value" toolTipText="The regular expression pattern"/>
         </com.edgytech.umongo.EditPatternDialog>
-        <com.edgytech.umongo.EditStringDialog>
+        <com.edgytech.umongo.EditStringDialog id="editStringDialog">
             <TextField id="value"/>
         </com.edgytech.umongo.EditStringDialog>
-        <com.edgytech.umongo.EditTimestampDialog>
+        <com.edgytech.umongo.EditTimestampDialog id="editTimestampDialog">
             <IntSpinner id="time" toolTipText="The time in seconds"/>
             <IntSpinner id="increment" toolTipText="The increment"/>
         </com.edgytech.umongo.EditTimestampDialog>
-        <com.edgytech.umongo.EditUuidDialog>
+        <com.edgytech.umongo.EditUuidDialog id="editUuidDialog">
             <TextField id="value" toolTipText="The UUID as a string in Java representation"/>
         </com.edgytech.umongo.EditUuidDialog>
         <com.edgytech.umongo.DocBuilderDialog id="docBuilderDialog" buttons="OK_CANCEL">
