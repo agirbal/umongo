@@ -79,35 +79,9 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
 
     public void drop(ButtonBase button) {
         final IndexNode indexNode = getIndexNode();
-        new DbJob() {
-
-            @Override
-            public Object doRun() throws IOException {
-                indexNode.getCollectionNode().getCollection().dropIndex(indexNode.getName());
-                return null;
-            }
-
-            @Override
-            public String getNS() {
-                return getIndexNode().getIndexedCollection().getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Drop Index";
-            }
-
-            @Override
-            public DBObject getRoot(Object result) {
-                return indexNode.getIndex();
-            }
-
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                indexNode.removeNode();
-            }
-        }.addJob();
+        DBObject cmd = new BasicDBObject("deleteIndexes", indexNode.getCollectionNode().getCollection().getName());
+        cmd.put("index", indexNode.getName());
+        new DbJobCmd(indexNode.getCollectionNode().getDbNode().getDb(), cmd, null, indexNode.getCollectionNode(), null).addJob();
     }
 
     public void getStats(ButtonBase button) {

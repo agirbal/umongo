@@ -91,7 +91,8 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         createCollCapped,
         createCollSize,
         createCollCount,
-        createCollAutoIndex,
+//        createCollAutoIndex,
+        createCollUsePowerOf2Sizes,
         enableSharding,
         movePrimary,
         mvpToShard,
@@ -349,31 +350,8 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
     public void dropDatabase(ButtonBase button) {
         final DbNode node = getDbNode();
         final DB db = getDbNode().getDb();
-        new DbJob() {
-
-            @Override
-            public Object doRun() {
-                db.dropDatabase();
-                return null;
-            }
-
-            @Override
-            public String getNS() {
-                return db.getName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Drop";
-            }
-
-            @Override
-            public void wrapUp(Object res) {
-                node.removeNode();
-                node = null;
-                super.wrapUp(res);
-            }
-        }.addJob();
+        BasicDBObject cmd = new BasicDBObject("dropDatabase", 1);
+        new DbJobCmd(db, cmd, null, node.getMongoNode(), null).addJob();
     }
 
     public void readWriteOptions(ButtonBase button) {
@@ -574,50 +552,29 @@ public class DbPanel extends BasePanel implements EnumListener<Item> {
         final boolean capped = getBooleanFieldValue(Item.createCollCapped);
         final int size = getIntFieldValue(Item.createCollSize);
         final int count = getIntFieldValue(Item.createCollCount);
-        final boolean autoIndexId = getBooleanFieldValue(Item.createCollAutoIndex);
+//        final boolean autoIndexId = getBooleanFieldValue(Item.createCollAutoIndex);
+        final boolean usePowerOf2Sizes = getBooleanFieldValue(Item.createCollUsePowerOf2Sizes);
 
-        new DbJob() {
-
-            @Override
-            public Object doRun() throws IOException {
-                DBObject opt = new BasicDBObject("capped", capped);
-                if (capped) {
-                    if (size > 0) {
-                        opt.put("size", size);
-                    }
-                    if (count > 0) {
-                        opt.put("max", count);
-                    }
-                }
-                if (!autoIndexId) {
-                    opt.put("autoIndexId", false);
-                }
-                db.createCollection(name, opt);
-                return null;
+        DBObject createCmd = new BasicDBObject("create", name);
+        DBObject opt = new BasicDBObject("capped", capped);
+        if (capped) {
+            if (size > 0) {
+                opt.put("size", size);
             }
-
-            @Override
-            public String getNS() {
-                return db.getName();
+            if (count > 0) {
+                opt.put("max", count);
             }
+        }
 
-            @Override
-            public String getShortName() {
-                return "Create Collection";
-            }
+//                // deprecated
+//                if (!autoIndexId) {
+//                    opt.put("autoIndexId", false);
+//                }
+        // usePowerOf2Sizes uses flags name :(
+        opt.put("flags", usePowerOf2Sizes ? 1 : 0);
 
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                node.structureComponent();
-            }
-
-            @Override
-            public ButtonBase getButton() {
-                return button;
-            }
-        }.addJob();
-
+        createCmd.putAll(opt);
+        new DbJobCmd(db, createCmd, null, node, button).addJob();
     }
 
     public void getStats(ButtonBase button) {

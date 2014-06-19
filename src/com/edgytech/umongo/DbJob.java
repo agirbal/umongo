@@ -22,6 +22,7 @@ import com.mongodb.WriteResult;
 import java.util.Iterator;
 import java.util.logging.Level;
 import com.edgytech.umongo.DbJob.Item;
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import java.awt.Component;
@@ -182,6 +183,24 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
             if (logRes && res instanceof DBCursor) {
                 logObj.put("firstResult", ((DBCursor)res).curr());
             }
+        } else if (res instanceof WriteResult) {
+            WriteResult wres = (WriteResult) res;
+            DBObject lasterr = wres.getCachedLastError();
+            if (lasterr != null) {
+                new DocView(null, title, this, sroot, lasterr).addToTabbedDiv();
+            }
+            if (logRes) {
+                logObj.put("firstResult", lasterr);
+            }
+        } else if (res instanceof CommandResult) {
+            CommandResult cres = (CommandResult) res;
+            if (!cres.ok()) {
+                UMongo.instance.showError(title, (Exception) cres.getException());
+            }
+            new DocView(null, title, this, sroot, (DBObject) res).addToTabbedDiv();
+            if (logRes) {
+                logObj.put("firstResult", res.toString());
+            }
         } else if (res instanceof List) {
             List list = (List) res;
             new DocView(null, title, this, sroot, list.iterator()).addToTabbedDiv();
@@ -198,15 +217,6 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
             // string may be large
             if (logRes) {
                 logObj.put("firstResult", MongoUtils.limitString((String)res, 0));
-            }
-        } else if (res instanceof WriteResult) {
-            WriteResult wres = (WriteResult) res;
-            DBObject lasterr = wres.getCachedLastError();
-            if (lasterr != null) {
-                new DocView(null, title, this, sroot, lasterr).addToTabbedDiv();
-            }
-            if (logRes) {
-                logObj.put("firstResult", lasterr);
             }
         } else if (res instanceof Exception) {
             UMongo.instance.showError(title, (Exception) res);

@@ -620,29 +620,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     public void dropCollection(ButtonBase button) {
         final CollectionNode colNode = getCollectionNode();
         final DBCollection col = getCollectionNode().getCollection();
-        new DbJob() {
-            @Override
-            public Object doRun() {
-                col.drop();
-                return null;
-            }
-
-            @Override
-            public String getNS() {
-                return col.getFullName();
-            }
-
-            @Override
-            public String getShortName() {
-                return "Drop";
-            }
-
-            @Override
-            public void wrapUp(Object res) {
-                super.wrapUp(res);
-                colNode.removeNode();
-            }
-        }.addJob();
+        BasicDBObject cmd = new BasicDBObject( "drop" , col.getName() );
+        new DbJobCmd(col.getDB(), cmd, null, colNode.getDbNode(), null).addJob();
     }
 
     public void readWriteOptions(ButtonBase button) {

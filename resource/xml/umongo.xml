@@ -201,7 +201,8 @@
                             <CheckBox id="createCollCapped" label="Is Capped"/>
                             <IntField id="createCollSize" label="Max Size" toolTipText="If capped, maximum size in bytes"/>
                             <IntField id="createCollCount" label="Max Count" toolTipText="If capped, maximum number of documents"/>
-                            <CheckBox id="createCollAutoIndex" label="Auto Index Id" value="true" toolTipText="To automatically create an index on _id field, default is true"/>
+<!--                            <CheckBox id="createCollAutoIndex" label="Auto Index Id" value="true" toolTipText="If true, automatically creates an index on _id field."/> -->
+                            <CheckBox id="createCollUsePowerOf2Sizes" label="Use Power Of 2 Sizes" value="true" toolTipText="this options makes all document spaces a power of 2 which helps reduce fragmentation, but adds extra space for each document. Turn off if documents are static in nature."/>
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>
@@ -388,7 +389,7 @@
                     </MenuItem>
                     <MenuItem id="settings" call="settings" showDialog="false">
                         <FormDialog>
-                            <CheckBox id="usePowerOf2Sizes" label="Use Power Of 2 Sizes" value="false" toolTipText="usePowerOf2Sizes flags makes all document spaces a power of 2 which can help reduce fragmentation"/>
+                            <CheckBox id="usePowerOf2Sizes" label="Use Power Of 2 Sizes" value="false" toolTipText="this options makes all document spaces a power of 2 which helps reduce fragmentation, but adds extra space for each document. Turn off if documents are static in nature."/>
                         </FormDialog>
                     </MenuItem>
                     <MenuSeparator/>

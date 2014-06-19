@@ -159,7 +159,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
             @Override
             public Object doRun() throws IOException {
                 db.getStats();
-                return null;
+                return new BasicDBObject("ok", 1);
             }
 
             @Override
@@ -170,6 +170,11 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
             @Override
             public String getShortName() {
                 return "Create DB";
+            }
+
+            @Override
+            public DBObject getRoot(Object result) {
+                return new BasicDBObject("name", name);
             }
 
             @Override

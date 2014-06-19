@@ -27,8 +27,19 @@ public class DbJobCmd extends DbJob {
     DB db;
     DBObject cmd;
     BasePanel panel;
+    BaseTreeNode node;
     ButtonBase button;
 
+    public DbJobCmd(DB db, DBObject cmd, BasePanel panel, BaseTreeNode node, ButtonBase button) {
+        this.id = null;
+        this.label = cmd.keySet().iterator().next();
+        this.db = db;
+        this.cmd = cmd;
+        this.panel = panel;
+        this.button = button;
+        this.node = node;
+    }
+    
     public DbJobCmd(DB db, DBObject cmd, BasePanel panel, ButtonBase button) {
         this.id = null;
         this.label = cmd.keySet().iterator().next();
@@ -53,7 +64,8 @@ public class DbJobCmd extends DbJob {
     @Override
     public Object doRun() {
         CommandResult res = db.command(cmd);
-        res.throwOnError();
+        // we want to pop up the exception, but still see the results...
+//        res.throwOnError();
         return res;
     }
 
@@ -105,6 +117,10 @@ public class DbJobCmd extends DbJob {
         // panel info may need to be refreshed
         if (panel != null) {
             panel.refresh();
+        }
+        
+        if (node != null) {
+            node.structureComponent();
         }
     }
 }
